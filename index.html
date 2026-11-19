@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Artist's Loft | MT. Oung</title>
+    <title>The Artist's Loft | Curated Myanmar Fine Art</title>
     <!-- Browser Tab Favicon & Mobile Home Screen Icon -->
     <link id="dynamic-favicon" rel="icon" type="image/jpeg" href="Logo.jpg">
     <link id="dynamic-shortcut-icon" rel="shortcut icon" type="image/jpeg" href="Logo.jpg">
@@ -193,7 +193,7 @@
                 <button type="button" onclick="showSection('contact')" class="nav-link md:hidden text-xs uppercase tracking-[0.22em] font-medium transition-colors py-1" data-target="contact">Contact</button>
             </nav>
 
-            <!-- Center Brand Title (5 taps opens hidden Admin Console) -->
+            <!-- Center Brand Logo (5 taps opens hidden Admin Console) -->
             <div class="md:w-1/3 flex justify-center items-center">
                 <button type="button" onclick="handleSecretBrandTap(event)" class="group flex items-center justify-center focus:outline-none select-none" aria-label="The Artist's Loft">
                     <img id="header-brand-logo"
@@ -228,8 +228,8 @@
         
         <!-- Side-by-side Background Lotus Paintings -->
         <div class="absolute inset-0 z-0 flex w-full h-full pointer-events-none">
-            <img id="home-bg-1" src="05582-mtoung3.jpg" alt="Lotus Study I by MT. Oung" onerror="handleBgFallback(this, 1)" class="w-1/2 h-full object-cover opacity-35 mix-blend-multiply">
-            <img id="home-bg-2" src="8899c-mtoung4.jpg" alt="Lotus Study II by MT. Oung" onerror="handleBgFallback(this, 2)" class="w-1/2 h-full object-cover opacity-35 mix-blend-multiply">
+            <img id="home-bg-1" src="05582-mtoung3.jpg" alt="Lotus Study I" onerror="handleBgFallback(this, 1)" class="w-1/2 h-full object-cover opacity-35 mix-blend-multiply">
+            <img id="home-bg-2" src="8899c-mtoung4.jpg" alt="Lotus Study II" onerror="handleBgFallback(this, 2)" class="w-1/2 h-full object-cover opacity-35 mix-blend-multiply">
         </div>
 
         <!-- Soft Gradient Vignettes for Seamless Blending with Classic Warm Parchment -->
@@ -251,26 +251,31 @@
                     Explore Artworks
                 </button>
                 <button type="button" onclick="showSection('about')" class="px-8 py-3.5 border border-[#9C8265]/65 text-[#26231F] text-xs uppercase tracking-[0.22em] font-medium rounded-full hover:border-[#26231F] transition-colors">
-                    Meet MT. Oung
+                    About The Gallery
                 </button>
             </div>
         </div>
     </section>
 
-    <!-- ==================== 2. ARTWORKS SECTION ==================== -->
+    <!-- ==================== 2. ARTWORKS SECTION (MULTI-ARTIST SELECTOR + PROFILE + WORKS) ==================== -->
     <section id="section-artworks" class="page-section hidden flex-grow flex flex-col">
-        <!-- Gallery Header -->
-        <div class="w-full max-w-4xl mx-auto px-6 pt-14 pb-10 text-center">
-            <p class="text-xs uppercase tracking-[0.35em] text-[#A69076] mb-3 font-medium">Featured Collection</p>
-            <h2 class="text-4xl md:text-5xl font-serif font-medium text-[#2C2C2C] mb-5">
-                MT. Oung
-            </h2>
-            <p class="text-sm md:text-base text-[#2C2C2C]/75 font-light max-w-2xl mx-auto leading-relaxed">
-                A master of contemporary realism and lyrical impressionism. Exploring the profound depths of Burmese spirituality, nature, and human emotion through oil on canvas.
-            </p>
+        
+        <!-- Top Artist Selector Bar -->
+        <div class="w-full max-w-screen-xl mx-auto px-6 pt-12 pb-6 text-center">
+            <p class="text-[11px] uppercase tracking-[0.35em] text-[#9C8265] mb-4 font-medium">Represented Artists</p>
+            <div id="artist-selector-bar" class="flex flex-wrap items-center justify-center gap-3 md:gap-4">
+                <!-- Artist selection buttons injected dynamically via JS -->
+            </div>
         </div>
 
-        <!-- Dynamic Category Filter Bar -->
+        <!-- Selected Artist Profile Card -->
+        <div class="w-full max-w-5xl mx-auto px-6 pb-10">
+            <div id="selected-artist-profile" class="bg-[#FAF7F0]/85 backdrop-blur-sm border border-[#9C8265]/25 rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm flex flex-col md:flex-row items-center md:items-start gap-7 md:gap-10">
+                <!-- Artist Portrait & Bio injected dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- Dynamic Category Filter Bar for Selected Artist -->
         <div class="w-full max-w-screen-xl mx-auto px-6 mb-12">
             <div id="category-filter-bar" class="flex flex-wrap items-center justify-center gap-2.5 md:gap-4 border-b border-[#A69076]/20 pb-6">
                 <!-- Buttons injected dynamically via JS -->
@@ -288,63 +293,54 @@
         </main>
     </section>
 
-    <!-- ==================== 3. ABOUT SECTION ==================== -->
+    <!-- ==================== 3. ABOUT SECTION (THE ARTIST'S LOFT GALLERY) ==================== -->
     <section id="section-about" class="page-section hidden flex-grow">
-        <div class="max-w-6xl mx-auto px-6 md:px-12 py-16 md:py-24">
-            <!-- Frameless Editorial Magazine Layout -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-                
-                <!-- Left Column: Frameless Natural Portrait -->
-                <div class="lg:col-span-5">
-                    <img src="artist.jpg" alt="Artist MT. Oung (Myoe Thant Oung)" onerror="handleArtistFallback(this)" class="w-full h-auto object-cover block">
-                    <p class="mt-4 text-xs uppercase tracking-[0.22em] text-[#A69076]">
-                        MT. Oung (Myoe Thant Oung) — Yangon, Myanmar
-                    </p>
-                </div>
-
-                <!-- Right Column: Editorial Biography -->
-                <div class="lg:col-span-7 flex flex-col justify-center">
-                    <p class="text-xs uppercase tracking-[0.35em] text-[#A69076] mb-3 font-medium">Biography</p>
-                    <h2 class="text-4xl sm:text-5xl md:text-6xl font-serif font-medium text-[#2C2C2C] mb-4 leading-tight">
-                        MT. Oung
+        <div class="max-w-5xl mx-auto px-6 md:px-12 py-16 md:py-24">
+            <div class="bg-[#FAF7F0]/85 backdrop-blur-sm border border-[#9C8265]/25 rounded-3xl p-8 sm:p-12 md:p-16 shadow-sm">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <p class="text-xs uppercase tracking-[0.35em] text-[#9C8265] mb-3 font-medium">Curatorial Vision</p>
+                    <h2 id="gallery-about-heading" class="text-4xl sm:text-5xl font-serif font-medium text-[#26231F] mb-4 leading-tight">
+                        About The Artist's Loft
                     </h2>
-                    <p class="text-lg font-serif italic text-[#2C2C2C]/70 mb-8">
-                        Myoe Thant Oung (b. 1965)
+                    <p id="gallery-about-subtitle" class="text-base sm:text-lg font-serif italic text-[#26231F]/70">
+                        Bridging Myanmar's Contemporary Fine Art with Global Collectors
                     </p>
-                    <div class="w-16 h-[1px] bg-[#A69076] mb-8"></div>
+                    <div class="w-16 h-[1px] bg-[#9C8265] mx-auto mt-7"></div>
+                </div>
 
-                    <div class="space-y-6 text-[#2C2C2C]/85 font-light text-base md:text-lg leading-relaxed">
-                        <p>
-                            Artist MT. Oung was born on 6 May, 1965 at Ahlone Township, Yangon. His mentors are Maung Maung Ba (U), Tin Maung Oo (U), WPM and very great master Ko Shwe Oung Thame.
-                        </p>
-                        <p>
-                            He has participated in 60 group shows in Myanmar and also abroad.
-                        </p>
-                        <p>
-                            His Solo shows in Myanmar are at Artist and Artisans Show Room in 1990, Korea Ambassador residence Myanmar in 1990, Myanmar Art Centre entitled the Strength of Life, Bahan Gallery (Myanmar Japon). His Solo shows in Singapore are at Dynasties Art Gallery in 1996, Orchard Point Exhibition Hall in 1997 and J Gallery, The Oriental in 2000, 2001, and 2003. He has participated in Wind of Artist and Residence at the Fukuoka Asian Art Museum in Japan, 2004.
-                        </p>
-                        <p>
-                            His art works are collected in National Museum of Yangon, Myanmar and Fukuoka Asian Art Museum in Japan.
-                        </p>
+                <div id="gallery-about-body" class="space-y-6 text-[#26231F]/85 font-light text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
+                    <p>
+                        Founded in Yangon, <strong>The Artist's Loft</strong> is an independent curatorial platform and private art space dedicated to presenting original fine artworks by distinguished and emerging artists from Myanmar.
+                    </p>
+                    <p>
+                        Rooted in a deep respect for traditional craftsmanship and contemporary visual storytelling, our collection highlights works that capture the spiritual tranquility, cultural heritage, and poetic landscapes of Myanmar.
+                    </p>
+                    <p>
+                        Every painting presented in our gallery is carefully curated directly from the artists' studios, ensuring authenticity, provenance, and a meaningful connection between creator and collector worldwide.
+                    </p>
+                </div>
+
+                <!-- Gallery Pillars Strip -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-14 pt-10 border-t border-[#9C8265]/25 text-center">
+                    <div>
+                        <span class="block font-serif text-xl text-[#26231F] mb-1">Direct Provenance</span>
+                        <span class="text-xs uppercase tracking-widest text-[#9C8265]">Authenticated Studio Works</span>
                     </div>
-
-                    <!-- Career Highlights Strip -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 mt-12 pt-8 border-t border-[#A69076]/25">
-                        <div>
-                            <span class="block font-serif text-2xl text-[#2C2C2C]">1965</span>
-                            <span class="text-xs uppercase tracking-widest text-[#A69076]">Born in Yangon</span>
-                        </div>
-                        <div>
-                            <span class="block font-serif text-2xl text-[#2C2C2C]">60+</span>
-                            <span class="text-xs uppercase tracking-widest text-[#A69076]">Group Exhibitions</span>
-                        </div>
-                        <div class="col-span-2 sm:col-span-1">
-                            <span class="block font-serif text-2xl text-[#2C2C2C]">2004</span>
-                            <span class="text-xs uppercase tracking-widest text-[#A69076]">Fukuoka Museum Residency</span>
-                        </div>
+                    <div>
+                        <span class="block font-serif text-xl text-[#26231F] mb-1">Myanmar Heritage</span>
+                        <span class="text-xs uppercase tracking-widest text-[#9C8265]">Masters & Emerging Voices</span>
+                    </div>
+                    <div>
+                        <span class="block font-serif text-xl text-[#26231F] mb-1">Private Viewings</span>
+                        <span class="text-xs uppercase tracking-widest text-[#9C8265]">Worldwide Collector Support</span>
                     </div>
                 </div>
 
+                <div class="mt-12 text-center">
+                    <button type="button" onclick="showSection('artworks')" class="px-8 py-3.5 bg-[#26231F] text-[#F3EFE6] text-xs uppercase tracking-[0.22em] font-medium rounded-full hover:bg-[#9C8265] transition-colors shadow-sm">
+                        Meet Our Artists &amp; View Works
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -353,16 +349,15 @@
     <section id="section-contact" class="page-section hidden flex-grow flex items-center justify-center">
         <div class="max-w-2xl w-full mx-auto px-6 py-20 md:py-24">
             <div class="text-center mb-12">
-                <p class="text-xs uppercase tracking-[0.35em] text-[#A69076] mb-3 font-medium">Inquiries & Acquisitions</p>
+                <p class="text-xs uppercase tracking-[0.35em] text-[#A69076] mb-3 font-medium">Inquiries &amp; Acquisitions</p>
                 <h2 class="text-4xl md:text-5xl font-serif font-medium text-[#2C2C2C] mb-4">Get in Touch</h2>
                 <p class="text-sm md:text-base text-[#2C2C2C]/70 font-light">
                     For artwork availability, private viewings, or exhibition inquiries, please leave a message below.
                 </p>
             </div>
 
-            <!-- Secure Server-Proxied Contact Form (Zero API keys exposed in client HTML) -->
+            <!-- Secure Server-Proxied Contact Form -->
             <form id="contact-form" name="contact" method="POST" onsubmit="handleContactSubmit(event)" class="space-y-8 bg-[#FAF7F0]/80 backdrop-blur-sm border border-[#9C8265]/25 p-8 md:p-12 rounded-3xl shadow-sm">
-                <!-- Hidden Honeypot Field to Trap Automated Spam Bots -->
                 <input type="checkbox" name="botcheck" id="contact-botcheck" class="hidden" style="display:none;" tabindex="-1" autocomplete="off" />
 
                 <div>
@@ -386,7 +381,6 @@
                     </button>
                 </div>
 
-                <!-- Instant Client-Side Confirmation Banner -->
                 <div id="contact-feedback" class="hidden p-4 rounded-2xl bg-[#A69076]/15 border border-[#A69076]/40 text-center text-sm text-[#2C2C2C]">
                     Thank you! Your message has been sent to our gallery team. We will respond shortly.
                 </div>
@@ -447,10 +441,10 @@
                 <button type="button" onclick="closeAdminModal()" class="text-3xl text-[#2C2C2C]/60 hover:text-[#2C2C2C] leading-none">&times;</button>
             </div>
 
-            <!-- Modal Body (Single unified scroll container with min-h-0 fix) -->
+            <!-- Modal Body -->
             <div id="admin-modal-body" class="p-5 md:p-8 overflow-y-auto overscroll-contain space-y-8 flex-1 min-h-0">
                 
-                <!-- Step 1: Secure Passcode Gate (No plaintext PIN in source code) -->
+                <!-- Step 1: Secure Passcode Gate -->
                 <div id="admin-login-view" class="max-w-sm mx-auto py-8 text-center space-y-5">
                     <div class="w-12 h-12 rounded-full bg-[#A69076]/15 text-[#A69076] flex items-center justify-center mx-auto">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -485,18 +479,28 @@
                                 Change Passcode
                             </button>
                             <button type="button" onclick="exportArtworksJSON()" class="px-4 py-2 rounded-xl border border-[#A69076] text-[#2C2C2C] hover:bg-[#A69076] hover:text-white text-xs uppercase tracking-wider transition-colors">
-                                Export Data (JSON)
-                            </button>
-                            <button type="button" onclick="resetToDefaultArtworks()" class="px-4 py-2 rounded-xl border border-red-300 text-red-700 hover:bg-red-50 text-xs uppercase tracking-wider transition-colors">
-                                Restore Defaults
+                                Export Backup
                             </button>
                         </div>
                     </div>
 
-                    <!-- Admin Publish Status Banner -->
+                    <!-- Admin Status Banner -->
                     <div id="admin-publish-feedback" class="hidden p-4 rounded-2xl text-xs font-medium"></div>
 
-                    <!-- Change Passcode Box (Hidden by default) -->
+                    <!-- Admin Sub-Tabs: Artworks | Artists | Gallery About -->
+                    <div class="flex flex-wrap gap-2 border-b border-[#A69076]/20 pb-3">
+                        <button type="button" onclick="switchAdminTab('artworks')" id="admin-tab-btn-artworks" class="admin-tab-btn px-5 py-2 rounded-full text-xs uppercase tracking-[0.18em] font-medium bg-[#2C2C2C] text-[#FAF9F6]">
+                            Manage Artworks
+                        </button>
+                        <button type="button" onclick="switchAdminTab('artists')" id="admin-tab-btn-artists" class="admin-tab-btn px-5 py-2 rounded-full text-xs uppercase tracking-[0.18em] font-medium border border-[#A69076]/40 text-[#2C2C2C]/75 hover:border-[#2C2C2C]">
+                            Manage Artists
+                        </button>
+                        <button type="button" onclick="switchAdminTab('gallery')" id="admin-tab-btn-gallery" class="admin-tab-btn px-5 py-2 rounded-full text-xs uppercase tracking-[0.18em] font-medium border border-[#A69076]/40 text-[#2C2C2C]/75 hover:border-[#2C2C2C]">
+                            Gallery About Page
+                        </button>
+                    </div>
+
+                    <!-- Change Passcode Box -->
                     <div id="change-pin-box" class="hidden bg-white p-5 rounded-2xl border border-[#A69076]/30 shadow-sm">
                         <h4 class="font-serif text-lg mb-1">Update Curator Passcode</h4>
                         <p class="text-xs text-[#2C2C2C]/60 mb-4">Your passcode is encrypted (SHA-256) and never stored in plain text or source code.</p>
@@ -510,83 +514,168 @@
                         <p id="change-pin-feedback" class="hidden text-xs mt-2.5 font-medium"></p>
                     </div>
 
-                    <!-- Add / Edit Artwork Form -->
-                    <div id="admin-form-container" class="bg-white p-6 rounded-2xl border border-[#A69076]/25 shadow-sm transition-all duration-300">
-                        <h4 id="admin-form-heading" class="font-serif text-xl mb-5">Add New Artwork</h4>
-                        <form id="admin-artwork-form" onsubmit="saveArtworkFromAdmin(event)" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <input type="hidden" id="edit-artwork-id" value="">
+                    <!-- ==================== ADMIN TAB 1: ARTWORKS ==================== -->
+                    <div id="admin-panel-artworks" class="space-y-8">
+                        <div id="admin-form-container" class="bg-white p-6 rounded-2xl border border-[#A69076]/25 shadow-sm transition-all duration-300">
+                            <h4 id="admin-form-heading" class="font-serif text-xl mb-5">Add New Artwork</h4>
+                            <form id="admin-artwork-form" onsubmit="saveArtworkFromAdmin(event)" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <input type="hidden" id="edit-artwork-id" value="">
 
-                            <div>
-                                <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Painting Title *</label>
-                                <input id="art-title-input" type="text" required placeholder="e.g., Golden Pagoda Morning" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
-                            </div>
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Artist *</label>
+                                    <select id="art-artist-select" required class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                                        <!-- Artist options populated via JS -->
+                                    </select>
+                                </div>
 
-                            <div>
-                                <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Category *</label>
-                                <div class="flex gap-2">
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Painting Title *</label>
+                                    <input id="art-title-input" type="text" required placeholder="e.g., Golden Pagoda Morning" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Category *</label>
                                     <select id="art-category-select" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
                                         <!-- Options populated by JS -->
                                     </select>
                                 </div>
-                            </div>
 
-                            <div>
-                                <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Create New Category (Optional)</label>
-                                <input id="art-new-category-input" type="text" placeholder="Type new category name..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Medium / Subtitle</label>
-                                <input id="art-medium-input" type="text" value="Oil on Canvas" placeholder="e.g., Oil on Canvas, 2024" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Availability Status</label>
-                                <select id="art-status-select" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
-                                    <option value="Available">Available (Green Dot)</option>
-                                    <option value="Sold">Collected (Red Dot)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Price (Optional)</label>
-                                <input id="art-price-input" type="text" placeholder="e.g., $1,200 or Price on Request" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
-                            </div>
-
-                            <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-[#FAF9F6] border border-[#A69076]/20">
                                 <div>
-                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Option A: Upload Image File</label>
-                                    <input id="art-file-input" type="file" accept="image/*" onchange="previewAdminSelectedFile(this)" class="w-full text-xs text-[#2C2C2C]/70 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:uppercase file:tracking-wider file:bg-[#2C2C2C] file:text-[#FAF9F6] hover:file:bg-[#A69076] cursor-pointer">
-                                    <p id="art-file-status" class="hidden text-[11px] text-[#9C8265] mt-1.5 font-medium"></p>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Create New Category (Optional)</label>
+                                    <input id="art-new-category-input" type="text" placeholder="Type new category name..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
                                 </div>
+
                                 <div>
-                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Option B: Local Filename / Image URL</label>
-                                    <input id="art-url-input" type="text" placeholder="e.g., my-painting.jpg" class="w-full px-3.5 py-2 rounded-xl border border-[#A69076]/40 bg-white text-sm outline-none focus:border-[#2C2C2C]">
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Medium / Subtitle</label>
+                                    <input id="art-medium-input" type="text" value="Oil on Canvas" placeholder="e.g., Oil on Canvas, 2024" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
                                 </div>
-                                <div id="art-upload-feedback" class="hidden md:col-span-2 text-xs px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-800"></div>
-                            </div>
 
-                            <div class="md:col-span-2">
-                                <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Description</label>
-                                <textarea id="art-desc-input" rows="2" placeholder="Poetic description or story behind the artwork..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C] resize-none"></textarea>
-                            </div>
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Availability Status</label>
+                                    <select id="art-status-select" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                                        <option value="Available">Available (Green Dot)</option>
+                                        <option value="Sold">Collected (Red Dot)</option>
+                                    </select>
+                                </div>
 
-                            <div class="md:col-span-2 flex items-center justify-end gap-3">
-                                <button type="button" id="cancel-edit-btn" onclick="resetAdminForm()" class="hidden px-5 py-2.5 rounded-xl border border-[#2C2C2C]/30 text-xs uppercase tracking-wider hover:bg-[#2C2C2C]/5">
-                                    Cancel Edit
-                                </button>
-                                <button type="submit" id="save-artwork-btn" class="px-7 py-3 rounded-xl bg-[#2C2C2C] text-[#FAF9F6] hover:bg-[#A69076] text-xs uppercase tracking-[0.2em] font-medium transition-colors disabled:opacity-50">
-                                    Publish to Live Gallery
-                                </button>
+                                <div class="md:col-span-2">
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Price (Optional)</label>
+                                    <input id="art-price-input" type="text" placeholder="e.g., $1,200 or Price on Request" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                                </div>
+
+                                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-[#FAF9F6] border border-[#A69076]/20">
+                                    <div>
+                                        <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Option A: Upload Image File</label>
+                                        <input id="art-file-input" type="file" accept="image/*" onchange="previewAdminSelectedFile(this, 'art-file-status')" class="w-full text-xs text-[#2C2C2C]/70 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:uppercase file:tracking-wider file:bg-[#2C2C2C] file:text-[#FAF9F6] hover:file:bg-[#A69076] cursor-pointer">
+                                        <p id="art-file-status" class="hidden text-[11px] text-[#9C8265] mt-1.5 font-medium"></p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Option B: Local Filename / Image URL</label>
+                                        <input id="art-url-input" type="text" placeholder="e.g., my-painting.jpg" class="w-full px-3.5 py-2 rounded-xl border border-[#A69076]/40 bg-white text-sm outline-none focus:border-[#2C2C2C]">
+                                    </div>
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Description</label>
+                                    <textarea id="art-desc-input" rows="2" placeholder="Poetic description or story behind the artwork..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C] resize-none"></textarea>
+                                </div>
+
+                                <div class="md:col-span-2 flex items-center justify-end gap-3">
+                                    <button type="button" id="cancel-edit-btn" onclick="resetAdminForm()" class="hidden px-5 py-2.5 rounded-xl border border-[#2C2C2C]/30 text-xs uppercase tracking-wider hover:bg-[#2C2C2C]/5">
+                                        Cancel Edit
+                                    </button>
+                                    <button type="submit" id="save-artwork-btn" class="px-7 py-3 rounded-xl bg-[#2C2C2C] text-[#FAF9F6] hover:bg-[#A69076] text-xs uppercase tracking-[0.2em] font-medium transition-colors disabled:opacity-50">
+                                        Publish to Live Gallery
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div>
+                            <h4 class="font-serif text-xl mb-4">Current Collection (<span id="admin-total-count">0</span>)</h4>
+                            <div id="admin-artworks-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Admin artwork cards populated via JS -->
                             </div>
-                        </form>
+                        </div>
                     </div>
 
-                    <!-- Existing Artworks List -->
-                    <div>
-                        <h4 class="font-serif text-xl mb-4">Current Collection (<span id="admin-total-count">0</span>)</h4>
-                        <div id="admin-artworks-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Admin item cards populated via JS -->
+                    <!-- ==================== ADMIN TAB 2: ARTISTS ==================== -->
+                    <div id="admin-panel-artists" class="hidden space-y-8">
+                        <div id="admin-artist-form-container" class="bg-white p-6 rounded-2xl border border-[#A69076]/25 shadow-sm">
+                            <h4 id="admin-artist-form-heading" class="font-serif text-xl mb-5">Add New Artist Profile</h4>
+                            <form id="admin-artist-form" onsubmit="saveArtistFromAdmin(event)" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <input type="hidden" id="edit-artist-id" value="">
+
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Artist Name *</label>
+                                    <input id="artist-name-input" type="text" required placeholder="e.g., U Lun Gywe or Daw Khin" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                                </div>
+
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Subtitle / Birth Year &amp; Origin</label>
+                                    <input id="artist-subtitle-input" type="text" placeholder="e.g., Contemporary Impressionist (b. 1978, Yangon)" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                                </div>
+
+                                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-[#FAF9F6] border border-[#A69076]/20">
+                                    <div>
+                                        <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Option A: Upload Portrait Photo</label>
+                                        <input id="artist-file-input" type="file" accept="image/*" onchange="previewAdminSelectedFile(this, 'artist-file-status')" class="w-full text-xs text-[#2C2C2C]/70 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:uppercase file:tracking-wider file:bg-[#2C2C2C] file:text-[#FAF9F6] hover:file:bg-[#A69076] cursor-pointer">
+                                        <p id="artist-file-status" class="hidden text-[11px] text-[#9C8265] mt-1.5 font-medium"></p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Option B: Portrait Filename / URL</label>
+                                        <input id="artist-url-input" type="text" placeholder="e.g., artist2.jpg" class="w-full px-3.5 py-2 rounded-xl border border-[#A69076]/40 bg-white text-sm outline-none focus:border-[#2C2C2C]">
+                                    </div>
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Artist Biography &amp; Exhibitions *</label>
+                                    <textarea id="artist-bio-input" rows="4" required placeholder="Write the artist's biography, style, exhibitions, and museum collections..." class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C] resize-y"></textarea>
+                                </div>
+
+                                <div class="md:col-span-2 flex items-center justify-end gap-3">
+                                    <button type="button" id="cancel-artist-edit-btn" onclick="resetArtistForm()" class="hidden px-5 py-2.5 rounded-xl border border-[#2C2C2C]/30 text-xs uppercase tracking-wider hover:bg-[#2C2C2C]/5">
+                                        Cancel Edit
+                                    </button>
+                                    <button type="submit" id="save-artist-btn" class="px-7 py-3 rounded-xl bg-[#2C2C2C] text-[#FAF9F6] hover:bg-[#A69076] text-xs uppercase tracking-[0.2em] font-medium transition-colors">
+                                        Save Artist Profile
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div>
+                            <h4 class="font-serif text-xl mb-4">Represented Artists (<span id="admin-artists-count">0</span>)</h4>
+                            <div id="admin-artists-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Artist cards populated via JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==================== ADMIN TAB 3: GALLERY ABOUT ==================== -->
+                    <div id="admin-panel-gallery" class="hidden">
+                        <div class="bg-white p-6 rounded-2xl border border-[#A69076]/25 shadow-sm">
+                            <h4 class="font-serif text-xl mb-2">Edit Gallery About Page</h4>
+                            <p class="text-xs text-[#2C2C2C]/60 mb-5">Customize the story and curatorial vision displayed on the About page.</p>
+                            <form onsubmit="saveGalleryAboutFromAdmin(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Heading</label>
+                                    <input id="about-heading-input" type="text" required class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Subtitle</label>
+                                    <input id="about-subtitle-input" type="text" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Gallery Story (Separate paragraphs with a blank line)</label>
+                                    <textarea id="about-body-input" rows="6" required class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C] resize-y"></textarea>
+                                </div>
+                                <div class="text-right">
+                                    <button type="submit" class="px-7 py-3 rounded-xl bg-[#2C2C2C] text-[#FAF9F6] hover:bg-[#A69076] text-xs uppercase tracking-[0.2em] font-medium transition-colors">
+                                        Update Gallery About
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
@@ -599,7 +688,7 @@
     <footer class="w-full py-10 px-6 md:px-12 border-t border-[#9C8265]/20 bg-[#F3EFE6] text-center">
         <div class="max-w-screen-xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs uppercase tracking-[0.22em] text-[#26231F]/60">
             <span ondblclick="openAdminModal()" class="cursor-pointer select-none hover:text-[#26231F] transition-colors" title="Double-click for Gallery Management">&copy; <span id="footer-year">2026</span> The Artist's Loft</span>
-            <span>Curated Myanmar Fine Art &bull; MT. Oung</span>
+            <span>Curated Myanmar Fine Art Gallery</span>
         </div>
     </footer>
 
@@ -629,7 +718,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Secret 5-Tap Admin Trigger on Brand Title
+        // Secret 5-Tap Admin Trigger on Brand Logo
         let secretTapCount = 0;
         let secretTapTimer = null;
         function handleSecretBrandTap(event) {
@@ -665,7 +754,7 @@
             return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
         }
 
-        // Compress & resize uploaded images cleanly so they always stay well under Firestore's 1MB document limit
+        // Compress & resize uploaded images cleanly
         function compressImageFile(file, maxDimension = 960, quality = 0.78) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -695,7 +784,6 @@
                         let currentQuality = quality;
                         let compressedDataUrl = canvas.toDataURL('image/jpeg', currentQuality);
 
-                        // Guarantee payload stays safely below 450KB for instant Firestore writes
                         while (compressedDataUrl.length > 450000 && currentQuality > 0.35) {
                             currentQuality -= 0.1;
                             compressedDataUrl = canvas.toDataURL('image/jpeg', currentQuality);
@@ -711,19 +799,20 @@
             });
         }
 
-        function previewAdminSelectedFile(input) {
-            const statusEl = document.getElementById('art-file-status');
+        function previewAdminSelectedFile(input, statusElementId = 'art-file-status') {
+            const statusEl = document.getElementById(statusElementId);
             if (!statusEl) return;
             if (input.files && input.files[0]) {
                 const f = input.files[0];
                 const kb = Math.round(f.size / 1024);
-                statusEl.textContent = `Selected: ${f.name} (${kb} KB) — Ready to optimize & publish`;
+                statusEl.textContent = `Selected: ${f.name} (${kb} KB) — Ready to optimize & save`;
                 statusEl.classList.remove('hidden');
             } else {
                 statusEl.classList.add('hidden');
             }
         }
-        // Smart Auto-Resolver for Logo.jpg (updates both Header Brand Logo & Browser Tab Favicon)
+
+        // Smart Auto-Resolver for Logo.jpg
         function initBrandLogoResolver() {
             const candidates = [
                 'brand-logo.jpg',
@@ -799,14 +888,17 @@
         }
         window.addEventListener('DOMContentLoaded', initBrandLogoResolver);
 
-        function handleArtistFallback(img) {
+        function handleArtistFallback(img, artistName = 'Artist') {
+            if (!img || img.dataset.fallbackApplied === 'true') return;
+            img.dataset.fallbackApplied = 'true';
             img.onerror = null;
+            const safeName = String(artistName || 'Artist').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750">
                 <rect width="600" height="750" fill="#EDE9E1"/>
                 <circle cx="300" cy="270" r="95" fill="#A69076" opacity="0.35"/>
                 <path d="M130 680 C130 510, 470 510, 470 680" fill="#A69076" opacity="0.28"/>
-                <text x="300" y="440" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#2C2C2C" opacity="0.75">MT. Oung</text>
-                <text x="300" y="472" text-anchor="middle" font-family="sans-serif" font-size="11" letter-spacing="3" fill="#2C2C2C" opacity="0.5">ARTIST PORTRAIT (artist.jpg)</text>
+                <text x="300" y="440" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#2C2C2C" opacity="0.75">${safeName}</text>
+                <text x="300" y="472" text-anchor="middle" font-family="sans-serif" font-size="11" letter-spacing="3" fill="#2C2C2C" opacity="0.5">ARTIST PORTRAIT</text>
             </svg>`;
             img.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
         }
@@ -815,7 +907,7 @@
             if (!img || img.dataset.fallbackApplied === 'true') return;
             img.dataset.fallbackApplied = 'true';
             img.onerror = null;
-            img.src = createArtPlaceholderDataURL(`Lotus Study ${index === 2 ? 'II' : 'I'}`, 'MT. Oung', '3/4');
+            img.src = createArtPlaceholderDataURL(`Lotus Study ${index === 2 ? 'II' : 'I'}`, "The Artist's Loft", '3/4');
         }
 
         function applyArtFallback(img, title, category, aspect = '3/4') {
@@ -835,14 +927,13 @@
             );
         }
 
-        // Automatically resolve broken images even if onerror fired before JS parsed
         function verifyAllImagesLoaded() {
             document.querySelectorAll('img').forEach(img => {
                 if (img.complete && img.naturalWidth === 0) {
                     if (img.hasAttribute('data-title')) {
                         handleCardImageError(img);
-                    } else if (img.alt && img.alt.includes('MT. Oung (')) {
-                        handleArtistFallback(img);
+                    } else if (img.hasAttribute('data-artist-name')) {
+                        handleArtistFallback(img, img.getAttribute('data-artist-name'));
                     } else if (img.alt && img.alt.includes('Lotus Study')) {
                         handleBgFallback(img, img.alt.includes('II') ? 2 : 1);
                     }
@@ -853,16 +944,14 @@
         window.addEventListener('load', verifyAllImagesLoaded);
     </script>
 
-    <!-- Application Logic with Live Firebase Cloud Sync -->
+    <!-- Application Logic with Multi-Artist & Live Firebase Cloud Sync -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Set current year
         document.getElementById('footer-year').textContent = new Date().getFullYear();
 
-        // Store only cryptographic SHA-256 hash in memory/cloud (zero plaintext passcode in code)
         let storedPinHash = null;
         let isPinInitialized = false;
         const APP_ID = typeof __app_id !== 'undefined' ? __app_id : 'theartists-loft';
@@ -875,10 +964,30 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
+        // Default Artist Profile (MT. Oung)
+        const DEFAULT_ARTISTS = [
+            {
+                id: 'mt-oung',
+                name: 'MT. Oung',
+                subtitle: 'Myoe Thant Oung (b. 1965) • Yangon, Myanmar',
+                image: 'artist.jpg',
+                bio: 'Artist MT. Oung was born on 6 May, 1965 at Ahlone Township, Yangon. His mentors are U Maung Maung Ba, U Tin Maung Oo, WPM, and master Ko Shwe Oung Thame. He has participated in over 60 group shows in Myanmar and abroad, including solo exhibitions in Yangon and Singapore, as well as the Fukuoka Asian Art Museum residency in Japan (2004). His works are held in the permanent collections of the National Museum of Yangon and the Fukuoka Asian Art Museum.',
+                order: 1
+            }
+        ];
+
+        // Default Gallery About Content
+        const DEFAULT_GALLERY_ABOUT = {
+            heading: "About The Artist's Loft",
+            subtitle: "Bridging Myanmar's Contemporary Fine Art with Global Collectors",
+            body: "Founded in Yangon, The Artist's Loft is an independent curatorial platform and private art space dedicated to presenting original fine artworks by distinguished and emerging artists from Myanmar.\n\nRooted in a deep respect for traditional craftsmanship and contemporary visual storytelling, our collection highlights works that capture the spiritual tranquility, cultural heritage, and poetic landscapes of Myanmar.\n\nEvery painting presented in our gallery is carefully curated directly from the artists' studios, ensuring authenticity, provenance, and a meaningful connection between creator and collector worldwide."
+        };
+
         // Default Seed Artworks
         const DEFAULT_ARTWORKS = [
             {
                 id: 'art-1',
+                artistId: 'mt-oung',
                 title: 'Devotion in Saffron',
                 category: 'Sacred Art',
                 medium: 'Oil on Canvas',
@@ -891,6 +1000,7 @@
             },
             {
                 id: 'art-2',
+                artistId: 'mt-oung',
                 title: 'Sacred Lotus Bloom',
                 category: 'Floral & Still Life',
                 medium: 'Oil on Canvas',
@@ -903,6 +1013,7 @@
             },
             {
                 id: 'art-3',
+                artistId: 'mt-oung',
                 title: 'Morning Mist on the Irrawaddy',
                 category: 'Landscapes',
                 medium: 'Oil on Canvas',
@@ -915,6 +1026,7 @@
             },
             {
                 id: 'art-4',
+                artistId: 'mt-oung',
                 title: "Mother's Love",
                 category: 'Portraits',
                 medium: 'Oil on Canvas',
@@ -927,6 +1039,7 @@
             },
             {
                 id: 'art-5',
+                artistId: 'mt-oung',
                 title: 'Lotus Pond Reverie',
                 category: 'Floral & Still Life',
                 medium: 'Oil on Canvas',
@@ -939,6 +1052,7 @@
             },
             {
                 id: 'art-6',
+                artistId: 'mt-oung',
                 title: "Melody's Rest",
                 category: 'Portraits',
                 medium: 'Oil on Canvas',
@@ -952,7 +1066,10 @@
         ];
 
         // Live State
+        let artists = [...DEFAULT_ARTISTS];
         let artworks = [...DEFAULT_ARTWORKS];
+        let galleryAbout = { ...DEFAULT_GALLERY_ABOUT };
+        let activeArtistId = 'mt-oung';
         let activeCategory = 'All';
         let isAdminUnlocked = false;
         let db = null;
@@ -960,7 +1077,6 @@
         let currentUser = null;
         let cloudReady = false;
 
-        // Your Firebase Configuration (theartist-sloft)
         const LIVE_FIREBASE_CONFIG = {
             apiKey: "AIzaSyAaT5T_BABWliAqxvNr_KADw-VItLSxWlc",
             authDomain: "theartist-sloft.firebaseapp.com",
@@ -982,6 +1098,14 @@
 
         function getArtworksCollectionRef() {
             return collection(db, 'artifacts', APP_ID, 'public', 'data', 'artworks');
+        }
+
+        function getArtistsCollectionRef() {
+            return collection(db, 'artifacts', APP_ID, 'public', 'data', 'artists');
+        }
+
+        function getGalleryAboutDocRef() {
+            return doc(db, 'artifacts', APP_ID, 'public', 'data', 'settings', 'gallery_about');
         }
 
         function getSettingsDocRef() {
@@ -1007,104 +1131,91 @@
                     currentUser = cred.user;
                 }
 
-                // Listen for encrypted curator passcode hash from Cloud
-                onSnapshot(
-                    getSettingsDocRef(),
-                    (docSnap) => {
-                        if (docSnap.exists() && docSnap.data().pinHash) {
-                            storedPinHash = String(docSnap.data().pinHash);
-                            isPinInitialized = true;
-                        } else {
-                            isPinInitialized = false;
-                        }
-                        updateAdminGateUI();
-                    },
-                    (err) => {
-                        console.warn('Settings sync notice:', err);
+                // 1. Sync Passcode Security
+                onSnapshot(getSettingsDocRef(), (docSnap) => {
+                    if (docSnap.exists() && docSnap.data().pinHash) {
+                        storedPinHash = String(docSnap.data().pinHash);
+                        isPinInitialized = true;
+                    } else {
+                        isPinInitialized = false;
                     }
-                );
+                    updateAdminGateUI();
+                }, (err) => console.warn('Settings sync notice:', err));
 
+                // 2. Sync Gallery About Page
+                onSnapshot(getGalleryAboutDocRef(), (docSnap) => {
+                    if (docSnap.exists()) {
+                        galleryAbout = { ...DEFAULT_GALLERY_ABOUT, ...docSnap.data() };
+                        renderGalleryAboutSection();
+                        if (isAdminUnlocked) populateGalleryAboutAdminForm();
+                    }
+                }, (err) => console.warn('Gallery About sync notice:', err));
+
+                // 3. Sync Represented Artists
+                const artistsColRef = getArtistsCollectionRef();
+                onSnapshot(artistsColRef, async (snapshot) => {
+                    if (snapshot.empty) {
+                        for (const a of DEFAULT_ARTISTS) {
+                            await setDoc(doc(artistsColRef, a.id), a);
+                        }
+                        return;
+                    }
+                    const loadedArtists = [];
+                    snapshot.forEach((docSnap) => loadedArtists.push(docSnap.data()));
+                    loadedArtists.sort((a, b) => (a.order || 999) - (b.order || 999));
+                    artists = loadedArtists;
+
+                    if (!artists.some(a => a.id === activeArtistId)) {
+                        activeArtistId = artists[0]?.id || 'mt-oung';
+                    }
+
+                    renderArtistSelectorBar();
+                    renderSelectedArtistProfile();
+                    renderCategoryFilterBar();
+                    renderArtworksGrid();
+                    if (isAdminUnlocked) {
+                        populateAdminArtistDropdown();
+                        renderAdminArtistsList();
+                        renderAdminArtworksList();
+                    }
+                }, (err) => console.warn('Artists sync notice:', err));
+
+                // 4. Sync Artworks
                 const colRef = getArtworksCollectionRef();
-
-                // Real-time listener so every visitor worldwide sees updates immediately
-                onSnapshot(
-                    colRef,
-                    async (snapshot) => {
-                        if (snapshot.empty) {
-                            updateCloudStatus(true, 'Connected to Cloud (theartist-sloft) — Seeding initial collection...');
-                            for (const item of DEFAULT_ARTWORKS) {
-                                await setDoc(doc(colRef, item.id), item);
-                            }
-                            return;
+                onSnapshot(colRef, async (snapshot) => {
+                    if (snapshot.empty) {
+                        updateCloudStatus(true, 'Connected to Cloud — Seeding initial collection...');
+                        for (const item of DEFAULT_ARTWORKS) {
+                            await setDoc(doc(colRef, item.id), item);
                         }
-
-                        const loaded = [];
-                        snapshot.forEach((docSnap) => {
-                            loaded.push(docSnap.data());
-                        });
-
-                        loaded.sort((a, b) => (a.order || 999) - (b.order || 999));
-                        artworks = loaded;
-                        updateCloudStatus(true, 'Connected to Cloud (theartist-sloft) — Live Sync Active');
-                        renderCategoryFilterBar();
-                        renderArtworksGrid();
-                        if (isAdminUnlocked) {
-                            populateAdminCategoryDropdown();
-                            renderAdminArtworksList();
-                        }
-                    },
-                    (error) => {
-                        console.error('Firestore listener error:', error);
-                        updateCloudStatus(false, 'Offline fallback mode (Check Firestore Rules)');
+                        return;
                     }
-                );
+
+                    const loaded = [];
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        // Ensure legacy artworks without artistId belong to MT. Oung
+                        if (!data.artistId) data.artistId = 'mt-oung';
+                        loaded.push(data);
+                    });
+
+                    loaded.sort((a, b) => (a.order || 999) - (b.order || 999));
+                    artworks = loaded;
+                    updateCloudStatus(true, 'Connected to Cloud (theartist-sloft) — Live Sync Active');
+                    renderCategoryFilterBar();
+                    renderArtworksGrid();
+                    if (isAdminUnlocked) {
+                        populateAdminCategoryDropdown();
+                        renderAdminArtworksList();
+                    }
+                }, (error) => {
+                    console.error('Firestore listener error:', error);
+                    updateCloudStatus(false, 'Offline fallback mode (Check Firestore Rules)');
+                });
             } catch (error) {
                 console.error('Cloud initialization error:', error);
                 updateCloudStatus(false, 'Offline fallback mode');
             }
-        }
-
-        // Compress & resize uploaded images cleanly before cloud storage
-        function compressImageFile(file, maxDimension = 1000, quality = 0.78) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const rawDataUrl = e.target.result;
-                    const img = new Image();
-                    img.onload = () => {
-                        try {
-                            let width = img.width || 800;
-                            let height = img.height || 1000;
-
-                            if (width > maxDimension || height > maxDimension) {
-                                if (width > height) {
-                                    height = Math.round((height * maxDimension) / width);
-                                    width = maxDimension;
-                                } else {
-                                    width = Math.round((width * maxDimension) / height);
-                                    height = maxDimension;
-                                }
-                            }
-
-                            const canvas = document.createElement('canvas');
-                            canvas.width = width;
-                            canvas.height = height;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, width, height);
-
-                            const aspect = height > width ? '3/4' : '4/3';
-                            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-                            resolve({ dataUrl: compressedDataUrl, aspect });
-                        } catch (canvasErr) {
-                            resolve({ dataUrl: rawDataUrl, aspect: '3/4' });
-                        }
-                    };
-                    img.onerror = () => resolve({ dataUrl: rawDataUrl, aspect: '3/4' });
-                    img.src = rawDataUrl;
-                };
-                reader.onerror = () => reject(new Error('Unable to read image file.'));
-                reader.readAsDataURL(file);
-            });
         }
 
         function showAdminFeedback(msg, isError = false) {
@@ -1120,10 +1231,96 @@
             }
         }
 
+        function escapeHTML(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ==================== GALLERY ABOUT RENDERING ====================
+        function renderGalleryAboutSection() {
+            const headingEl = document.getElementById('gallery-about-heading');
+            const subEl = document.getElementById('gallery-about-subtitle');
+            const bodyEl = document.getElementById('gallery-about-body');
+            if (headingEl) headingEl.textContent = galleryAbout.heading || DEFAULT_GALLERY_ABOUT.heading;
+            if (subEl) subEl.textContent = galleryAbout.subtitle || DEFAULT_GALLERY_ABOUT.subtitle;
+            if (bodyEl) {
+                const paragraphs = String(galleryAbout.body || DEFAULT_GALLERY_ABOUT.body)
+                    .split(/\n\s*\n/)
+                    .map(p => p.trim())
+                    .filter(Boolean);
+                bodyEl.innerHTML = paragraphs.map(p => `<p>${escapeHTML(p)}</p>`).join('');
+            }
+        }
+
+        // ==================== ARTIST SELECTOR & PROFILE RENDERING ====================
+        function renderArtistSelectorBar() {
+            const bar = document.getElementById('artist-selector-bar');
+            if (!bar) return;
+
+            bar.innerHTML = artists.map(artist => {
+                const isActive = artist.id === activeArtistId;
+                const safeId = escapeHTML(artist.id);
+                const safeName = escapeHTML(artist.name);
+                const baseClasses = "px-6 py-2.5 rounded-full text-xs uppercase tracking-[0.22em] transition-all duration-300 font-medium";
+                const stateClasses = isActive
+                    ? "bg-[#26231F] text-[#F3EFE6] shadow-md scale-[1.03]"
+                    : "bg-[#FAF7F0]/80 text-[#26231F]/75 border border-[#9C8265]/40 hover:border-[#26231F] hover:text-[#26231F]";
+                return `<button type="button" onclick="selectArtist('${safeId}')" class="${baseClasses} ${stateClasses}">${safeName}</button>`;
+            }).join('');
+        }
+
+        function selectArtist(artistId) {
+            playSoftGalleryChime('filter');
+            activeArtistId = artistId;
+            activeCategory = 'All';
+            renderArtistSelectorBar();
+            renderSelectedArtistProfile();
+            renderCategoryFilterBar();
+            renderArtworksGrid();
+        }
+
+        function renderSelectedArtistProfile() {
+            const container = document.getElementById('selected-artist-profile');
+            if (!container) return;
+
+            const artist = artists.find(a => a.id === activeArtistId) || artists[0];
+            if (!artist) return;
+
+            const safeName = escapeHTML(artist.name);
+            const safeSubtitle = escapeHTML(artist.subtitle || 'Represented Artist • Myanmar');
+            const safeBio = escapeHTML(artist.bio || '');
+            const safeImg = escapeHTML(artist.image || 'artist.jpg');
+
+            container.innerHTML = `
+                <div class="w-36 h-44 sm:w-44 sm:h-52 md:w-48 md:h-60 rounded-2xl overflow-hidden bg-[#E7E0D2] flex-shrink-0 shadow-md border border-[#9C8265]/25">
+                    <img src="${safeImg}"
+                         alt="${safeName}"
+                         data-artist-name="${safeName}"
+                         onerror="handleArtistFallback(this, '${safeName.replace(/'/g, "\\'")}')"
+                         class="w-full h-full object-cover block">
+                </div>
+                <div class="flex-1 text-center md:text-left">
+                    <span class="inline-block text-[10px] uppercase tracking-[0.32em] text-[#9C8265] mb-2 font-medium">Artist Profile</span>
+                    <h2 class="text-3xl sm:text-4xl font-serif font-medium text-[#26231F] mb-1.5 leading-tight">${safeName}</h2>
+                    <p class="text-sm font-serif italic text-[#26231F]/65 mb-4">${safeSubtitle}</p>
+                    <div class="w-12 h-[1px] bg-[#9C8265] mx-auto md:mx-0 mb-4"></div>
+                    <p class="text-sm md:text-base text-[#26231F]/80 font-light leading-relaxed whitespace-pre-line">${safeBio}</p>
+                </div>
+            `;
+        }
+
         // ==================== CATEGORY & GALLERY RENDERING ====================
+        function getArtworksForActiveArtist() {
+            return artworks.filter(art => (art.artistId || 'mt-oung') === activeArtistId);
+        }
+
         function getUniqueCategories() {
             const cats = new Set(['All']);
-            artworks.forEach(art => {
+            getArtworksForActiveArtist().forEach(art => {
                 if (art.category && art.category.trim() !== '') {
                     cats.add(art.category.trim());
                 }
@@ -1158,19 +1355,13 @@
             renderArtworksGrid();
         }
 
-        function escapeHTML(str) {
-            return String(str || '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
-
         function inquireAboutArtwork(id, event) {
             if (event) event.stopPropagation();
             const art = artworks.find(a => a.id === id);
             if (!art) return;
+
+            const artist = artists.find(a => a.id === (art.artistId || 'mt-oung'));
+            const artistName = artist ? artist.name : '';
 
             playSoftGalleryChime('inquiry');
             const lightboxModal = document.getElementById('lightbox-modal');
@@ -1183,7 +1374,7 @@
                 const messageEl = document.getElementById('contact-message');
                 const nameEl = document.getElementById('contact-name');
                 if (messageEl) {
-                    messageEl.value = `Hello, I would like to inquire about the price and availability of "${art.title}" (${art.medium || 'Oil on Canvas'}).`;
+                    messageEl.value = `Hello, I would like to inquire about the price and availability of "${art.title}"${artistName ? ` by ${artistName}` : ''} (${art.medium || 'Oil on Canvas'}).`;
                 }
                 if (nameEl) nameEl.focus();
             }, 120);
@@ -1194,16 +1385,20 @@
             const countLabel = document.getElementById('artwork-count-label');
             if (!grid) return;
 
+            const artistWorks = getArtworksForActiveArtist();
             const filtered = activeCategory === 'All'
-                ? artworks
-                : artworks.filter(art => art.category === activeCategory);
+                ? artistWorks
+                : artistWorks.filter(art => art.category === activeCategory);
+
+            const currentArtist = artists.find(a => a.id === activeArtistId);
+            const artistDisplay = currentArtist ? ` by ${currentArtist.name}` : '';
 
             if (countLabel) {
-                countLabel.textContent = `Showing ${filtered.length} ${filtered.length === 1 ? 'Work' : 'Works'}${activeCategory !== 'All' ? ` in ${activeCategory}` : ''}`;
+                countLabel.textContent = `Showing ${filtered.length} ${filtered.length === 1 ? 'Work' : 'Works'}${artistDisplay}${activeCategory !== 'All' ? ` in ${activeCategory}` : ''}`;
             }
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-16 text-[#2C2C2C]/50 font-light">No artworks found in this category yet.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-16 text-[#2C2C2C]/50 font-light">No artworks published for this artist yet.</div>`;
                 return;
             }
 
@@ -1233,7 +1428,6 @@
                                      onerror="handleCardImageError(this)"
                                      class="w-full h-auto object-cover block transition-transform duration-700 ease-out group-hover:scale-105">
 
-                                <!-- Availability Status Dot on Painting (Green = Available, Red = Collected) -->
                                 <div class="absolute top-3.5 right-3.5 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF9F6]/90 backdrop-blur-sm border border-[#A69076]/25 shadow-sm"
                                      title="${statusLabel}">
                                     <span class="w-2.5 h-2.5 rounded-full ${statusDotClass} ring-2"></span>
@@ -1251,7 +1445,6 @@
                                 <h3 class="font-serif text-xl text-[#2C2C2C] mb-1 group-hover:text-[#A69076] transition-colors">${safeTitle}</h3>
                                 <p class="text-xs text-[#2C2C2C]/55 font-light">${safeMedium}</p>
 
-                                <!-- Price & Price Inquiry Row -->
                                 <div class="mt-4 pt-3.5 border-t border-[#A69076]/15 flex items-center justify-between gap-2">
                                     <span class="text-xs font-medium text-[#2C2C2C]/85">
                                         ${isSold ? '<span class="text-red-700/80 uppercase tracking-[0.18em] text-[10px]">Collected</span>' : (safePrice || '<span class="text-[#2C2C2C]/50 font-light">Available</span>')}
@@ -1281,10 +1474,7 @@
         let revealObserver = null;
 
         function initScrollRevealObserver() {
-            if (revealObserver) {
-                revealObserver.disconnect();
-            }
-
+            if (revealObserver) revealObserver.disconnect();
             revealObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1293,13 +1483,9 @@
                         entry.target.classList.remove('is-visible');
                     }
                 });
-            }, {
-                threshold: 0.08,
-                rootMargin: '0px 0px -30px 0px'
-            });
+            }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
 
-            const items = document.querySelectorAll('.reveal-item');
-            items.forEach(el => {
+            document.querySelectorAll('.reveal-item').forEach(el => {
                 revealObserver.observe(el);
                 const rect = el.getBoundingClientRect();
                 if (rect.top < window.innerHeight && rect.bottom > 0) {
@@ -1311,32 +1497,21 @@
         function initTiltCards() {
             document.querySelectorAll('.tilt-card').forEach(card => {
                 const glare = card.querySelector('.tilt-glare');
-
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-
-                    const rotateX = ((y - centerY) / centerY) * -6;
-                    const rotateY = ((x - centerX) / centerX) * 6;
-
+                    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -6;
+                    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 6;
                     card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.015, 1.015, 1.015)`;
-
                     if (glare) {
-                        const percentX = (x / rect.width) * 100;
-                        const percentY = (y / rect.height) * 100;
-                        glare.style.background = `radial-gradient(circle at ${percentX}% ${percentY}%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 70%)`;
+                        glare.style.background = `radial-gradient(circle at ${(x / rect.width) * 100}% ${(y / rect.height) * 100}%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 70%)`;
                         glare.style.opacity = '1';
                     }
                 });
-
                 card.addEventListener('mouseleave', () => {
                     card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-                    if (glare) {
-                        glare.style.opacity = '0';
-                    }
+                    if (glare) glare.style.opacity = '0';
                 });
             });
         }
@@ -1346,9 +1521,10 @@
         let isLightboxTransitioning = false;
 
         function getVisibleLightboxArtworks() {
+            const artistWorks = getArtworksForActiveArtist();
             return activeCategory === 'All'
-                ? artworks
-                : artworks.filter(art => art.category === activeCategory);
+                ? artistWorks
+                : artistWorks.filter(art => art.category === activeCategory);
         }
 
         function populateLightboxContent(art, list) {
@@ -1362,18 +1538,19 @@
             const priceEl = document.getElementById('lightbox-price');
             const inquiryBtn = document.getElementById('lightbox-inquiry-btn');
 
+            const artist = artists.find(a => a.id === (art.artistId || 'mt-oung'));
+            const artistPrefix = artist ? `${artist.name} • ` : '';
+
             img.onerror = function() {
                 applyArtFallback(img, art.title, art.category, art.aspect || '3/4');
             };
             img.src = art.image;
             titleEl.textContent = art.title;
-            catEl.textContent = `${art.category} — ${art.medium || 'Oil on Canvas'}`;
+            catEl.textContent = `${artistPrefix}${art.category} — ${art.medium || 'Oil on Canvas'}`;
             descEl.textContent = art.description || '';
 
             const isSold = (art.status || 'Available').toLowerCase() === 'sold' || (art.status || '').toLowerCase() === 'collected';
-            if (statusDotEl) {
-                statusDotEl.className = `w-2.5 h-2.5 rounded-full ${isSold ? 'bg-red-500' : 'bg-emerald-400'}`;
-            }
+            if (statusDotEl) statusDotEl.className = `w-2.5 h-2.5 rounded-full ${isSold ? 'bg-red-500' : 'bg-emerald-400'}`;
             if (statusTextEl) {
                 statusTextEl.textContent = isSold ? 'Collected' : 'Available';
                 statusTextEl.className = `text-[10px] uppercase tracking-[0.25em] font-medium ${isSold ? 'text-red-300' : 'text-emerald-300'}`;
@@ -1414,9 +1591,7 @@
             void modal.offsetWidth;
 
             requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    modal.classList.add('is-open');
-                });
+                requestAnimationFrame(() => modal.classList.add('is-open'));
             });
             document.body.style.overflow = 'hidden';
         }
@@ -1439,7 +1614,6 @@
 
             const img = document.getElementById('lightbox-img');
             const caption = document.getElementById('lightbox-caption');
-
             const outClass = direction > 0 ? 'lightbox-slide-out-left' : 'lightbox-slide-out-right';
             const inClass = direction > 0 ? 'lightbox-slide-in-from-right' : 'lightbox-slide-in-from-left';
 
@@ -1448,20 +1622,16 @@
 
             setTimeout(() => {
                 populateLightboxContent(nextArt, list);
-
                 img.classList.remove(outClass);
                 caption.classList.remove(outClass);
                 img.classList.add(inClass);
                 caption.classList.add(inClass);
-
                 void img.offsetWidth;
 
                 requestAnimationFrame(() => {
                     img.classList.remove(inClass);
                     caption.classList.remove(inClass);
-                    setTimeout(() => {
-                        isLightboxTransitioning = false;
-                    }, 650);
+                    setTimeout(() => { isLightboxTransitioning = false; }, 650);
                 });
             }, 300);
         }
@@ -1471,60 +1641,53 @@
             playSoftGalleryChime('close');
             const modal = document.getElementById('lightbox-modal');
             currentLightboxId = null;
-
             modal.classList.remove('is-open');
-
             setTimeout(() => {
                 modal.classList.add('hidden');
                 document.body.style.overflow = '';
             }, 720);
         }
 
-        // Touch swipe support inside Lightbox for mobile/tablet
         let lightboxTouchStartX = 0;
         const lightboxModalEl = document.getElementById('lightbox-modal');
         if (lightboxModalEl) {
             lightboxModalEl.addEventListener('touchstart', (e) => {
                 lightboxTouchStartX = e.changedTouches[0].screenX;
             }, { passive: true });
-
             lightboxModalEl.addEventListener('touchend', (e) => {
                 const diffX = e.changedTouches[0].screenX - lightboxTouchStartX;
-                if (Math.abs(diffX) > 45) {
-                    navigateLightbox(diffX < 0 ? 1 : -1);
-                }
+                if (Math.abs(diffX) > 45) navigateLightbox(diffX < 0 ? 1 : -1);
             }, { passive: true });
         }
 
         document.addEventListener('keydown', (e) => {
             const lightboxOpen = !document.getElementById('lightbox-modal').classList.contains('hidden');
             if (lightboxOpen) {
-                if (e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    navigateLightbox(1);
-                    return;
-                }
-                if (e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    navigateLightbox(-1);
-                    return;
-                }
+                if (e.key === 'ArrowRight') { e.preventDefault(); navigateLightbox(1); return; }
+                if (e.key === 'ArrowLeft') { e.preventDefault(); navigateLightbox(-1); return; }
             }
-            if (e.key === 'Escape') {
-                closeLightbox();
-                closeAdminModal();
-            }
-            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
-                e.preventDefault();
-                openAdminModal();
-            }
-            if (e.altKey && e.key.toLowerCase() === 'a') {
-                e.preventDefault();
-                openAdminModal();
-            }
+            if (e.key === 'Escape') { closeLightbox(); closeAdminModal(); }
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') { e.preventDefault(); openAdminModal(); }
+            if (e.altKey && e.key.toLowerCase() === 'a') { e.preventDefault(); openAdminModal(); }
         });
 
         // ==================== ADMIN CONSOLE LOGIC ====================
+        function switchAdminTab(tabName) {
+            ['artworks', 'artists', 'gallery'].forEach(t => {
+                const panel = document.getElementById('admin-panel-' + t);
+                const btn = document.getElementById('admin-tab-btn-' + t);
+                const isSelected = t === tabName;
+                if (panel) panel.classList.toggle('hidden', !isSelected);
+                if (btn) {
+                    btn.className = isSelected
+                        ? 'admin-tab-btn px-5 py-2 rounded-full text-xs uppercase tracking-[0.18em] font-medium bg-[#2C2C2C] text-[#FAF9F6]'
+                        : 'admin-tab-btn px-5 py-2 rounded-full text-xs uppercase tracking-[0.18em] font-medium border border-[#A69076]/40 text-[#2C2C2C]/75 hover:border-[#2C2C2C]';
+                }
+            });
+            if (tabName === 'gallery') populateGalleryAboutAdminForm();
+            if (tabName === 'artists') renderAdminArtistsList();
+        }
+
         function updateAdminGateUI() {
             const titleEl = document.getElementById('admin-gate-title');
             const subEl = document.getElementById('admin-gate-subtitle');
@@ -1571,9 +1734,9 @@
         function closeAdminModal() {
             document.getElementById('admin-modal').classList.add('hidden');
             resetAdminForm();
+            resetArtistForm();
         }
 
-        // Brute-Force Rate Limiting for Admin Passcode Gate
         let failedPinAttempts = 0;
         let pinLockoutUntil = 0;
 
@@ -1683,7 +1846,6 @@
                     feedback.classList.add('hidden');
                 }, 2000);
             } catch (err) {
-                console.error('Failed to save passcode:', err);
                 feedback.textContent = 'Updated for this session.';
                 feedback.className = 'text-xs mt-2.5 font-medium text-amber-700';
                 feedback.classList.remove('hidden');
@@ -1693,12 +1855,26 @@
         function showAdminDashboard() {
             document.getElementById('admin-login-view').classList.add('hidden');
             document.getElementById('admin-dashboard-view').classList.remove('hidden');
+            populateAdminArtistDropdown();
             populateAdminCategoryDropdown();
             renderAdminArtworksList();
+            renderAdminArtistsList();
+            populateGalleryAboutAdminForm();
+        }
+
+        function populateAdminArtistDropdown(selectedArtistId = '') {
+            const select = document.getElementById('art-artist-select');
+            if (!select) return;
+            const targetId = selectedArtistId || activeArtistId;
+            select.innerHTML = artists.map(a => {
+                const isSelected = a.id === targetId ? 'selected' : '';
+                return `<option value="${escapeHTML(a.id)}" ${isSelected}>${escapeHTML(a.name)}</option>`;
+            }).join('');
         }
 
         function populateAdminCategoryDropdown(selectedCat = '') {
             const select = document.getElementById('art-category-select');
+            if (!select) return;
             const defaultCats = ['Sacred Art', 'Floral & Still Life', 'Landscapes', 'Portraits'];
             const allCats = new Set(defaultCats);
             artworks.forEach(a => {
@@ -1715,11 +1891,14 @@
             const list = document.getElementById('admin-artworks-list');
             const totalCount = document.getElementById('admin-total-count');
             if (totalCount) totalCount.textContent = artworks.length;
+            if (!list) return;
 
             list.innerHTML = artworks.map(art => {
                 const isSold = (art.status || 'Available').toLowerCase() === 'sold' || (art.status || '').toLowerCase() === 'collected';
                 const dotClass = isSold ? 'bg-red-500' : 'bg-emerald-500';
                 const statusInfo = isSold ? 'Collected' : (escapeHTML(art.price) || 'Available');
+                const artist = artists.find(a => a.id === (art.artistId || 'mt-oung'));
+                const artistName = artist ? escapeHTML(artist.name) : 'MT. Oung';
 
                 return `
                     <div class="flex items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-[#A69076]/20">
@@ -1732,7 +1911,7 @@
                                  onerror="handleCardImageError(this)"
                                  class="w-14 h-14 rounded-xl object-cover bg-[#EFECE6] flex-shrink-0">
                             <div class="min-w-0">
-                                <span class="text-[10px] uppercase tracking-wider text-[#A69076] block truncate">${escapeHTML(art.category)}</span>
+                                <span class="text-[10px] uppercase tracking-wider text-[#A69076] block truncate">${artistName} • ${escapeHTML(art.category)}</span>
                                 <div class="flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full ${dotClass} flex-shrink-0"></span>
                                     <h5 class="font-serif text-base text-[#2C2C2C] truncate">${escapeHTML(art.title)}</h5>
@@ -1761,6 +1940,7 @@
 
             try {
                 const editId = document.getElementById('edit-artwork-id').value;
+                const artistId = document.getElementById('art-artist-select').value || activeArtistId;
                 const title = document.getElementById('art-title-input').value.trim();
                 const selectedCat = document.getElementById('art-category-select').value;
                 const newCat = document.getElementById('art-new-category-input').value.trim();
@@ -1794,6 +1974,7 @@
 
                 const artworkPayload = {
                     id: docId,
+                    artistId,
                     title,
                     category,
                     medium,
@@ -1827,7 +2008,7 @@
                     renderCategoryFilterBar();
                     renderArtworksGrid();
                     renderAdminArtworksList();
-                    showAdminFeedback(`"${title}" saved locally (Cloud offline).`);
+                    showAdminFeedback(`"${title}" saved locally.`);
                 }
 
                 resetAdminForm();
@@ -1847,6 +2028,7 @@
 
             document.getElementById('admin-form-heading').textContent = 'Edit Artwork';
             document.getElementById('edit-artwork-id').value = art.id;
+            populateAdminArtistDropdown(art.artistId || 'mt-oung');
             document.getElementById('art-title-input').value = art.title || '';
             populateAdminCategoryDropdown(art.category);
             document.getElementById('art-new-category-input').value = '';
@@ -1859,33 +2041,8 @@
             document.getElementById('cancel-edit-btn').classList.remove('hidden');
             document.getElementById('save-artwork-btn').textContent = 'Update Artwork';
 
-            const modalOverlay = document.getElementById('admin-modal');
             const modalBody = document.getElementById('admin-modal-body');
-            const formContainer = document.getElementById('admin-form-container');
-            const titleInput = document.getElementById('art-title-input');
-
-            const scrollToTop = () => {
-                if (modalOverlay) modalOverlay.scrollTop = 0;
-                if (modalBody) {
-                    modalBody.scrollTop = 0;
-                    modalBody.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-                if (formContainer) {
-                    formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            };
-
-            scrollToTop();
-            requestAnimationFrame(scrollToTop);
-            setTimeout(() => {
-                scrollToTop();
-                if (titleInput) titleInput.focus({ preventScroll: false });
-            }, 60);
-
-            if (formContainer) {
-                formContainer.classList.add('ring-2', 'ring-[#A69076]');
-                setTimeout(() => formContainer.classList.remove('ring-2', 'ring-[#A69076]'), 1600);
-            }
+            if (modalBody) modalBody.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function resetAdminForm() {
@@ -1896,6 +2053,8 @@
             document.getElementById('art-status-select').value = 'Available';
             document.getElementById('cancel-edit-btn').classList.add('hidden');
             document.getElementById('save-artwork-btn').textContent = 'Publish to Live Gallery';
+            const statusEl = document.getElementById('art-file-status');
+            if (statusEl) statusEl.classList.add('hidden');
         }
 
         async function deleteArtworkFromAdmin(id) {
@@ -1909,30 +2068,197 @@
             }
         }
 
-        async function resetToDefaultArtworks() {
-            if (cloudReady && currentUser) {
-                for (const item of artworks) {
-                    if (!DEFAULT_ARTWORKS.some(d => d.id === item.id)) {
-                        await deleteDoc(doc(getArtworksCollectionRef(), item.id));
+        // ==================== ADMIN: ARTISTS MANAGEMENT ====================
+        function renderAdminArtistsList() {
+            const list = document.getElementById('admin-artists-list');
+            const countEl = document.getElementById('admin-artists-count');
+            if (countEl) countEl.textContent = artists.length;
+            if (!list) return;
+
+            list.innerHTML = artists.map(artist => {
+                const safeId = escapeHTML(artist.id);
+                const safeName = escapeHTML(artist.name);
+                const safeSub = escapeHTML(artist.subtitle || '');
+                const safeImg = escapeHTML(artist.image || 'artist.jpg');
+                const worksCount = artworks.filter(w => (w.artistId || 'mt-oung') === artist.id).length;
+
+                return `
+                    <div class="flex items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-[#A69076]/20">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <img src="${safeImg}"
+                                 alt="${safeName}"
+                                 data-artist-name="${safeName}"
+                                 onerror="handleArtistFallback(this, '${safeName.replace(/'/g, "\\'")}')"
+                                 class="w-14 h-14 rounded-xl object-cover bg-[#EFECE6] flex-shrink-0">
+                            <div class="min-w-0">
+                                <h5 class="font-serif text-base text-[#2C2C2C] truncate">${safeName}</h5>
+                                <span class="text-[11px] text-[#2C2C2C]/60 block truncate">${safeSub}</span>
+                                <span class="text-[10px] uppercase tracking-wider text-[#9C8265] block mt-0.5">${worksCount} ${worksCount === 1 ? 'Artwork' : 'Artworks'}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <button type="button" onclick="editArtistInAdmin('${safeId}')" class="px-3 py-1.5 rounded-lg border border-[#A69076]/40 text-xs hover:bg-[#A69076] hover:text-white transition-colors">
+                                Edit
+                            </button>
+                            ${artists.length > 1 ? `
+                            <button type="button" onclick="deleteArtistFromAdmin('${safeId}')" class="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs hover:bg-red-50 transition-colors">
+                                Delete
+                            </button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function saveArtistFromAdmin(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('save-artist-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving Artist...';
+
+            try {
+                const editId = document.getElementById('edit-artist-id').value;
+                const name = document.getElementById('artist-name-input').value.trim();
+                const subtitle = document.getElementById('artist-subtitle-input').value.trim();
+                const bio = document.getElementById('artist-bio-input').value.trim();
+                const urlInput = document.getElementById('artist-url-input').value.trim();
+                const fileInput = document.getElementById('artist-file-input');
+
+                let imageSrc = urlInput;
+                if (fileInput.files && fileInput.files[0]) {
+                    const compressed = await compressImageFile(fileInput.files[0], 720, 0.8);
+                    imageSrc = compressed.dataUrl;
+                } else if (!imageSrc && editId) {
+                    const existing = artists.find(a => a.id === editId);
+                    if (existing) imageSrc = existing.image;
+                } else if (!imageSrc) {
+                    imageSrc = 'artist.jpg';
+                }
+
+                const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || ('artist-' + Date.now());
+                const docId = editId || slugId;
+                const existingArtist = artists.find(a => a.id === docId);
+
+                const artistPayload = {
+                    id: docId,
+                    name,
+                    subtitle,
+                    bio,
+                    image: imageSrc,
+                    order: existingArtist ? (existingArtist.order || artists.length + 1) : artists.length + 1,
+                    updatedAt: Date.now()
+                };
+
+                if (db && currentUser) {
+                    await setDoc(doc(getArtistsCollectionRef(), docId), artistPayload);
+                } else {
+                    if (editId) {
+                        const idx = artists.findIndex(a => a.id === editId);
+                        if (idx !== -1) artists[idx] = artistPayload;
+                    } else {
+                        artists.push(artistPayload);
                     }
+                    renderArtistSelectorBar();
+                    renderSelectedArtistProfile();
+                    renderAdminArtistsList();
+                    populateAdminArtistDropdown();
                 }
-                for (const item of DEFAULT_ARTWORKS) {
-                    await setDoc(doc(getArtworksCollectionRef(), item.id), item);
-                }
-            } else {
-                artworks = [...DEFAULT_ARTWORKS];
+
+                activeArtistId = docId;
+                renderArtistSelectorBar();
+                renderSelectedArtistProfile();
                 renderCategoryFilterBar();
                 renderArtworksGrid();
-                renderAdminArtworksList();
+                resetArtistForm();
+                showAdminFeedback(`Artist profile "${name}" saved to Live Gallery!`);
+            } catch (err) {
+                console.error('Save artist error:', err);
+                showAdminFeedback('Error saving artist: ' + (err.message || 'Please try again.'), true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Artist Profile';
             }
-            resetAdminForm();
+        }
+
+        function editArtistInAdmin(id) {
+            const artist = artists.find(a => a.id === id);
+            if (!artist) return;
+
+            document.getElementById('admin-artist-form-heading').textContent = 'Edit Artist Profile';
+            document.getElementById('edit-artist-id').value = artist.id;
+            document.getElementById('artist-name-input').value = artist.name || '';
+            document.getElementById('artist-subtitle-input').value = artist.subtitle || '';
+            document.getElementById('artist-bio-input').value = artist.bio || '';
+            const currentImg = String(artist.image || '');
+            document.getElementById('artist-url-input').value = currentImg.startsWith('data:') ? '' : currentImg;
+            document.getElementById('cancel-artist-edit-btn').classList.remove('hidden');
+            document.getElementById('save-artist-btn').textContent = 'Update Artist Profile';
+
+            const modalBody = document.getElementById('admin-modal-body');
+            if (modalBody) modalBody.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetArtistForm() {
+            document.getElementById('admin-artist-form-heading').textContent = 'Add New Artist Profile';
+            const form = document.getElementById('admin-artist-form');
+            if (form) form.reset();
+            document.getElementById('edit-artist-id').value = '';
+            document.getElementById('cancel-artist-edit-btn').classList.add('hidden');
+            document.getElementById('save-artist-btn').textContent = 'Save Artist Profile';
+            const statusEl = document.getElementById('artist-file-status');
+            if (statusEl) statusEl.classList.add('hidden');
+        }
+
+        async function deleteArtistFromAdmin(id) {
+            if (artists.length <= 1) return;
+            if (cloudReady && currentUser) {
+                await deleteDoc(doc(getArtistsCollectionRef(), id));
+            } else {
+                artists = artists.filter(a => a.id !== id);
+                if (activeArtistId === id) activeArtistId = artists[0].id;
+                renderArtistSelectorBar();
+                renderSelectedArtistProfile();
+                renderAdminArtistsList();
+                populateAdminArtistDropdown();
+            }
+            showAdminFeedback('Artist profile removed.');
+        }
+
+        // ==================== ADMIN: GALLERY ABOUT MANAGEMENT ====================
+        function populateGalleryAboutAdminForm() {
+            const hInput = document.getElementById('about-heading-input');
+            const sInput = document.getElementById('about-subtitle-input');
+            const bInput = document.getElementById('about-body-input');
+            if (hInput) hInput.value = galleryAbout.heading || DEFAULT_GALLERY_ABOUT.heading;
+            if (sInput) sInput.value = galleryAbout.subtitle || DEFAULT_GALLERY_ABOUT.subtitle;
+            if (bInput) bInput.value = galleryAbout.body || DEFAULT_GALLERY_ABOUT.body;
+        }
+
+        async function saveGalleryAboutFromAdmin(event) {
+            event.preventDefault();
+            const heading = document.getElementById('about-heading-input').value.trim();
+            const subtitle = document.getElementById('about-subtitle-input').value.trim();
+            const body = document.getElementById('about-body-input').value.trim();
+
+            galleryAbout = { heading, subtitle, body };
+            renderGalleryAboutSection();
+
+            try {
+                if (db && currentUser) {
+                    await setDoc(getGalleryAboutDocRef(), { heading, subtitle, body, updatedAt: Date.now() }, { merge: true });
+                }
+                showAdminFeedback('Gallery About page updated live!');
+            } catch (err) {
+                showAdminFeedback('Saved locally (Check Cloud permissions).', true);
+            }
         }
 
         function exportArtworksJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(artworks, null, 2));
+            const backupPayload = { artists, artworks, galleryAbout, exportedAt: new Date().toISOString() };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "the-artists-loft-collection.json");
+            downloadAnchor.setAttribute("download", "the-artists-loft-backup.json");
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
@@ -1944,9 +2270,7 @@
             const feedback = document.getElementById('contact-feedback');
             const submitBtn = document.getElementById('contact-submit-btn');
 
-            if (document.getElementById('contact-botcheck')?.checked) {
-                return;
-            }
+            if (document.getElementById('contact-botcheck')?.checked) return;
 
             const name = document.getElementById('contact-name').value.trim();
             const email = document.getElementById('contact-email').value.trim();
@@ -1959,10 +2283,7 @@
             try {
                 const res = await fetch('/api/contact', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({ name, email, message })
                 });
 
@@ -1990,7 +2311,7 @@
 
         // ==================== CLASSIC GALLERY AMBIENCE + TACTILE UI SOUND EFFECTS ====================
         let audioCtx = null;
-        let isSoundEnabled = true; // Default ON
+        let isSoundEnabled = true;
         let isLoopStarted = false;
         let ambientInterval = null;
         let natureBirdTimer = null;
@@ -2051,9 +2372,7 @@
                 masterGain.gain.setValueAtTime(0.55, audioCtx.currentTime);
                 masterGain.connect(audioCtx.destination);
             }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             const silentBuffer = audioCtx.createBuffer(1, 1, 22050);
             const source = audioCtx.createBufferSource();
             source.buffer = silentBuffer;
@@ -2061,7 +2380,6 @@
             source.start(0);
         }
 
-        // Soft Courtyard Breeze, Gentle Rustling Leaves & Lotus Fountain Water Trickle
         function startCourtyardBreeze() {
             if (!audioCtx || breezeNode) return;
             const bufferSize = audioCtx.sampleRate * 4;
@@ -2080,7 +2398,6 @@
                 b6 = white * 0.115926;
             }
 
-            // 1. Gentle Breeze & Rustling Courtyard Leaves
             breezeNode = audioCtx.createBufferSource();
             breezeNode.buffer = noiseBuffer;
             breezeNode.loop = true;
@@ -2090,7 +2407,6 @@
             breezeFilter.frequency.setValueAtTime(520, audioCtx.currentTime);
             breezeFilter.Q.setValueAtTime(0.65, audioCtx.currentTime);
 
-            // Slow natural wind swell modulation (every ~7 seconds)
             breezeLfo = audioCtx.createOscillator();
             const lfoGain = audioCtx.createGain();
             breezeLfo.type = 'sine';
@@ -2109,7 +2425,6 @@
             breezeNode.start();
             breezeLfo.start();
 
-            // 2. Soft Lotus Pond / Courtyard Fountain Water Trickle
             const waterBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 3, audioCtx.sampleRate);
             const wData = waterBuffer.getChannelData(0);
             for (let i = 0; i < wData.length; i++) {
@@ -2137,24 +2452,11 @@
         }
 
         function stopCourtyardBreeze() {
-            if (breezeNode) {
-                try { breezeNode.stop(); } catch (e) {}
-                breezeNode.disconnect();
-                breezeNode = null;
-            }
-            if (breezeLfo) {
-                try { breezeLfo.stop(); } catch (e) {}
-                breezeLfo.disconnect();
-                breezeLfo = null;
-            }
-            if (fountainNode) {
-                try { fountainNode.stop(); } catch (e) {}
-                fountainNode.disconnect();
-                fountainNode = null;
-            }
+            if (breezeNode) { try { breezeNode.stop(); } catch (e) {} breezeNode.disconnect(); breezeNode = null; }
+            if (breezeLfo) { try { breezeLfo.stop(); } catch (e) {} breezeLfo.disconnect(); breezeLfo = null; }
+            if (fountainNode) { try { fountainNode.stop(); } catch (e) {} fountainNode.disconnect(); fountainNode = null; }
         }
 
-        // Distant Garden Songbird Chirp outside the gallery courtyard
         function playDistantSongbird() {
             if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
@@ -2164,7 +2466,6 @@
             for (let i = 0; i < notesCount; i++) {
                 const startT = now + i * (0.14 + Math.random() * 0.08);
                 const dur = 0.09 + Math.random() * 0.05;
-
                 const osc = audioCtx.createOscillator();
                 const filter = audioCtx.createBiquadFilter();
                 const birdGain = audioCtx.createGain();
@@ -2193,18 +2494,15 @@
         function scheduleNatureBirds() {
             clearTimeout(natureBirdTimer);
             if (!isSoundEnabled) return;
-            const nextDelay = 6000 + Math.random() * 7000;
             natureBirdTimer = setTimeout(() => {
                 playDistantSongbird();
                 scheduleNatureBirds();
-            }, nextDelay);
+            }, 6000 + Math.random() * 7000);
         }
 
-        // Whisper-Soft Felt Grand Piano / Harp Voice
         function playFeltPianoNote(freq, duration = 5.8, volume = 0.14) {
             if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
-
             const osc = audioCtx.createOscillator();
             const overtoneOsc = audioCtx.createOscillator();
             const filter = audioCtx.createBiquadFilter();
@@ -2213,7 +2511,6 @@
 
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, now);
-
             overtoneOsc.type = 'triangle';
             overtoneOsc.frequency.setValueAtTime(freq * 2, now);
             overtoneGain.gain.setValueAtTime(0.055, now);
@@ -2238,11 +2535,9 @@
             overtoneOsc.stop(now + duration + 0.15);
         }
 
-        // Delicate Crystal / Celesta Bell Voice for UI Interactions
         function playCelestaBell(freq, duration = 1.6, volume = 0.12) {
             if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
-
             const fundamental = audioCtx.createOscillator();
             const shimmer = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -2250,7 +2545,6 @@
 
             fundamental.type = 'sine';
             fundamental.frequency.setValueAtTime(freq, now);
-
             shimmer.type = 'sine';
             shimmer.frequency.setValueAtTime(freq * 3, now);
             shimmerGain.gain.setValueAtTime(0.035, now);
@@ -2271,7 +2565,6 @@
             shimmer.stop(now + duration + 0.05);
         }
 
-        // Soft Velvet Canvas Swoosh for Next/Prev Artwork Navigation
         function playSoftCanvasSwoosh() {
             if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
@@ -2281,32 +2574,26 @@
             for (let i = 0; i < bufferSize; i++) {
                 data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
             }
-
             const noise = audioCtx.createBufferSource();
             noise.buffer = buffer;
-
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'bandpass';
             filter.frequency.setValueAtTime(340, now);
             filter.frequency.exponentialRampToValueAtTime(620, now + 0.26);
             filter.Q.setValueAtTime(1.8, now);
-
             const swooshGain = audioCtx.createGain();
             swooshGain.gain.setValueAtTime(0.0001, now);
             swooshGain.gain.linearRampToValueAtTime(0.09, now + 0.08);
             swooshGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.27);
-
             noise.connect(filter);
             filter.connect(swooshGain);
             swooshGain.connect(masterGain);
             noise.start(now);
         }
 
-        // Soft Warm Chamber Cello Sustain
         function playChamberCello(freq, duration = 6.5, volume = 0.11) {
             if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
-
             const osc1 = audioCtx.createOscillator();
             const osc2 = audioCtx.createOscillator();
             const filter = audioCtx.createBiquadFilter();
@@ -2314,7 +2601,6 @@
 
             osc1.type = 'sawtooth';
             osc1.frequency.setValueAtTime(freq, now);
-
             osc2.type = 'triangle';
             osc2.frequency.setValueAtTime(freq * 1.002, now);
 
@@ -2337,37 +2623,29 @@
             osc2.stop(now + duration + 0.2);
         }
 
-        // Poetic & Tactile UI Sound Effects for Every Gallery Interaction
         function playSoftGalleryChime(type = 'step') {
             if (!isSoundEnabled) return;
             ensureAudioContext();
 
             if (type === 'open') {
-                // Opening a painting in Lightbox: Warm rising Harp Arpeggio (C5 -> E5 -> G5)
                 playFeltPianoNote(523.25, 2.2, 0.12);
                 setTimeout(() => playFeltPianoNote(659.25, 2.4, 0.11), 95);
                 setTimeout(() => playCelestaBell(783.99, 2.6, 0.09), 190);
             } else if (type === 'close') {
-                // Closing Lightbox: Gentle descending resolution (G5 -> C5)
                 playFeltPianoNote(783.99, 1.4, 0.08);
                 setTimeout(() => playFeltPianoNote(523.25, 1.8, 0.09), 100);
             } else if (type === 'step') {
-                // Next / Previous painting: Soft velvet swoosh + delicate bell
                 playSoftCanvasSwoosh();
                 playCelestaBell(587.33, 1.5, 0.09);
             } else if (type === 'filter') {
-                // Category filter click: Crisp crystal celesta note (A5)
                 playCelestaBell(880.00, 1.4, 0.10);
             } else if (type === 'nav') {
-                // Main navigation click: Soft warm harp pluck (G4 -> D5)
                 playFeltPianoNote(392.00, 1.4, 0.09);
                 setTimeout(() => playCelestaBell(587.33, 1.5, 0.07), 85);
             } else if (type === 'inquiry') {
-                // Price inquiry click: Inviting warm chord (E5 -> B5)
                 playFeltPianoNote(659.25, 1.8, 0.11);
                 setTimeout(() => playCelestaBell(987.77, 2.0, 0.09), 110);
             } else if (type === 'success') {
-                // Message sent confirmation: Serene 3-note harmonic chime (C5 -> G5 -> B5)
                 playFeltPianoNote(523.25, 2.2, 0.12);
                 setTimeout(() => playFeltPianoNote(783.99, 2.4, 0.11), 120);
                 setTimeout(() => playCelestaBell(987.77, 2.8, 0.10), 250);
@@ -2380,13 +2658,11 @@
             if (isLoopStarted) return;
             isLoopStarted = true;
 
-            // Layer 1: Gentle Courtyard Breeze, Lotus Fountain & Distant Garden Songbirds
             ensureAudioContext();
             startCourtyardBreeze();
             setTimeout(() => playDistantSongbird(), 600);
             scheduleNatureBirds();
 
-            // Layer 2: Start Instant Chamber Piano immediately (0.3s) while 13.4MB MP3 buffers
             if (customBgAudio && !customTrackFailed) {
                 startSynthAmbienceLoop(true);
                 customBgAudio.volume = 0.01;
@@ -2407,7 +2683,6 @@
                             handoffToCustomTrack();
                         }
                     }).catch(() => {
-                        // Browser blocked autoplay until first tap; keep synth ready for unlock
                         clearInterval(ambientInterval);
                         ambientInterval = null;
                         stopCourtyardBreeze();
@@ -2429,46 +2704,26 @@
                 scheduleNatureBirds();
             }
 
-            // Long 16-Measure Classic Nocturne / Gymnopédie Progression (~46 seconds per full cycle)
             const classicalSuite = [
-                { bass: 130.81, chord: [261.63, 329.63, 392.00], melody: 493.88 }, // Cmaj7 (B4)
-                { bass: 110.00, chord: [220.00, 261.63, 329.63], melody: 440.00 }, // Am7 (A4)
-                { bass: 87.31,  chord: [174.61, 220.00, 261.63], melody: 392.00 }, // Fmaj7 (G4)
-                { bass: 98.00,  chord: [196.00, 246.94, 293.66], melody: 329.63 }, // G6 (E4)
-                { bass: 82.41,  chord: [164.81, 246.94, 329.63], melody: 392.00 }, // Em7 (G4)
-                { bass: 110.00, chord: [220.00, 261.63, 329.63], melody: 523.25 }, // Am9 (C5)
-                { bass: 146.83, chord: [220.00, 261.63, 349.23], melody: 440.00 }, // Dm7 (A4)
-                { bass: 98.00,  chord: [196.00, 261.63, 293.66], melody: 392.00 }, // Gsus4 (G4)
-                { bass: 130.81, chord: [261.63, 329.63, 493.88], melody: 587.33 }, // Cmaj9 (D5)
-                { bass: 123.47, chord: [246.94, 293.66, 392.00], melody: 493.88 }, // G/B (B4)
-                { bass: 110.00, chord: [220.00, 261.63, 392.00], melody: 440.00 }, // Am7 (A4)
-                { bass: 98.00,  chord: [196.00, 261.63, 329.63], melody: 392.00 }, // C/G (G4)
-                { bass: 87.31,  chord: [174.61, 220.00, 329.63], melody: 349.23 }, // Fmaj7 (F4)
-                { bass: 82.41,  chord: [164.81, 196.00, 293.66], melody: 329.63 }, // Em7 (E4)
-                { bass: 146.83, chord: [174.61, 220.00, 261.63], melody: 293.66 }, // Dm7 (D4)
-                { bass: 98.00,  chord: [196.00, 246.94, 349.23], melody: 261.63 }  // G7 -> C (C4)
+                { bass: 130.81, chord: [261.63, 329.63, 392.00], melody: 493.88 },
+                { bass: 110.00, chord: [220.00, 261.63, 329.63], melody: 440.00 },
+                { bass: 87.31,  chord: [174.61, 220.00, 261.63], melody: 392.00 },
+                { bass: 98.00,  chord: [196.00, 246.94, 293.66], melody: 329.63 },
+                { bass: 82.41,  chord: [164.81, 246.94, 329.63], melody: 392.00 },
+                { bass: 110.00, chord: [220.00, 261.63, 329.63], melody: 523.25 },
+                { bass: 146.83, chord: [220.00, 261.63, 349.23], melody: 440.00 },
+                { bass: 98.00,  chord: [196.00, 261.63, 293.66], melody: 392.00 }
             ];
             let measure = 0;
 
             const playMeasure = () => {
                 if (!isSoundEnabled || !audioCtx || audioCtx.state !== 'running') return;
                 const bar = classicalSuite[measure % classicalSuite.length];
-
-                // 1. Soft expressive Cello bass on beat 1
                 playChamberCello(bar.bass, 6.0, 0.11);
-
-                // 2. Gentle arpeggiated Felt Piano accompaniment
                 bar.chord.forEach((freq, idx) => {
-                    setTimeout(() => {
-                        playFeltPianoNote(freq, 5.0, 0.10);
-                    }, (idx + 1) * 540);
+                    setTimeout(() => playFeltPianoNote(freq, 5.0, 0.10), (idx + 1) * 540);
                 });
-
-                // 3. Soft lyrical melody note floating above
-                setTimeout(() => {
-                    playFeltPianoNote(bar.melody, 5.6, 0.14);
-                }, 1700);
-
+                setTimeout(() => playFeltPianoNote(bar.melody, 5.6, 0.14), 1700);
                 measure++;
             };
 
@@ -2478,9 +2733,7 @@
 
         function stopClassicAmbienceLoop() {
             if (customBgAudio && !customBgAudio.paused) {
-                fadeAudioVolume(customBgAudio, 0, 700, () => {
-                    customBgAudio.pause();
-                });
+                fadeAudioVolume(customBgAudio, 0, 700, () => customBgAudio.pause());
             }
             clearInterval(ambientInterval);
             clearTimeout(natureBirdTimer);
@@ -2496,12 +2749,9 @@
             startClassicAmbienceLoop();
         }
 
-        // Auto-unlock on first user interaction anywhere on the page (satisfies modern browser autoplay policy)
         ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(evtName => {
             window.addEventListener(evtName, () => {
-                if (isSoundEnabled && !isLoopStarted) {
-                    unlockAndStartDefaultSound();
-                }
+                if (isSoundEnabled && !isLoopStarted) unlockAndStartDefaultSound();
             }, { passive: true });
         });
 
@@ -2510,7 +2760,6 @@
             const btn = document.getElementById('sound-toggle-btn');
             const label = document.getElementById('sound-toggle-label');
 
-            // If Sound was set to Default ON but browser hadn't unlocked audio yet, start it immediately instead of turning off
             if (isSoundEnabled && !isLoopStarted) {
                 ensureAudioContext();
                 startClassicAmbienceLoop();
@@ -2535,10 +2784,11 @@
             }
         }
 
-        // Expose functions globally for inline event handlers
+        // Expose functions globally
         window.toggleGallerySound = toggleGallerySound;
         window.showSection = showSection;
         window.handleSecretBrandTap = handleSecretBrandTap;
+        window.selectArtist = selectArtist;
         window.filterByCategory = filterByCategory;
         window.inquireAboutArtwork = inquireAboutArtwork;
         window.openLightboxById = openLightboxById;
@@ -2546,6 +2796,7 @@
         window.closeLightbox = closeLightbox;
         window.openAdminModal = openAdminModal;
         window.closeAdminModal = closeAdminModal;
+        window.switchAdminTab = switchAdminTab;
         window.verifyAdminPin = verifyAdminPin;
         window.toggleChangePinBox = toggleChangePinBox;
         window.saveNewAdminPin = saveNewAdminPin;
@@ -2554,11 +2805,18 @@
         window.editArtworkInAdmin = editArtworkInAdmin;
         window.resetAdminForm = resetAdminForm;
         window.deleteArtworkFromAdmin = deleteArtworkFromAdmin;
-        window.resetToDefaultArtworks = resetToDefaultArtworks;
+        window.saveArtistFromAdmin = saveArtistFromAdmin;
+        window.editArtistInAdmin = editArtistInAdmin;
+        window.resetArtistForm = resetArtistForm;
+        window.deleteArtistFromAdmin = deleteArtistFromAdmin;
+        window.saveGalleryAboutFromAdmin = saveGalleryAboutFromAdmin;
         window.exportArtworksJSON = exportArtworksJSON;
         window.handleContactSubmit = handleContactSubmit;
 
         // Boot initial view & connect to Firebase Cloud
+        renderArtistSelectorBar();
+        renderSelectedArtistProfile();
+        renderGalleryAboutSection();
         renderCategoryFilterBar();
         renderArtworksGrid();
         showSection('home');
@@ -2566,7 +2824,6 @@
         verifyAllImagesLoaded();
         unlockAndStartDefaultSound();
 
-        // Auto-open Admin Console if URL includes ?admin=true or #admin
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('admin') === 'true' || window.location.hash === '#admin') {
             setTimeout(() => openAdminModal(), 300);
