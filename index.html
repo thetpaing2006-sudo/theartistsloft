@@ -2338,39 +2338,45 @@
                 if (!rowGroup) {
                     rowGroup = { top: rect.top, bottom: rect.bottom, cards: [] };
                     rows.push(rowGroup);
+                } else {
+                    rowGroup.top = Math.min(rowGroup.top, rect.top);
+                    rowGroup.bottom = Math.max(rowGroup.bottom, rect.bottom);
                 }
                 rowGroup.cards.push(card);
-                rowGroup.bottom = Math.max(rowGroup.bottom, rect.bottom);
             });
 
-            // Synchronized viewport focal window:
-            // - Lower row fades in smoothly as it rises from 92% -> 58% of viewport height
-            // - Upper row fades out smoothly in lockstep as it moves past 28% -> -8% of viewport height
-            const topFadeStart = headerHeight + (vh - headerHeight) * 0.24;
-            const topFadeEnd = headerHeight - 90;
-            const bottomFadeStart = vh * 0.94;
-            const bottomFadeEnd = vh * 0.56;
+            // Synchronized viewport focal window (gentler, wider visibility so cards never stay overly faded)
+            const topFadeStart = headerHeight + 35;
+            const topFadeEnd = headerHeight - 160;
+            const bottomFadeStart = vh + 95;
+            const bottomFadeEnd = vh * 0.84;
 
             rows.forEach(row => {
                 const rowCenter = (row.top + row.bottom) * 0.5;
+                const rowHasHover = row.cards.some(c => c.dataset.hovered === 'true');
                 let progress = 1;
 
-                if (rowCenter < topFadeStart) {
+                if (rowHasHover) {
+                    progress = 1;
+                } else if (rowCenter < topFadeStart) {
                     progress = (rowCenter - topFadeEnd) / (topFadeStart - topFadeEnd);
                 } else if (rowCenter > bottomFadeEnd) {
                     progress = 1 - ((rowCenter - bottomFadeEnd) / (bottomFadeStart - bottomFadeEnd));
                 }
 
-                progress = Math.max(0, Math.min(1, progress));
-                // Smooth cubic ease for natural, unhurried gallery dissolve
+                progress = Math.max(0.28, Math.min(1, progress));
                 const eased = progress * progress * (3 - 2 * progress);
 
-                const translateY = (1 - eased) * (rowCenter < topFadeStart ? -34 : 48);
-                const scale = 0.95 + (0.05 * eased);
-                const blurPx = (1 - eased) * 4.5;
+                const translateY = (1 - eased) * (rowCenter < topFadeStart ? -18 : 28);
+                const scale = 0.975 + (0.025 * eased);
+                const blurPx = (1 - eased) * 1.5;
 
                 row.cards.forEach(card => {
-                    if (card.dataset.hovered === 'true') return;
+                    if (card.dataset.hovered === 'true') {
+                        card.style.opacity = '1';
+                        card.style.filter = 'none';
+                        return;
+                    }
                     card.style.opacity = eased.toFixed(3);
                     card.style.filter = blurPx > 0.08 ? `blur(${blurPx.toFixed(2)}px)` : 'none';
                     card.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(4)})`;
@@ -2379,7 +2385,7 @@
         }
 
         function requestGalleryScrollUpdate() {
-            if (!galleryScrollRaf) {
+            if (galleryScrollRaf === null) {
                 galleryScrollRaf = requestAnimationFrame(updateGalleryScrollPresence);
             }
         }
@@ -2391,8 +2397,6 @@
                 window.addEventListener('resize', requestGalleryScrollUpdate, { passive: true });
             }
 
-            requestGalleryScrollUpdate();
-
             document.querySelectorAll('#artworks-masonry-grid .tilt-card').forEach(card => {
                 if (card.dataset.tiltBound === 'true') return;
                 card.dataset.tiltBound = 'true';
@@ -2400,521 +2404,253 @@
 
                 card.addEventListener('mouseenter', () => {
                     card.dataset.hovered = 'true';
+                    card.style.opacity = '1';
+                    card.style.filter = 'none';
+                    updateGalleryScrollPresence();
                 });
+
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * -7.5;
-                    const rotateY = ((x - centerX) / centerX) * 7.5;
-                    card.style.transition = 'transform 0.14s ease-out, box-shadow 0.45s ease, border-color 0.4s ease';
-                    card.style.opacity = '1';
-                    card.style.filter = 'none';
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale3d(1.022, 1.022, 1.022)`;
+                    const rotateX = ((y - centerY) / centerY) * -6.5;
+                    const rotateY = ((x - centerX) / centerX) * 6.5;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-6px) scale(1.015)`;
                     if (glare) {
                         const pctX = (x / rect.width) * 100;
                         const pctY = (y / rect.height) * 100;
-                        glare.style.background = `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 68%)`;
+                        glare.style.background = `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(255,255,255,0.44) 0%, rgba(255,255,255,0) 68%)`;
                         glare.style.opacity = '1';
                     }
                 });
+
                 card.addEventListener('mouseleave', () => {
                     card.dataset.hovered = 'false';
-                    card.style.transition = 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease, border-color 0.45s ease, opacity 0.55s ease, filter 0.55s ease';
                     if (glare) glare.style.opacity = '0';
                     requestGalleryScrollUpdate();
                 });
             });
+
+            updateGalleryScrollPresence();
         }
 
-        // ==================== CLASSIC GALLERY AMBIENCE & SOUND SYSTEM ====================
-        let isSoundEnabled = true;
-        let isLoopStarted = false;
+        // ==================== WHISPER GALLERY AMBIENCE & SOUND EFFECTS ====================
         let audioCtx = null;
         let masterGain = null;
+        let isSoundEnabled = true;
         let ambientInterval = null;
-        let natureBirdTimer = null;
         let breezeNode = null;
-        let breezeLfo = null;
-        let breezeGain = null;
-        let fountainNode = null;
-        let fountainGain = null;
-        let audioFadeTimer = null;
-        let customTrackFailed = false;
-        const customBgAudio = document.getElementById('gallery-bg-audio');
-        if (customBgAudio) {
-            customBgAudio.addEventListener('error', () => {
-                customTrackFailed = true;
-            });
-        }
-
-        function fadeAudioVolume(audioEl, targetVol, durationMs = 1400, onDone = null) {
-            if (!audioEl) return;
-            clearInterval(audioFadeTimer);
-            const steps = 28;
-            const stepTime = durationMs / steps;
-            const startVol = audioEl.volume;
-            const delta = (targetVol - startVol) / steps;
-            let count = 0;
-
-            audioFadeTimer = setInterval(() => {
-                count++;
-                const nextVol = Math.min(1, Math.max(0, startVol + delta * count));
-                audioEl.volume = nextVol;
-                if (count >= steps) {
-                    clearInterval(audioFadeTimer);
-                    audioEl.volume = targetVol;
-                    if (onDone) onDone();
-                }
-            }, stepTime);
-        }
+        let audioUnlockBound = false;
 
         function ensureAudioContext() {
             if (!audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContextClass();
                 masterGain = audioCtx.createGain();
-                masterGain.gain.setValueAtTime(0.55, audioCtx.currentTime);
+                masterGain.gain.setValueAtTime(0.055, audioCtx.currentTime);
                 masterGain.connect(audioCtx.destination);
             }
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const silentBuffer = audioCtx.createBuffer(1, 1, 22050);
-            const source = audioCtx.createBufferSource();
-            source.buffer = silentBuffer;
-            source.connect(audioCtx.destination);
-            source.start(0);
-        }
-
-        function startCourtyardBreeze() {
-            if (!audioCtx || breezeNode) return;
-            const bufferSize = audioCtx.sampleRate * 4;
-            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
-            for (let i = 0; i < bufferSize; i++) {
-                const white = Math.random() * 2 - 1;
-                b0 = 0.99886 * b0 + white * 0.0555179;
-                b1 = 0.99332 * b1 + white * 0.0750759;
-                b2 = 0.96900 * b2 + white * 0.1538520;
-                b3 = 0.86650 * b3 + white * 0.3104856;
-                b4 = 0.55000 * b4 + white * 0.5329522;
-                b5 = -0.7616 * b5 - white * 0.0168980;
-                output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
-                b6 = white * 0.115926;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
             }
-
-            breezeNode = audioCtx.createBufferSource();
-            breezeNode.buffer = noiseBuffer;
-            breezeNode.loop = true;
-
-            const breezeFilter = audioCtx.createBiquadFilter();
-            breezeFilter.type = 'bandpass';
-            breezeFilter.frequency.setValueAtTime(520, audioCtx.currentTime);
-            breezeFilter.Q.setValueAtTime(0.65, audioCtx.currentTime);
-
-            breezeLfo = audioCtx.createOscillator();
-            const lfoGain = audioCtx.createGain();
-            breezeLfo.type = 'sine';
-            breezeLfo.frequency.setValueAtTime(0.14, audioCtx.currentTime);
-            lfoGain.gain.setValueAtTime(190, audioCtx.currentTime);
-            breezeLfo.connect(lfoGain);
-            lfoGain.connect(breezeFilter.frequency);
-
-            breezeGain = audioCtx.createGain();
-            breezeGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            breezeGain.gain.linearRampToValueAtTime(0.38, audioCtx.currentTime + 2.2);
-
-            breezeNode.connect(breezeFilter);
-            breezeFilter.connect(breezeGain);
-            breezeGain.connect(masterGain);
-            breezeNode.start();
-            breezeLfo.start();
-
-            const waterBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 3, audioCtx.sampleRate);
-            const wData = waterBuffer.getChannelData(0);
-            for (let i = 0; i < wData.length; i++) {
-                const sparkle = Math.random() > 0.992 ? (Math.random() * 2 - 1) * 0.45 : 0;
-                wData[i] = ((Math.random() * 2 - 1) * 0.06) + sparkle;
-            }
-
-            fountainNode = audioCtx.createBufferSource();
-            fountainNode.buffer = waterBuffer;
-            fountainNode.loop = true;
-
-            const waterFilter = audioCtx.createBiquadFilter();
-            waterFilter.type = 'bandpass';
-            waterFilter.frequency.setValueAtTime(1150, audioCtx.currentTime);
-            waterFilter.Q.setValueAtTime(1.4, audioCtx.currentTime);
-
-            fountainGain = audioCtx.createGain();
-            fountainGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            fountainGain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 2.5);
-
-            fountainNode.connect(waterFilter);
-            waterFilter.connect(fountainGain);
-            fountainGain.connect(masterGain);
-            fountainNode.start();
+            return audioCtx;
         }
 
-        function stopCourtyardBreeze() {
-            if (breezeNode) { try { breezeNode.stop(); } catch (e) {} breezeNode.disconnect(); breezeNode = null; }
-            if (breezeLfo) { try { breezeLfo.stop(); } catch (e) {} breezeLfo.disconnect(); breezeLfo = null; }
-            if (fountainNode) { try { fountainNode.stop(); } catch (e) {} fountainNode.disconnect(); fountainNode = null; }
-        }
-
-        function playDistantSongbird() {
-            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
-            const now = audioCtx.currentTime;
-            const notesCount = 2 + Math.floor(Math.random() * 3);
-            const baseFreq = 1950 + Math.random() * 650;
-
-            for (let i = 0; i < notesCount; i++) {
-                const startT = now + i * (0.14 + Math.random() * 0.08);
-                const dur = 0.09 + Math.random() * 0.05;
-                const osc = audioCtx.createOscillator();
-                const filter = audioCtx.createBiquadFilter();
-                const birdGain = audioCtx.createGain();
-
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(baseFreq, startT);
-                osc.frequency.exponentialRampToValueAtTime(baseFreq * (1.18 + Math.random() * 0.12), startT + dur * 0.5);
-                osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.92, startT + dur);
-
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(2350, startT);
-
-                birdGain.gain.setValueAtTime(0.0001, startT);
-                birdGain.gain.linearRampToValueAtTime(0.042, startT + 0.02);
-                birdGain.gain.exponentialRampToValueAtTime(0.0001, startT + dur);
-
-                osc.connect(filter);
-                filter.connect(birdGain);
-                birdGain.connect(masterGain);
-
-                osc.start(startT);
-                osc.stop(startT + dur + 0.02);
-            }
-        }
-
-        function scheduleNatureBirds() {
-            clearTimeout(natureBirdTimer);
-            if (!isSoundEnabled) return;
-            natureBirdTimer = setTimeout(() => {
-                playDistantSongbird();
-                scheduleNatureBirds();
-            }, 6000 + Math.random() * 7000);
-        }
-
-        function playFeltPianoNote(freq, duration = 5.8, volume = 0.14) {
-            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
-            const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const overtoneOsc = audioCtx.createOscillator();
-            const filter = audioCtx.createBiquadFilter();
-            const noteGain = audioCtx.createGain();
-            const overtoneGain = audioCtx.createGain();
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now);
-            overtoneOsc.type = 'triangle';
-            overtoneOsc.frequency.setValueAtTime(freq * 2, now);
-            overtoneGain.gain.setValueAtTime(0.055, now);
-
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(920, now);
-            filter.frequency.exponentialRampToValueAtTime(420, now + duration);
-
-            noteGain.gain.setValueAtTime(0.0001, now);
-            noteGain.gain.linearRampToValueAtTime(volume, now + 0.12);
-            noteGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-            osc.connect(filter);
-            overtoneOsc.connect(overtoneGain);
-            overtoneGain.connect(filter);
-            filter.connect(noteGain);
-            noteGain.connect(masterGain);
-
-            osc.start(now);
-            overtoneOsc.start(now);
-            osc.stop(now + duration + 0.15);
-            overtoneOsc.stop(now + duration + 0.15);
-        }
-
-        function playCelestaBell(freq, duration = 1.6, volume = 0.12) {
-            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
-            const now = audioCtx.currentTime;
-            const fundamental = audioCtx.createOscillator();
-            const shimmer = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            const shimmerGain = audioCtx.createGain();
-
-            fundamental.type = 'sine';
-            fundamental.frequency.setValueAtTime(freq, now);
-            shimmer.type = 'sine';
-            shimmer.frequency.setValueAtTime(freq * 3, now);
-            shimmerGain.gain.setValueAtTime(0.035, now);
-            shimmerGain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.45);
-
-            gain.gain.setValueAtTime(0.0001, now);
-            gain.gain.linearRampToValueAtTime(volume, now + 0.025);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-            fundamental.connect(gain);
-            shimmer.connect(shimmerGain);
-            shimmerGain.connect(gain);
-            gain.connect(masterGain);
-
-            fundamental.start(now);
-            shimmer.start(now);
-            fundamental.stop(now + duration + 0.05);
-            shimmer.stop(now + duration + 0.05);
-        }
-
-        function playSoftCanvasSwoosh() {
-            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
-            const now = audioCtx.currentTime;
-            const bufferSize = Math.floor(audioCtx.sampleRate * 0.28);
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
-            }
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = buffer;
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.setValueAtTime(340, now);
-            filter.frequency.exponentialRampToValueAtTime(620, now + 0.26);
-            filter.Q.setValueAtTime(1.8, now);
-            const swooshGain = audioCtx.createGain();
-            swooshGain.gain.setValueAtTime(0.0001, now);
-            swooshGain.gain.linearRampToValueAtTime(0.09, now + 0.08);
-            swooshGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.27);
-            noise.connect(filter);
-            filter.connect(swooshGain);
-            swooshGain.connect(masterGain);
-            noise.start(now);
-        }
-
-        function playChamberCello(freq, duration = 6.5, volume = 0.11) {
-            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
-            const now = audioCtx.currentTime;
-            const osc1 = audioCtx.createOscillator();
-            const osc2 = audioCtx.createOscillator();
-            const filter = audioCtx.createBiquadFilter();
-            const celloGain = audioCtx.createGain();
-
-            osc1.type = 'sawtooth';
-            osc1.frequency.setValueAtTime(freq, now);
-            osc2.type = 'triangle';
-            osc2.frequency.setValueAtTime(freq * 1.002, now);
-
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(290, now);
-            filter.Q.setValueAtTime(1.2, now);
-
-            celloGain.gain.setValueAtTime(0.0001, now);
-            celloGain.gain.linearRampToValueAtTime(volume, now + 1.2);
-            celloGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-            osc1.connect(filter);
-            osc2.connect(filter);
-            filter.connect(celloGain);
-            celloGain.connect(masterGain);
-
-            osc1.start(now);
-            osc2.start(now);
-            osc1.stop(now + duration + 0.2);
-            osc2.stop(now + duration + 0.2);
-        }
-
-        function playSoftGalleryChime(type = 'step') {
-            if (!isSoundEnabled) return;
-            ensureAudioContext();
-
-            if (type === 'artist') {
-                playSoftCanvasSwoosh();
-                playCelestaBell(659.25, 1.1, 0.032);
-                setTimeout(() => playCelestaBell(987.77, 1.3, 0.026), 140);
-            } else if (type === 'open') {
-                playFeltPianoNote(523.25, 2.2, 0.12);
-                setTimeout(() => playFeltPianoNote(659.25, 2.4, 0.11), 95);
-                setTimeout(() => playCelestaBell(783.99, 2.6, 0.09), 190);
-            } else if (type === 'close') {
-                playFeltPianoNote(783.99, 1.4, 0.08);
-                setTimeout(() => playFeltPianoNote(523.25, 1.8, 0.09), 100);
-            } else if (type === 'step') {
-                playSoftCanvasSwoosh();
-                playCelestaBell(587.33, 1.5, 0.09);
-            } else if (type === 'filter') {
-                playCelestaBell(880.00, 1.4, 0.10);
-            } else if (type === 'nav') {
-                playFeltPianoNote(392.00, 1.4, 0.09);
-                setTimeout(() => playCelestaBell(587.33, 1.5, 0.07), 85);
-            } else if (type === 'inquiry') {
-                playFeltPianoNote(659.25, 1.8, 0.11);
-                setTimeout(() => playCelestaBell(987.77, 2.0, 0.09), 110);
-            } else if (type === 'success') {
-                playFeltPianoNote(523.25, 2.2, 0.12);
-                setTimeout(() => playFeltPianoNote(783.99, 2.4, 0.11), 120);
-                setTimeout(() => playCelestaBell(987.77, 2.8, 0.10), 250);
+        function updateSoundButtonUI() {
+            const btn = document.getElementById('sound-toggle-btn');
+            const label = document.getElementById('sound-toggle-label');
+            if (!btn || !label) return;
+            if (isSoundEnabled) {
+                btn.classList.remove('sound-paused');
+                label.textContent = 'Sound On';
             } else {
-                playCelestaBell(659.25, 1.5, 0.09);
+                btn.classList.add('sound-paused');
+                label.textContent = 'Sound Off';
             }
         }
 
-        function startClassicAmbienceLoop() {
-            if (isLoopStarted) return;
-            isLoopStarted = true;
+        function fadeAudioVolume(audioEl, targetVol, durationMs = 1500) {
+            if (!audioEl) return;
+            const startVol = audioEl.volume;
+            const steps = 25;
+            const stepTime = durationMs / steps;
+            let step = 0;
+            const timer = setInterval(() => {
+                step++;
+                const ratio = step / steps;
+                audioEl.volume = Math.max(0, Math.min(1, startVol + (targetVol - startVol) * ratio));
+                if (step >= steps) clearInterval(timer);
+            }, stepTime);
+        }
 
-            ensureAudioContext();
-            startCourtyardBreeze();
-            setTimeout(() => playDistantSongbird(), 600);
-            scheduleNatureBirds();
+        function playWhisperChord() {
+            if (!isSoundEnabled) return;
+            try {
+                const ctx = ensureAudioContext();
+                if (ctx.state !== 'running') return;
+                const chords = [
+                    [261.63, 329.63, 392.00], // C major
+                    [220.00, 261.63, 329.63], // A minor
+                    [174.61, 220.00, 261.63], // F major
+                    [196.00, 246.94, 293.66]  // G major
+                ];
+                const chord = chords[Math.floor(Math.random() * chords.length)];
+                const now = ctx.currentTime;
 
-            if (customBgAudio && !customTrackFailed) {
-                startSynthAmbienceLoop(true);
-                customBgAudio.volume = 0.01;
+                chord.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.18);
 
-                const handoffToCustomTrack = () => {
-                    if (!isSoundEnabled || customBgAudio.paused) return;
-                    clearInterval(ambientInterval);
-                    ambientInterval = null;
-                    fadeAudioVolume(customBgAudio, 0.30, 1800);
-                };
+                    gain.gain.setValueAtTime(0.0001, now + i * 0.18);
+                    gain.gain.linearRampToValueAtTime(0.014, now + i * 0.18 + 1.4);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.18 + 5.2);
 
-                customBgAudio.addEventListener('playing', handoffToCustomTrack, { once: true });
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start(now + i * 0.18);
+                    osc.stop(now + i * 0.18 + 5.4);
+                });
+            } catch (e) {}
+        }
 
+        function startAmbientSoundscape() {
+            if (!isSoundEnabled) return;
+            const customBgAudio = document.getElementById('gallery-bg-audio');
+
+            if (customBgAudio) {
+                customBgAudio.volume = 0.04;
                 const playPromise = customBgAudio.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        if (!customBgAudio.paused && customBgAudio.readyState >= 3) {
-                            handoffToCustomTrack();
+                        if (ambientInterval) {
+                            clearInterval(ambientInterval);
+                            ambientInterval = null;
                         }
+                        fadeAudioVolume(customBgAudio, 0.04, 1800);
                     }).catch(() => {
-                        clearInterval(ambientInterval);
-                        ambientInterval = null;
-                        stopCourtyardBreeze();
-                        clearTimeout(natureBirdTimer);
-                        isLoopStarted = false;
+                        if (!ambientInterval) {
+                            playWhisperChord();
+                            ambientInterval = setInterval(playWhisperChord, 6800);
+                        }
                     });
                 }
-                return;
+            } else if (!ambientInterval) {
+                playWhisperChord();
+                ambientInterval = setInterval(playWhisperChord, 6800);
             }
-
-            startSynthAmbienceLoop(false);
         }
 
-        function startSynthAmbienceLoop(isWarmupOnly = false) {
-            isLoopStarted = true;
-            if (!isWarmupOnly) {
-                startCourtyardBreeze();
-                setTimeout(() => playDistantSongbird(), 1200);
-                scheduleNatureBirds();
-            }
-
-            const classicalSuite = [
-                { bass: 130.81, chord: [261.63, 329.63, 392.00], melody: 493.88 },
-                { bass: 110.00, chord: [220.00, 261.63, 329.63], melody: 440.00 },
-                { bass: 87.31,  chord: [174.61, 220.00, 261.63], melody: 392.00 },
-                { bass: 98.00,  chord: [196.00, 246.94, 293.66], melody: 329.63 },
-                { bass: 82.41,  chord: [164.81, 246.94, 329.63], melody: 392.00 },
-                { bass: 110.00, chord: [220.00, 261.63, 329.63], melody: 523.25 },
-                { bass: 146.83, chord: [220.00, 261.63, 349.23], melody: 440.00 },
-                { bass: 98.00,  chord: [196.00, 261.63, 293.66], melody: 392.00 }
-            ];
-            let measure = 0;
-
-            const playMeasure = () => {
-                if (!isSoundEnabled || !audioCtx || audioCtx.state !== 'running') return;
-                const bar = classicalSuite[measure % classicalSuite.length];
-                playChamberCello(bar.bass, 6.0, 0.11);
-                bar.chord.forEach((freq, idx) => {
-                    setTimeout(() => playFeltPianoNote(freq, 5.0, 0.10), (idx + 1) * 540);
-                });
-                setTimeout(() => playFeltPianoNote(bar.melody, 5.6, 0.14), 1700);
-                measure++;
-            };
-
-            playMeasure();
-            ambientInterval = setInterval(playMeasure, 2900);
-        }
-
-        function stopClassicAmbienceLoop() {
+        function stopAmbientSoundscape() {
+            const customBgAudio = document.getElementById('gallery-bg-audio');
             if (customBgAudio && !customBgAudio.paused) {
-                fadeAudioVolume(customBgAudio, 0, 700, () => customBgAudio.pause());
+                customBgAudio.pause();
             }
-            clearInterval(ambientInterval);
-            clearTimeout(natureBirdTimer);
-            stopCourtyardBreeze();
-            ambientInterval = null;
-            natureBirdTimer = null;
-            isLoopStarted = false;
+            if (ambientInterval) {
+                clearInterval(ambientInterval);
+                ambientInterval = null;
+            }
         }
-
-        function unlockAndStartDefaultSound() {
-            if (!isSoundEnabled || isLoopStarted) return;
-            ensureAudioContext();
-            startClassicAmbienceLoop();
-        }
-
-        ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(evtName => {
-            window.addEventListener(evtName, () => {
-                if (isSoundEnabled && !isLoopStarted) unlockAndStartDefaultSound();
-            }, { passive: true });
-        });
 
         function toggleGallerySound(event) {
             if (event) event.stopPropagation();
-            const btn = document.getElementById('sound-toggle-btn');
-            const label = document.getElementById('sound-toggle-label');
-
-            if (isSoundEnabled && !isLoopStarted) {
+            isSoundEnabled = !isSoundEnabled;
+            updateSoundButtonUI();
+            if (isSoundEnabled) {
                 ensureAudioContext();
-                startClassicAmbienceLoop();
-                playSoftGalleryChime('open');
-                if (btn) btn.classList.remove('sound-paused');
-                if (label) label.textContent = 'Sound On';
-                return;
-            }
-
-            if (!isSoundEnabled) {
-                isSoundEnabled = true;
-                ensureAudioContext();
-                startClassicAmbienceLoop();
-                playSoftGalleryChime('open');
-                if (btn) btn.classList.remove('sound-paused');
-                if (label) label.textContent = 'Sound On';
+                startAmbientSoundscape();
             } else {
-                isSoundEnabled = false;
-                stopClassicAmbienceLoop();
-                if (btn) btn.classList.add('sound-paused');
-                if (label) label.textContent = 'Sound Off';
+                stopAmbientSoundscape();
             }
         }
 
-        // Expose functions globally
-        window.toggleGallerySound = toggleGallerySound;
-        window.showSection = showSection;
-        window.handleSecretBrandTap = handleSecretBrandTap;
+        function playSoftGalleryChime(type = 'nav') {
+            if (!isSoundEnabled) return;
+            try {
+                const ctx = ensureAudioContext();
+                if (ctx.state !== 'running') return;
+                const now = ctx.currentTime;
+
+                if (type === 'artist') {
+                    // Feather-light Silk Harmonic (ultra-thin, airy, non-heavy)
+                    const notes = [659.25, 987.77, 1318.51];
+                    notes.forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.14);
+
+                        gain.gain.setValueAtTime(0.0001, now + idx * 0.14);
+                        gain.gain.linearRampToValueAtTime(0.011, now + idx * 0.14 + 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.14 + 1.25);
+
+                        osc.connect(gain);
+                        gain.connect(masterGain);
+                        osc.start(now + idx * 0.14);
+                        osc.stop(now + idx * 0.14 + 1.3);
+                    });
+                    return;
+                }
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                const freqMap = {
+                    nav: 587.33,
+                    filter: 659.25,
+                    open: 783.99,
+                    close: 523.25,
+                    step: 698.46,
+                    inquiry: 880.00,
+                    success: 987.77
+                };
+                osc.frequency.setValueAtTime(freqMap[type] || 587.33, now);
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.linearRampToValueAtTime(0.009, now + 0.03);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } catch (e) {}
+        }
+
+        function bindFirstInteractionAudioUnlock() {
+            if (audioUnlockBound) return;
+            audioUnlockBound = true;
+            const unlock = () => {
+                if (isSoundEnabled) {
+                    ensureAudioContext();
+                    startAmbientSoundscape();
+                }
+                ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+                    window.removeEventListener(evt, unlock);
+                });
+            };
+            ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+                window.addEventListener(evt, unlock, { passive: true });
+            });
+        }
+
+        // Expose functions globally for inline HTML event handlers
         window.selectArtist = selectArtist;
         window.scrollToArtistWorks = scrollToArtistWorks;
         window.filterByCategory = filterByCategory;
-        window.inquireAboutArtwork = inquireAboutArtwork;
         window.openLightboxById = openLightboxById;
         window.navigateLightbox = navigateLightbox;
         window.closeLightbox = closeLightbox;
         window.openAdminModal = openAdminModal;
         window.closeAdminModal = closeAdminModal;
-        window.switchAdminTab = switchAdminTab;
         window.verifyAdminPin = verifyAdminPin;
         window.resetForgottenAdminPin = resetForgottenAdminPin;
         window.toggleChangePinBox = toggleChangePinBox;
         window.saveNewAdminPin = saveNewAdminPin;
+        window.switchAdminTab = switchAdminTab;
         window.saveArtworkFromAdmin = saveArtworkFromAdmin;
-        window.previewAdminSelectedFile = previewAdminSelectedFile;
         window.editArtworkInAdmin = editArtworkInAdmin;
         window.resetAdminForm = resetAdminForm;
         window.deleteArtworkFromAdmin = deleteArtworkFromAdmin;
@@ -2925,22 +2661,20 @@
         window.saveGalleryAboutFromAdmin = saveGalleryAboutFromAdmin;
         window.exportArtworksJSON = exportArtworksJSON;
         window.handleContactSubmit = handleContactSubmit;
+        window.toggleGallerySound = toggleGallerySound;
+        window.playSoftGalleryChime = playSoftGalleryChime;
+        window.initGalleryCardAnimations = initGalleryCardAnimations;
 
-        // Boot initial view & connect to Firebase Cloud
+        // Initial Render & Cloud Sync Startup
+        renderGalleryAboutSection();
         renderArtistSelectorBar();
         renderSelectedArtistProfile();
-        renderGalleryAboutSection();
         renderCategoryFilterBar();
         renderArtworksGrid();
-        showSection('home');
+        updateSoundButtonUI();
+        bindFirstInteractionAudioUnlock();
+        startAmbientSoundscape();
         initCloudGallery();
-        verifyAllImagesLoaded();
-        unlockAndStartDefaultSound();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('admin') === 'true' || window.location.hash === '#admin') {
-            setTimeout(() => openAdminModal(), 300);
-        }
     </script>
 </body>
 </html>
