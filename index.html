@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Artist's Loft | Curated Myanmar Fine Art</title>
-    <!-- Browser Tab Favicon & Mobile Home Screen Icon -->
+    <title>The Artist's Loft — Curated Myanmar Fine Art</title>
+
+    <!-- Dynamic Browser Tab Favicon -->
     <link id="dynamic-favicon" rel="icon" type="image/jpeg" href="Logo.jpg">
     <link id="dynamic-shortcut-icon" rel="shortcut icon" type="image/jpeg" href="Logo.jpg">
     <link id="dynamic-apple-icon" rel="apple-touch-icon" href="Logo.jpg">
@@ -16,26 +17,17 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script>
-        if (window.tailwind) {
-            window.tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            cream: '#F3EFE6',
-                            parchment: '#E9E2D3',
-                            charcoal: '#26231F',
-                            taupe: '#9C8265',
-                        },
-                        fontFamily: {
-                            serif: ['"Playfair Display"', 'Georgia', 'serif'],
-                            sans: ['"Inter"', 'system-ui', 'sans-serif'],
-                        }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                        sans: ['"Inter"', 'system-ui', 'sans-serif'],
                     }
                 }
-            };
-        }
+            }
+        };
     </script>
 
     <style>
@@ -82,14 +74,14 @@
             transform: scaleY(0.35);
         }
 
-        /* Bidirectional Scroll Reveal Animation */
+        /* Apple-Inspired Dramatic Scroll Reveal & 3D Depth */
         .reveal-item {
             opacity: 0;
-            transform: translateY(36px) scale(0.96);
-            filter: blur(10px);
-            transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-                        transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-                        filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(72px) scale(0.94);
+            filter: blur(8px);
+            transition: opacity 1.15s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 1.25s cubic-bezier(0.16, 1, 0.3, 1),
+                        filter 1.05s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, transform, filter;
         }
         .reveal-item.is-visible {
@@ -98,27 +90,41 @@
             filter: blur(0);
         }
 
-        /* 3D Tilt Card & Glare */
+        /* Apple-Style Interactive 3D Tilt Card, Specular Glare & Light Sheen */
         .tilt-card {
             transform-style: preserve-3d;
-            transition: transform 0.35s cubic-bezier(0.03, 0.98, 0.52, 0.99),
-                        box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1),
                         border-color 0.45s ease;
             position: relative;
         }
         .tilt-card:hover {
-            box-shadow: 0 24px 48px -16px rgba(38, 35, 31, 0.18), 0 8px 20px -8px rgba(156, 130, 101, 0.22);
-            border-color: rgba(156, 130, 101, 0.6);
+            box-shadow: 0 32px 64px -18px rgba(38, 35, 31, 0.26), 0 12px 28px -10px rgba(156, 130, 101, 0.32);
+            border-color: rgba(156, 130, 101, 0.75);
         }
         .tilt-glare {
             position: absolute;
             inset: 0;
             pointer-events: none;
-            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 70%);
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 68%);
             opacity: 0;
-            transition: opacity 0.35s ease;
+            transition: opacity 0.4s ease;
             border-radius: inherit;
             z-index: 20;
+        }
+        .tilt-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, 0.34) 48%, rgba(255, 255, 255, 0.08) 54%, transparent 72%);
+            transform: translateX(-130%);
+            transition: transform 0.95s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 21;
+            border-radius: inherit;
+        }
+        .tilt-card:hover::after {
+            transform: translateX(130%);
         }
 
         /* Smooth Section Fade */
@@ -1224,7 +1230,6 @@
                     const loaded = [];
                     snapshot.forEach((docSnap) => {
                         const data = docSnap.data();
-                        // Ensure legacy artworks without artistId belong to MT. Oung
                         if (!data.artistId) data.artistId = 'mt-oung';
                         loaded.push(data);
                     });
@@ -1232,6 +1237,7 @@
                     loaded.sort((a, b) => (a.order || 999) - (b.order || 999));
                     artworks = loaded;
                     updateCloudStatus(true, 'Connected to Cloud (theartist-sloft) — Live Sync Active');
+                    renderSelectedArtistProfile();
                     renderCategoryFilterBar();
                     renderArtworksGrid();
                     if (isAdminUnlocked) {
@@ -1310,7 +1316,6 @@
             activeArtistId = artistId;
             activeCategory = 'All';
 
-            // Update pill button active state smoothly
             renderArtistSelectorBar();
 
             const profileEl = document.getElementById('selected-artist-profile');
@@ -1353,6 +1358,7 @@
             const safeSubtitle = escapeHTML(artist.subtitle || 'Represented Artist • Myanmar');
             const safeBio = escapeHTML(artist.bio || '');
             const safeImg = escapeHTML(artist.image || 'artist.jpg');
+            const artistWorksCount = artworks.filter(w => (w.artistId || 'mt-oung') === artist.id).length;
 
             container.innerHTML = `
                 <div class="w-36 h-44 sm:w-44 sm:h-52 md:w-48 md:h-60 rounded-2xl overflow-hidden bg-[#E7E0D2] flex-shrink-0 shadow-md border border-[#9C8265]/25">
@@ -1368,19 +1374,14 @@
                     <p class="text-sm font-serif italic text-[#26231F]/65 mb-4">${safeSubtitle}</p>
                     <div class="w-12 h-[1px] bg-[#9C8265] mx-auto md:mx-0 mb-4"></div>
                     <p class="text-sm md:text-base text-[#26231F]/80 font-light leading-relaxed whitespace-pre-line">${safeBio}</p>
-                    ${(() => {
-                        const artistWorksCount = artworks.filter(w => (w.artistId || 'mt-oung') === artist.id).length;
-                        return `
-                            <div class="mt-6 pt-5 border-t border-[#9C8265]/20 flex flex-wrap items-center justify-center md:justify-start gap-4">
-                                <button type="button" onclick="scrollToArtistWorks()" class="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-[#26231F] text-[#F3EFE6] hover:bg-[#9C8265] text-xs uppercase tracking-[0.2em] font-medium transition-all duration-300 shadow-sm group">
-                                    <span>View Artworks (${artistWorksCount})</span>
-                                    <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </button>
-                            </div>
-                        `;
-                    })()}
+                    <div class="mt-6 pt-5 border-t border-[#9C8265]/20 flex flex-wrap items-center justify-center md:justify-start gap-4">
+                        <button type="button" onclick="scrollToArtistWorks()" class="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-[#26231F] text-[#F3EFE6] hover:bg-[#9C8265] text-xs uppercase tracking-[0.2em] font-medium transition-all duration-300 shadow-sm group">
+                            <span>View Artworks (${artistWorksCount})</span>
+                            <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             `;
         }
@@ -1473,7 +1474,7 @@
                                  data-category="${safeCat}"
                                  data-aspect="${safeAspect}"
                                  onerror="handleCardImageError(this)"
-                                 class="w-full h-auto object-cover block transition-transform duration-1000 ease-out group-hover:scale-[1.04]">
+                                 class="w-full h-auto object-cover block transition-transform duration-1000 ease-out group-hover:scale-[1.06]">
                             <div class="absolute inset-0 bg-gradient-to-t from-[#26231F]/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                             <div class="absolute top-3.5 right-3.5 px-3 py-1 rounded-full bg-[#26231F]/80 backdrop-blur-sm text-[#FAF9F6] text-[10px] uppercase tracking-[0.2em] flex items-center gap-1.5 z-10">
                                 <span class="w-2 h-2 rounded-full ${dotClass}"></span>
@@ -2061,6 +2062,7 @@
                 await deleteDoc(doc(getArtworksCollectionRef(), id));
             } else {
                 artworks = artworks.filter(a => a.id !== id);
+                renderSelectedArtistProfile();
                 renderCategoryFilterBar();
                 renderArtworksGrid();
                 renderAdminArtworksList();
@@ -2309,6 +2311,58 @@
             }
         }
 
+        // ==================== APPLE-INSPIRED SCROLL REVEAL & 3D TILT ANIMATIONS ====================
+        function initGalleryCardAnimations() {
+            const cards = document.querySelectorAll('#artworks-masonry-grid .reveal-item');
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                        } else {
+                            entry.target.classList.remove('is-visible');
+                        }
+                    });
+                }, {
+                    threshold: 0.16,
+                    rootMargin: '-6% 0px -16% 0px'
+                });
+
+                cards.forEach((card, idx) => {
+                    card.style.transitionDelay = `${(idx % 3) * 140}ms`;
+                    observer.observe(card);
+                });
+            } else {
+                cards.forEach(card => card.classList.add('is-visible'));
+            }
+
+            document.querySelectorAll('#artworks-masonry-grid .tilt-card').forEach(card => {
+                const glare = card.querySelector('.tilt-glare');
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -7.5;
+                    const rotateY = ((x - centerX) / centerX) * 7.5;
+                    card.style.transition = 'transform 0.12s ease-out, box-shadow 0.45s ease, border-color 0.4s ease';
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale3d(1.022, 1.022, 1.022)`;
+                    if (glare) {
+                        const pctX = (x / rect.width) * 100;
+                        const pctY = (y / rect.height) * 100;
+                        glare.style.background = `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 68%)`;
+                        glare.style.opacity = '1';
+                    }
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transition = 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease, border-color 0.45s ease';
+                    card.style.transform = '';
+                    if (glare) glare.style.opacity = '0';
+                });
+            });
+        }
+
         // ==================== CLASSIC GALLERY AMBIENCE & SOUND SYSTEM ====================
         let isSoundEnabled = true;
         let isLoopStarted = false;
@@ -2327,52 +2381,6 @@
         if (customBgAudio) {
             customBgAudio.addEventListener('error', () => {
                 customTrackFailed = true;
-            });
-        }
-
-        function initGalleryCardAnimations() {
-            const cards = document.querySelectorAll('#artworks-masonry-grid .reveal-item');
-            if ('IntersectionObserver' in window) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                        } else {
-                            entry.target.classList.remove('is-visible');
-                        }
-                    });
-                }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-
-                cards.forEach((card, idx) => {
-                    card.style.transitionDelay = `${(idx % 3) * 85}ms`;
-                    observer.observe(card);
-                });
-            } else {
-                cards.forEach(card => card.classList.add('is-visible'));
-            }
-
-            document.querySelectorAll('#artworks-masonry-grid .tilt-card').forEach(card => {
-                const glare = card.querySelector('.tilt-glare');
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * -4.5;
-                    const rotateY = ((x - centerX) / centerX) * 4.5;
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
-                    if (glare) {
-                        const pctX = (x / rect.width) * 100;
-                        const pctY = (y / rect.height) * 100;
-                        glare.style.background = `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 70%)`;
-                        glare.style.opacity = '1';
-                    }
-                });
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = '';
-                    if (glare) glare.style.opacity = '0';
-                });
             });
         }
 
@@ -2661,7 +2669,6 @@
             ensureAudioContext();
 
             if (type === 'artist') {
-                // Whisper-thin, airy classical harmonic (ultra-light & delicate)
                 playSoftCanvasSwoosh();
                 playCelestaBell(659.25, 1.1, 0.032);
                 setTimeout(() => playCelestaBell(987.77, 1.3, 0.026), 140);
@@ -2677,12 +2684,6 @@
                 playCelestaBell(587.33, 1.5, 0.09);
             } else if (type === 'filter') {
                 playCelestaBell(880.00, 1.4, 0.10);
-            } else if (type === 'artist') {
-                // Light, graceful Classical Harp & Shimmering Glass Bell Arpeggio (C5 -> G5 -> B5 -> D6)
-                playCelestaBell(523.25, 1.9, 0.065);
-                setTimeout(() => playCelestaBell(783.99, 2.1, 0.06), 145);
-                setTimeout(() => playCelestaBell(987.77, 2.3, 0.055), 290);
-                setTimeout(() => playCelestaBell(1174.66, 2.6, 0.05), 440);
             } else if (type === 'nav') {
                 playFeltPianoNote(392.00, 1.4, 0.09);
                 setTimeout(() => playCelestaBell(587.33, 1.5, 0.07), 85);
