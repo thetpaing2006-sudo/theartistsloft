@@ -192,16 +192,16 @@
                 </button>
             </div>
 
-            <!-- Right Links + Classic Gallery Ambience Sound Toggle -->
+            <!-- Right Links + Classic Gallery Ambience Sound Toggle (Default ON) -->
             <div class="flex items-center justify-center md:justify-end gap-5 md:w-1/3">
-                <button type="button" id="sound-toggle-btn" onclick="toggleGallerySound()" title="Toggle Classic Gallery Ambience"
-                        class="sound-paused flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#9C8265]/40 bg-[#FAF7F0]/75 hover:border-[#26231F] text-[10px] uppercase tracking-[0.2em] text-[#26231F]/80 transition-all">
+                <button type="button" id="sound-toggle-btn" onclick="toggleGallerySound(event)" title="Toggle Classic Gallery Ambience"
+                        class="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#9C8265]/40 bg-[#FAF7F0]/75 hover:border-[#26231F] text-[10px] uppercase tracking-[0.2em] text-[#26231F]/80 transition-all">
                     <span class="flex items-end gap-[2px] h-3 w-3" aria-hidden="true">
                         <span class="sound-bar w-[2px] h-full bg-[#9C8265] rounded-full"></span>
                         <span class="sound-bar w-[2px] h-full bg-[#9C8265] rounded-full"></span>
                         <span class="sound-bar w-[2px] h-full bg-[#9C8265] rounded-full"></span>
                     </span>
-                    <span id="sound-toggle-label">Sound Off</span>
+                    <span id="sound-toggle-label">Sound On</span>
                 </button>
 
                 <button type="button" onclick="showSection('contact')" class="hidden md:inline-block nav-link text-xs uppercase tracking-[0.22em] font-medium transition-colors py-1" data-target="contact">
@@ -966,6 +966,7 @@
         }
 
         function showSection(sectionId) {
+            playSoftGalleryChime('nav');
             const sections = ['home', 'artworks', 'about', 'contact'];
             sections.forEach(id => {
                 const el = document.getElementById(`section-${id}`);
@@ -1108,7 +1109,7 @@
                                      onerror="handleCardImageError(this)"
                                      class="w-full h-auto object-cover block transition-transform duration-700 ease-out group-hover:scale-105">
 
-                                <!-- Availability Status Dot on Painting (Green = Available, Red = Sold) -->
+                                <!-- Availability Status Dot on Painting (Green = Available, Red = Collected) -->
                                 <div class="absolute top-3.5 right-3.5 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF9F6]/90 backdrop-blur-sm border border-[#A69076]/25 shadow-sm"
                                      title="${statusLabel}">
                                     <span class="w-2.5 h-2.5 rounded-full ${statusDotClass} ring-2"></span>
@@ -1279,7 +1280,6 @@
             const img = document.getElementById('lightbox-img');
             const caption = document.getElementById('lightbox-caption');
 
-            // Ensure starting closed state before triggering entrance transition
             modal.classList.remove('is-open');
             img.classList.remove('lightbox-slide-out-left', 'lightbox-slide-out-right', 'lightbox-slide-in-from-right', 'lightbox-slide-in-from-left');
             caption.classList.remove('lightbox-slide-out-left', 'lightbox-slide-out-right', 'lightbox-slide-in-from-right', 'lightbox-slide-in-from-left');
@@ -1287,7 +1287,6 @@
             populateLightboxContent(art, list);
 
             modal.classList.remove('hidden');
-            // Force browser reflow so CSS transition plays visibly from start to finish
             void modal.offsetWidth;
 
             requestAnimationFrame(() => {
@@ -1858,9 +1857,10 @@
             }
         }
 
-        // ==================== CLASSIC GALLERY AMBIENCE & TACTILE AUDIO ENGINE ====================
+        // ==================== CLASSIC GALLERY AMBIENCE & TACTILE AUDIO ENGINE (DEFAULT ON) ====================
         let audioCtx = null;
-        let isSoundPlaying = false;
+        let isSoundEnabled = true; // Default ON
+        let isLoopStarted = false;
         let ambientInterval = null;
         let masterGain = null;
 
@@ -1869,92 +1869,198 @@
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContextClass();
                 masterGain = audioCtx.createGain();
-                masterGain.gain.setValueAtTime(0.16, audioCtx.currentTime);
+                masterGain.gain.setValueAtTime(0.42, audioCtx.currentTime);
                 masterGain.connect(audioCtx.destination);
             }
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
+            // Unlock iOS / Safari WebAudio buffer
+            const silentBuffer = audioCtx.createBuffer(1, 1, 22050);
+            const source = audioCtx.createBufferSource();
+            source.buffer = silentBuffer;
+            source.connect(audioCtx.destination);
+            source.start(0);
         }
 
-        // Gentle warm harmonic piano/harp note
-        function playWarmNote(freq, duration = 4.2, volume = 0.14) {
-            if (!audioCtx || !isSoundPlaying) return;
+        // Warm Felt Grand Piano & Harp Voice
+        function playFeltPianoNote(freq, duration = 5.5, volume = 0.24) {
+            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
 
             const osc = audioCtx.createOscillator();
-            const subOsc = audioCtx.createOscillator();
+            const overtoneOsc = audioCtx.createOscillator();
             const filter = audioCtx.createBiquadFilter();
             const noteGain = audioCtx.createGain();
+            const overtoneGain = audioCtx.createGain();
 
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, now);
 
-            subOsc.type = 'triangle';
-            subOsc.frequency.setValueAtTime(freq * 0.5, now);
+            overtoneOsc.type = 'triangle';
+            overtoneOsc.frequency.setValueAtTime(freq * 2, now);
+            overtoneGain.gain.setValueAtTime(0.08, now);
 
+            // Soft felt hammer warmth
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(680, now);
+            filter.frequency.setValueAtTime(1150, now);
+            filter.frequency.exponentialRampToValueAtTime(520, now + duration);
 
             noteGain.gain.setValueAtTime(0.0001, now);
-            noteGain.gain.exponentialRampToValueAtTime(volume, now + 0.45);
+            noteGain.gain.linearRampToValueAtTime(volume, now + 0.14);
             noteGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
             osc.connect(filter);
-            subOsc.connect(filter);
+            overtoneOsc.connect(overtoneGain);
+            overtoneGain.connect(filter);
             filter.connect(noteGain);
             noteGain.connect(masterGain);
 
             osc.start(now);
-            subOsc.start(now);
-            osc.stop(now + duration + 0.1);
-            subOsc.stop(now + duration + 0.1);
+            overtoneOsc.start(now);
+            osc.stop(now + duration + 0.15);
+            overtoneOsc.stop(now + duration + 0.15);
         }
 
-        // Subtle tactile chime when opening or browsing paintings
+        // Deep Expressive Chamber Cello Sustain
+        function playChamberCello(freq, duration = 6.5, volume = 0.18) {
+            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
+            const now = audioCtx.currentTime;
+
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const filter = audioCtx.createBiquadFilter();
+            const celloGain = audioCtx.createGain();
+
+            osc1.type = 'sawtooth';
+            osc1.frequency.setValueAtTime(freq, now);
+
+            // Subtle warm ensemble detune
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(freq * 1.002, now);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(340, now);
+            filter.Q.setValueAtTime(1.5, now);
+
+            celloGain.gain.setValueAtTime(0.0001, now);
+            celloGain.gain.linearRampToValueAtTime(volume, now + 1.1);
+            celloGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+            osc1.connect(filter);
+            osc2.connect(filter);
+            filter.connect(celloGain);
+            celloGain.connect(masterGain);
+
+            osc1.start(now);
+            osc2.start(now);
+            osc1.stop(now + duration + 0.2);
+            osc2.stop(now + duration + 0.2);
+        }
+
+        // Subtle tactile chime when navigating or viewing paintings
         function playSoftGalleryChime(type = 'step') {
-            if (!isSoundPlaying) return;
+            if (!isSoundEnabled) return;
             ensureAudioContext();
-            const freq = type === 'open' ? 523.25 : 440.0; // C5 or A4
-            playWarmNote(freq, 1.3, 0.08);
+            if (type === 'open') {
+                playFeltPianoNote(523.25, 2.2, 0.2); // C5
+                setTimeout(() => playFeltPianoNote(659.25, 2.5, 0.18), 140); // E5
+            } else if (type === 'nav') {
+                playFeltPianoNote(392.00, 1.4, 0.14); // G4
+            } else {
+                playFeltPianoNote(440.00, 1.6, 0.16); // A4
+            }
         }
 
         function startClassicAmbienceLoop() {
-            // Serene Debussy / Erik Satie inspired pentatonic & major 9th gallery chords
-            const chords = [
-                [261.63, 329.63, 392.00, 493.88], // Cmaj7
-                [220.00, 261.63, 329.63, 392.00], // Am7
-                [174.61, 220.00, 261.63, 349.23], // Fmaj7
-                [196.00, 246.94, 293.66, 392.00]  // G6
-            ];
-            let step = 0;
+            if (isLoopStarted) return;
+            isLoopStarted = true;
 
-            const triggerChord = () => {
-                if (!isSoundPlaying) return;
-                const chord = chords[step % chords.length];
-                chord.forEach((freq, idx) => {
-                    setTimeout(() => playWarmNote(freq, 5.2, 0.11), idx * 420);
+            // Long 16-Measure Classic Nocturne / Gymnopédie Progression (~45 seconds per full cycle)
+            const classicalSuite = [
+                { bass: 130.81, chord: [261.63, 329.63, 392.00], melody: 493.88 }, // Cmaj7 (B4)
+                { bass: 110.00, chord: [220.00, 261.63, 329.63], melody: 440.00 }, // Am7 (A4)
+                { bass: 87.31,  chord: [174.61, 220.00, 261.63], melody: 392.00 }, // Fmaj7 (G4)
+                { bass: 98.00,  chord: [196.00, 246.94, 293.66], melody: 329.63 }, // G6 (E4)
+                { bass: 82.41,  chord: [164.81, 246.94, 329.63], melody: 392.00 }, // Em7 (G4)
+                { bass: 110.00, chord: [220.00, 261.63, 329.63], melody: 523.25 }, // Am9 (C5)
+                { bass: 146.83, chord: [220.00, 261.63, 349.23], melody: 440.00 }, // Dm7 (A4)
+                { bass: 98.00,  chord: [196.00, 261.63, 293.66], melody: 392.00 }, // Gsus4 (G4)
+                { bass: 130.81, chord: [261.63, 329.63, 493.88], melody: 587.33 }, // Cmaj9 (D5)
+                { bass: 123.47, chord: [246.94, 293.66, 392.00], melody: 493.88 }, // G/B (B4)
+                { bass: 110.00, chord: [220.00, 261.63, 392.00], melody: 440.00 }, // Am7 (A4)
+                { bass: 98.00,  chord: [196.00, 261.63, 329.63], melody: 392.00 }, // C/G (G4)
+                { bass: 87.31,  chord: [174.61, 220.00, 329.63], melody: 349.23 }, // Fmaj7 (F4)
+                { bass: 82.41,  chord: [164.81, 196.00, 293.66], melody: 329.63 }, // Em7 (E4)
+                { bass: 146.83, chord: [174.61, 220.00, 261.63], melody: 293.66 }, // Dm7 (D4)
+                { bass: 98.00,  chord: [196.00, 246.94, 349.23], melody: 261.63 }  // G7 -> C (C4)
+            ];
+            let measure = 0;
+
+            const playMeasure = () => {
+                if (!isSoundEnabled || !audioCtx || audioCtx.state !== 'running') return;
+                const bar = classicalSuite[measure % classicalSuite.length];
+
+                // 1. Deep expressive Cello bass on beat 1
+                playChamberCello(bar.bass, 5.8, 0.19);
+
+                // 2. Gentle arpeggiated Felt Piano accompaniment
+                bar.chord.forEach((freq, idx) => {
+                    setTimeout(() => {
+                        playFeltPianoNote(freq, 4.8, 0.17);
+                    }, (idx + 1) * 520);
                 });
-                step++;
+
+                // 3. Lyrical expressive melody note floating above
+                setTimeout(() => {
+                    playFeltPianoNote(bar.melody, 5.4, 0.23);
+                }, 1650);
+
+                measure++;
             };
 
-            triggerChord();
-            ambientInterval = setInterval(triggerChord, 5400);
+            playMeasure();
+            // 2.85 seconds per measure * 16 measures = ~45.6 seconds full classical movement
+            ambientInterval = setInterval(playMeasure, 2850);
         }
 
-        function toggleGallerySound() {
+        function stopClassicAmbienceLoop() {
+            clearInterval(ambientInterval);
+            ambientInterval = null;
+            isLoopStarted = false;
+        }
+
+        function unlockAndStartDefaultSound() {
+            if (!isSoundEnabled) return;
+            ensureAudioContext();
+            if (audioCtx && audioCtx.state === 'running' && !isLoopStarted) {
+                startClassicAmbienceLoop();
+            }
+        }
+
+        // Auto-unlock on first user interaction anywhere on the page (satisfies modern browser autoplay policy)
+        ['pointerdown', 'touchstart', 'keydown'].forEach(evtName => {
+            window.addEventListener(evtName, () => {
+                if (isSoundEnabled && (!audioCtx || audioCtx.state !== 'running' || !isLoopStarted)) {
+                    unlockAndStartDefaultSound();
+                }
+            }, { passive: true });
+        });
+
+        function toggleGallerySound(event) {
+            if (event) event.stopPropagation();
             const btn = document.getElementById('sound-toggle-btn');
             const label = document.getElementById('sound-toggle-label');
 
-            if (!isSoundPlaying) {
+            if (!isSoundEnabled) {
+                isSoundEnabled = true;
                 ensureAudioContext();
-                isSoundPlaying = true;
                 startClassicAmbienceLoop();
                 if (btn) btn.classList.remove('sound-paused');
                 if (label) label.textContent = 'Sound On';
             } else {
-                isSoundPlaying = false;
-                clearInterval(ambientInterval);
+                isSoundEnabled = false;
+                stopClassicAmbienceLoop();
                 if (btn) btn.classList.add('sound-paused');
                 if (label) label.textContent = 'Sound Off';
             }
@@ -1988,6 +2094,7 @@
         showSection('home');
         initCloudGallery();
         verifyAllImagesLoaded();
+        unlockAndStartDefaultSound();
 
         // Auto-open Admin Console if URL includes ?admin=true or #admin
         const urlParams = new URLSearchParams(window.location.search);
