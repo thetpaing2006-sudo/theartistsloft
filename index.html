@@ -1363,24 +1363,12 @@
                     <div class="w-12 h-[1px] bg-[#9C8265] mx-auto md:mx-0 mb-4"></div>
                     <p class="text-sm md:text-base text-[#26231F]/80 font-light leading-relaxed whitespace-pre-line">${safeBio}</p>
                     ${(() => {
-                        const artistWorks = artworks.filter(w => (w.artistId || 'mt-oung') === artist.id);
-                        const previewThumbs = artistWorks.slice(0, 3).map(w => `
-                            <button type="button" onclick="scrollToArtistWorks()" title="${escapeHTML(w.title)}"
-                                    class="w-11 h-11 rounded-xl overflow-hidden border border-[#9C8265]/35 shadow-sm hover:scale-110 transition-transform bg-[#E7E0D2] flex-shrink-0">
-                                <img src="${escapeHTML(w.image)}" alt="${escapeHTML(w.title)}"
-                                     data-title="${escapeHTML(w.title)}" data-category="${escapeHTML(w.category)}"
-                                     onerror="handleCardImageError(this)" class="w-full h-full object-cover">
-                            </button>
-                        `).join('');
+                        const artistWorksCount = artworks.filter(w => (w.artistId || 'mt-oung') === artist.id).length;
                         return `
-                            <div class="mt-6 pt-5 border-t border-[#9C8265]/20 flex flex-wrap items-center justify-center md:justify-between gap-4">
-                                <div class="flex items-center gap-2.5">
-                                    ${previewThumbs}
-                                    ${artistWorks.length > 3 ? `<span class="text-[11px] text-[#9C8265] font-medium pl-1">+${artistWorks.length - 3} more</span>` : ''}
-                                </div>
+                            <div class="mt-6 pt-5 border-t border-[#9C8265]/20 flex justify-center md:justify-start">
                                 <button type="button" onclick="scrollToArtistWorks()"
                                         class="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-[#26231F] text-[#F3EFE6] hover:bg-[#9C8265] text-[11px] uppercase tracking-[0.22em] font-medium transition-all shadow-sm">
-                                    <span>View Artworks (${artistWorks.length})</span>
+                                    <span>View Artworks (${artistWorksCount})</span>
                                     <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                                     </svg>
@@ -2093,9 +2081,9 @@
                                  onerror="handleArtistFallback(this, '${safeName.replace(/'/g, "\\'")}')"
                                  class="w-14 h-14 rounded-xl object-cover bg-[#EFECE6] flex-shrink-0">
                             <div class="min-w-0">
+                                <span class="text-[10px] uppercase tracking-wider text-[#A69076] block truncate">${worksCount} ${worksCount === 1 ? 'Work' : 'Works'}</span>
                                 <h5 class="font-serif text-base text-[#2C2C2C] truncate">${safeName}</h5>
-                                <span class="text-[11px] text-[#2C2C2C]/60 block truncate">${safeSub}</span>
-                                <span class="text-[10px] uppercase tracking-wider text-[#9C8265] block mt-0.5">${worksCount} ${worksCount === 1 ? 'Artwork' : 'Artworks'}</span>
+                                <span class="text-[11px] text-[#2C2C2C]/55 block truncate">${safeSub}</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 flex-shrink-0">
@@ -2103,9 +2091,10 @@
                                 Edit
                             </button>
                             ${artists.length > 1 ? `
-                            <button type="button" onclick="deleteArtistFromAdmin('${safeId}')" class="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs hover:bg-red-50 transition-colors">
-                                Delete
-                            </button>` : ''}
+                                <button type="button" onclick="deleteArtistFromAdmin('${safeId}')" class="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs hover:bg-red-50 transition-colors">
+                                    Delete
+                                </button>
+                            ` : ''}
                         </div>
                     </div>
                 `;
@@ -2137,22 +2126,22 @@
                     imageSrc = 'artist.jpg';
                 }
 
-                const slugId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || ('artist-' + Date.now());
-                const docId = editId || slugId;
+                const docId = editId || ('artist-' + Date.now());
                 const existingArtist = artists.find(a => a.id === docId);
 
                 const artistPayload = {
                     id: docId,
                     name,
                     subtitle,
-                    bio,
                     image: imageSrc,
-                    order: existingArtist ? (existingArtist.order || artists.length + 1) : artists.length + 1,
+                    bio,
+                    order: existingArtist ? (existingArtist.order || 1) : (artists.length + 1),
                     updatedAt: Date.now()
                 };
 
                 if (db && currentUser) {
                     await setDoc(doc(getArtistsCollectionRef(), docId), artistPayload);
+                    showAdminFeedback(`Artist "${name}" saved to Live Cloud!`);
                 } else {
                     if (editId) {
                         const idx = artists.findIndex(a => a.id === editId);
@@ -2162,20 +2151,15 @@
                     }
                     renderArtistSelectorBar();
                     renderSelectedArtistProfile();
-                    renderAdminArtistsList();
                     populateAdminArtistDropdown();
+                    renderAdminArtistsList();
+                    showAdminFeedback(`Artist "${name}" saved locally.`);
                 }
 
-                activeArtistId = docId;
-                renderArtistSelectorBar();
-                renderSelectedArtistProfile();
-                renderCategoryFilterBar();
-                renderArtworksGrid();
                 resetArtistForm();
-                showAdminFeedback(`Artist profile "${name}" saved to Live Gallery!`);
             } catch (err) {
-                console.error('Save artist error:', err);
-                showAdminFeedback('Error saving artist: ' + (err.message || 'Please try again.'), true);
+                console.error('Error saving artist:', err);
+                showAdminFeedback('Failed to save artist: ' + (err.message || 'Check connection.'), true);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Save Artist Profile';
@@ -2190,9 +2174,9 @@
             document.getElementById('edit-artist-id').value = artist.id;
             document.getElementById('artist-name-input').value = artist.name || '';
             document.getElementById('artist-subtitle-input').value = artist.subtitle || '';
-            document.getElementById('artist-bio-input').value = artist.bio || '';
             const currentImg = String(artist.image || '');
             document.getElementById('artist-url-input').value = currentImg.startsWith('data:') ? '' : currentImg;
+            document.getElementById('artist-bio-input').value = artist.bio || '';
             document.getElementById('cancel-artist-edit-btn').classList.remove('hidden');
             document.getElementById('save-artist-btn').textContent = 'Update Artist Profile';
 
@@ -2202,8 +2186,7 @@
 
         function resetArtistForm() {
             document.getElementById('admin-artist-form-heading').textContent = 'Add New Artist Profile';
-            const form = document.getElementById('admin-artist-form');
-            if (form) form.reset();
+            document.getElementById('admin-artist-form').reset();
             document.getElementById('edit-artist-id').value = '';
             document.getElementById('cancel-artist-edit-btn').classList.add('hidden');
             document.getElementById('save-artist-btn').textContent = 'Save Artist Profile';
@@ -2220,13 +2203,14 @@
                 if (activeArtistId === id) activeArtistId = artists[0].id;
                 renderArtistSelectorBar();
                 renderSelectedArtistProfile();
-                renderAdminArtistsList();
+                renderCategoryFilterBar();
+                renderArtworksGrid();
                 populateAdminArtistDropdown();
+                renderAdminArtistsList();
             }
-            showAdminFeedback('Artist profile removed.');
         }
 
-        // ==================== ADMIN: GALLERY ABOUT MANAGEMENT ====================
+        // ==================== ADMIN: GALLERY ABOUT & EXPORT & CONTACT ====================
         function populateGalleryAboutAdminForm() {
             const hInput = document.getElementById('about-heading-input');
             const sInput = document.getElementById('about-subtitle-input');
@@ -2242,106 +2226,144 @@
             const subtitle = document.getElementById('about-subtitle-input').value.trim();
             const body = document.getElementById('about-body-input').value.trim();
 
-            galleryAbout = { heading, subtitle, body };
+            galleryAbout = { heading, subtitle, body, updatedAt: Date.now() };
             renderGalleryAboutSection();
 
             try {
                 if (db && currentUser) {
-                    await setDoc(getGalleryAboutDocRef(), { heading, subtitle, body, updatedAt: Date.now() }, { merge: true });
+                    await setDoc(getGalleryAboutDocRef(), galleryAbout, { merge: true });
+                    showAdminFeedback('Gallery About page updated on Live Cloud!');
+                } else {
+                    showAdminFeedback('Gallery About page updated locally.');
                 }
-                showAdminFeedback('Gallery About page updated live!');
             } catch (err) {
-                showAdminFeedback('Saved locally (Check Cloud permissions).', true);
+                showAdminFeedback('Update failed: ' + err.message, true);
             }
         }
 
         function exportArtworksJSON() {
-            const backupPayload = { artists, artworks, galleryAbout, exportedAt: new Date().toISOString() };
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "the-artists-loft-backup.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
+            const payload = {
+                exportedAt: new Date().toISOString(),
+                galleryAbout,
+                artists,
+                artworks
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `the-artists-loft-backup-${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
         async function handleContactSubmit(event) {
             event.preventDefault();
-            const form = event.target;
+            const form = document.getElementById('contact-form');
+            const btn = document.getElementById('contact-submit-btn');
             const feedback = document.getElementById('contact-feedback');
-            const submitBtn = document.getElementById('contact-submit-btn');
+            const botcheck = document.getElementById('contact-botcheck');
 
-            if (document.getElementById('contact-botcheck')?.checked) return;
+            if (botcheck && botcheck.checked) return;
 
-            const name = document.getElementById('contact-name').value.trim();
-            const email = document.getElementById('contact-email').value.trim();
-            const message = document.getElementById('contact-message').value.trim();
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending...';
-            feedback.classList.add('hidden');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
 
             try {
+                const payload = {
+                    name: document.getElementById('contact-name').value.trim(),
+                    email: document.getElementById('contact-email').value.trim(),
+                    message: document.getElementById('contact-message').value.trim()
+                };
+
                 const res = await fetch('/api/contact', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ name, email, message })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
+                const data = await res.json();
 
-                const result = await res.json();
-                if (res.ok && result.success) {
+                if (res.ok && data.success) {
                     playSoftGalleryChime('success');
                     form.reset();
-                    feedback.textContent = 'Thank you! Your message has been sent directly to our email. We will respond shortly.';
-                    feedback.className = 'p-4 rounded-2xl bg-[#A69076]/15 border border-[#A69076]/40 text-center text-sm text-[#2C2C2C]';
+                    feedback.textContent = 'Thank you! Your message has been sent to our gallery team. We will respond shortly.';
                     feedback.classList.remove('hidden');
                 } else {
-                    feedback.textContent = result.message || 'Unable to send message right now. Please try again.';
-                    feedback.className = 'p-4 rounded-2xl bg-red-50 border border-red-200 text-center text-sm text-red-700';
-                    feedback.classList.remove('hidden');
+                    throw new Error(data.message || 'Unable to send message.');
                 }
             } catch (err) {
-                feedback.textContent = 'Network error while sending message. Please check your connection and try again.';
-                feedback.className = 'p-4 rounded-2xl bg-red-50 border border-red-200 text-center text-sm text-red-700';
+                feedback.textContent = 'Thank you for your inquiry. Please reach out directly or try again shortly.';
                 feedback.classList.remove('hidden');
             } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Send Message';
+                btn.disabled = false;
+                btn.textContent = 'Send Message';
             }
         }
 
-        // ==================== CLASSIC GALLERY AMBIENCE + TACTILE UI SOUND EFFECTS ====================
-        let audioCtx = null;
+        // ==================== CLASSIC GALLERY AMBIENCE & SOUND SYSTEM ====================
         let isSoundEnabled = true;
         let isLoopStarted = false;
+        let audioCtx = null;
+        let masterGain = null;
         let ambientInterval = null;
         let natureBirdTimer = null;
-        let masterGain = null;
         let breezeNode = null;
-        let breezeGain = null;
         let breezeLfo = null;
+        let breezeGain = null;
         let fountainNode = null;
         let fountainGain = null;
-        let customTrackFailed = false;
         let audioFadeTimer = null;
-
+        let customTrackFailed = false;
         const customBgAudio = document.getElementById('gallery-bg-audio');
         if (customBgAudio) {
-            customBgAudio.volume = 0.25;
             customBgAudio.addEventListener('error', () => {
-                if (!customBgAudio.dataset.triedCdn) {
-                    customBgAudio.dataset.triedCdn = 'true';
-                    customBgAudio.src = 'https://cdn.jsdelivr.net/gh/thetpaing2006-sudo/theartistsloft@main/ambience.mp3';
-                    customBgAudio.load();
-                    if (isSoundEnabled) customBgAudio.play().catch(() => {});
-                    return;
-                }
                 customTrackFailed = true;
-                if (isSoundEnabled) {
-                    ensureAudioContext();
-                    startSynthAmbienceLoop();
-                }
+            });
+        }
+
+        function initGalleryCardAnimations() {
+            const cards = document.querySelectorAll('#artworks-masonry-grid .reveal-item');
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                        } else {
+                            entry.target.classList.remove('is-visible');
+                        }
+                    });
+                }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+                cards.forEach((card, idx) => {
+                    card.style.transitionDelay = `${(idx % 3) * 85}ms`;
+                    observer.observe(card);
+                });
+            } else {
+                cards.forEach(card => card.classList.add('is-visible'));
+            }
+
+            document.querySelectorAll('#artworks-masonry-grid .tilt-card').forEach(card => {
+                const glare = card.querySelector('.tilt-glare');
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -4.5;
+                    const rotateY = ((x - centerX) / centerX) * 4.5;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+                    if (glare) {
+                        const pctX = (x / rect.width) * 100;
+                        const pctY = (y / rect.height) * 100;
+                        glare.style.background = `radial-gradient(circle at ${pctX}% ${pctY}%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 70%)`;
+                        glare.style.opacity = '1';
+                    }
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = '';
+                    if (glare) glare.style.opacity = '0';
+                });
             });
         }
 
