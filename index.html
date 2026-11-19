@@ -364,12 +364,23 @@
         </button>
         
         <div id="lightbox-stage" class="max-w-5xl w-full flex flex-col items-center justify-center text-center px-10 sm:px-16" onclick="event.stopPropagation()">
-            <img id="lightbox-img" src="" alt="Enlarged Artwork" class="max-h-[68vh] w-auto max-w-full object-contain rounded-lg shadow-2xl mb-6">
+            <img id="lightbox-img" src="" alt="Enlarged Artwork" class="max-h-[64vh] w-auto max-w-full object-contain rounded-lg shadow-2xl mb-5">
             <div id="lightbox-caption" class="max-w-2xl px-4">
-                <span id="lightbox-counter" class="block text-[10px] uppercase tracking-[0.3em] text-[#FAF9F6]/45 mb-1"></span>
+                <div class="flex items-center justify-center gap-2 mb-1.5">
+                    <span id="lightbox-status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                    <span id="lightbox-status-text" class="text-[10px] uppercase tracking-[0.25em] text-emerald-300 font-medium">Available</span>
+                    <span class="text-[#FAF9F6]/30">•</span>
+                    <span id="lightbox-counter" class="text-[10px] uppercase tracking-[0.3em] text-[#FAF9F6]/45"></span>
+                </div>
                 <span id="lightbox-category" class="inline-block text-[11px] uppercase tracking-[0.28em] text-[#A69076] mb-1.5"></span>
                 <h3 id="lightbox-title" class="font-serif text-2xl md:text-3xl text-[#FAF9F6] mb-2"></h3>
                 <p id="lightbox-desc" class="text-sm md:text-base text-[#FAF9F6]/75 font-light leading-relaxed"></p>
+                <div id="lightbox-price-row" class="mt-4 flex flex-wrap items-center justify-center gap-4">
+                    <span id="lightbox-price" class="text-sm font-medium text-[#FAF9F6] tracking-wide"></span>
+                    <button id="lightbox-inquiry-btn" type="button" class="px-5 py-2 rounded-full bg-[#A69076] text-[#FAF9F6] text-[11px] uppercase tracking-[0.22em] font-medium hover:bg-[#FAF9F6] hover:text-[#2C2C2C] transition-colors">
+                        Price Inquiry
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -475,6 +486,19 @@
                             <div>
                                 <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Medium / Subtitle</label>
                                 <input id="art-medium-input" type="text" value="Oil on Canvas" placeholder="e.g., Oil on Canvas, 2024" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Availability Status</label>
+                                <select id="art-status-select" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
+                                    <option value="Available">Available (Green Dot)</option>
+                                    <option value="Sold">Sold (Red Dot)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Price (Optional)</label>
+                                <input id="art-price-input" type="text" placeholder="e.g., $1,200 or Price on Request" class="w-full px-3.5 py-2.5 rounded-xl border border-[#A69076]/40 bg-[#FAF9F6] text-sm outline-none focus:border-[#2C2C2C]">
                             </div>
 
                             <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-[#FAF9F6] border border-[#A69076]/20">
@@ -651,6 +675,8 @@
                 title: 'Devotion in Saffron',
                 category: 'Sacred Art',
                 medium: 'Oil on Canvas',
+                status: 'Available',
+                price: '',
                 image: 'image_d698fb.jpg',
                 aspect: '3/4',
                 description: 'Young novices walking in serene morning light, capturing the quiet spiritual rhythm of Myanmar.',
@@ -661,6 +687,8 @@
                 title: 'Sacred Lotus Bloom',
                 category: 'Floral & Still Life',
                 medium: 'Oil on Canvas',
+                status: 'Available',
+                price: '',
                 image: '05582-mtoung3.jpg',
                 aspect: '3/4',
                 description: 'Soft impasto petals emerging from tranquil waters, symbolizing purity and inner stillness.',
@@ -671,6 +699,8 @@
                 title: 'Morning Mist on the Irrawaddy',
                 category: 'Landscapes',
                 medium: 'Oil on Canvas',
+                status: 'Sold',
+                price: '',
                 image: '179362955683157.jpg',
                 aspect: '4/3',
                 description: 'Luminous reflections across the river at dawn, painted with fluid impressionistic brushwork.',
@@ -681,6 +711,8 @@
                 title: "Mother's Love",
                 category: 'Portraits',
                 medium: 'Oil on Canvas',
+                status: 'Available',
+                price: '',
                 image: '20160602-mtoung5.jpg',
                 aspect: '3/4',
                 description: 'An intimate, tender study of maternal warmth rendered in earthy ochre and warm umber tones.',
@@ -691,6 +723,8 @@
                 title: 'Lotus Pond Reverie',
                 category: 'Floral & Still Life',
                 medium: 'Oil on Canvas',
+                status: 'Available',
+                price: '',
                 image: '8899c-mtoung4.jpg',
                 aspect: '3/4',
                 description: 'Delicate interplay of sunlight and shadow across blooming lotus leaves.',
@@ -701,6 +735,8 @@
                 title: "Melody's Rest",
                 category: 'Portraits',
                 medium: 'Oil on Canvas',
+                status: 'Available',
+                price: '',
                 image: 'images.jpg',
                 aspect: '4/3',
                 description: 'A quiet moment of contemplation alongside a classical harp, celebrating Burmese musical heritage.',
@@ -969,6 +1005,27 @@
                 .replace(/'/g, '&#39;');
         }
 
+        function inquireAboutArtwork(id, event) {
+            if (event) event.stopPropagation();
+            const art = artworks.find(a => a.id === id);
+            if (!art) return;
+
+            const lightboxModal = document.getElementById('lightbox-modal');
+            if (lightboxModal && !lightboxModal.classList.contains('hidden')) {
+                closeLightbox();
+            }
+
+            showSection('contact');
+            setTimeout(() => {
+                const messageEl = document.getElementById('contact-message');
+                const nameEl = document.getElementById('contact-name');
+                if (messageEl) {
+                    messageEl.value = `Hello, I would like to inquire about the price and availability of "${art.title}" (${art.medium || 'Oil on Canvas'}).`;
+                }
+                if (nameEl) nameEl.focus();
+            }, 120);
+        }
+
         function renderArtworksGrid() {
             const grid = document.getElementById('artworks-masonry-grid');
             const countLabel = document.getElementById('artwork-count-label');
@@ -993,6 +1050,10 @@
                 const safeMedium = escapeHTML(art.medium || 'Oil on Canvas');
                 const safeImage = escapeHTML(art.image);
                 const safeAspect = escapeHTML(art.aspect || '3/4');
+                const isSold = (art.status || 'Available').toLowerCase() === 'sold';
+                const statusDotClass = isSold ? 'bg-red-500 ring-red-200' : 'bg-emerald-500 ring-emerald-200';
+                const statusLabel = isSold ? 'Sold' : 'Available';
+                const safePrice = escapeHTML((art.price || '').trim());
 
                 return `
                     <article class="reveal-item break-inside-avoid mb-8" style="transition-delay: ${(index % 3) * 110}ms;">
@@ -1008,6 +1069,14 @@
                                      data-aspect="${safeAspect}"
                                      onerror="handleCardImageError(this)"
                                      class="w-full h-auto object-cover block transition-transform duration-700 ease-out group-hover:scale-105">
+
+                                <!-- Availability Status Dot on Painting (Green = Available, Red = Sold) -->
+                                <div class="absolute top-3.5 right-3.5 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF9F6]/90 backdrop-blur-sm border border-[#A69076]/25 shadow-sm"
+                                     title="${statusLabel}">
+                                    <span class="w-2.5 h-2.5 rounded-full ${statusDotClass} ring-2"></span>
+                                    <span class="text-[10px] uppercase tracking-[0.18em] font-medium text-[#2C2C2C]">${statusLabel}</span>
+                                </div>
+
                                 <div class="absolute inset-0 bg-[#2C2C2C]/0 group-hover:bg-[#2C2C2C]/15 transition-colors duration-300 flex items-end p-5">
                                     <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4 py-1.5 rounded-full bg-[#FAF9F6]/90 backdrop-blur-sm text-[10px] uppercase tracking-[0.22em] text-[#2C2C2C]">
                                         View Painting
@@ -1018,6 +1087,20 @@
                                 <span class="block text-[10px] uppercase tracking-[0.25em] text-[#A69076] mb-1.5">${safeCategory}</span>
                                 <h3 class="font-serif text-xl text-[#2C2C2C] mb-1 group-hover:text-[#A69076] transition-colors">${safeTitle}</h3>
                                 <p class="text-xs text-[#2C2C2C]/55 font-light">${safeMedium}</p>
+
+                                <!-- Price & Price Inquiry Row -->
+                                <div class="mt-4 pt-3.5 border-t border-[#A69076]/15 flex items-center justify-between gap-2">
+                                    <span class="text-xs font-medium text-[#2C2C2C]/85">
+                                        ${isSold ? '<span class="text-red-700/80 uppercase tracking-[0.18em] text-[10px]">Sold</span>' : (safePrice || '<span class="text-[#2C2C2C]/50 font-light">Available</span>')}
+                                    </span>
+                                    ${isSold
+                                        ? `<span class="text-[10px] uppercase tracking-[0.2em] text-[#2C2C2C]/40">Private Collection</span>`
+                                        : `<button type="button" onclick="inquireAboutArtwork('${escapeHTML(art.id)}', event)"
+                                               class="px-3.5 py-1.5 rounded-full bg-[#2C2C2C] text-[#FAF9F6] text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-[#A69076] transition-colors">
+                                               Price Inquiry
+                                           </button>`
+                                    }
+                                </div>
                             </div>
                         </div>
                     </article>
@@ -1111,6 +1194,10 @@
             const catEl = document.getElementById('lightbox-category');
             const descEl = document.getElementById('lightbox-desc');
             const counterEl = document.getElementById('lightbox-counter');
+            const statusDotEl = document.getElementById('lightbox-status-dot');
+            const statusTextEl = document.getElementById('lightbox-status-text');
+            const priceEl = document.getElementById('lightbox-price');
+            const inquiryBtn = document.getElementById('lightbox-inquiry-btn');
 
             img.onerror = function() {
                 applyArtFallback(img, art.title, art.category, art.aspect || '3/4');
@@ -1123,6 +1210,28 @@
             const idx = list.findIndex(a => a.id === art.id);
             if (counterEl && idx !== -1) {
                 counterEl.textContent = `${idx + 1} / ${list.length}`;
+            }
+
+            const isSold = (art.status || 'Available').toLowerCase() === 'sold';
+            if (isSold) {
+                if (statusDotEl) statusDotEl.className = 'w-2.5 h-2.5 rounded-full bg-red-500';
+                if (statusTextEl) {
+                    statusTextEl.className = 'text-[10px] uppercase tracking-[0.25em] text-red-300 font-medium';
+                    statusTextEl.textContent = 'Sold';
+                }
+                if (priceEl) priceEl.textContent = '';
+                if (inquiryBtn) inquiryBtn.classList.add('hidden');
+            } else {
+                if (statusDotEl) statusDotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400';
+                if (statusTextEl) {
+                    statusTextEl.className = 'text-[10px] uppercase tracking-[0.25em] text-emerald-300 font-medium';
+                    statusTextEl.textContent = 'Available';
+                }
+                if (priceEl) priceEl.textContent = (art.price || '').trim();
+                if (inquiryBtn) {
+                    inquiryBtn.classList.remove('hidden');
+                    inquiryBtn.onclick = (e) => inquireAboutArtwork(art.id, e);
+                }
             }
         }
 
@@ -1428,32 +1537,41 @@
             const totalCount = document.getElementById('admin-total-count');
             if (totalCount) totalCount.textContent = artworks.length;
 
-            list.innerHTML = artworks.map(art => `
-                <div class="flex items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-[#A69076]/20">
-                    <div class="flex items-center gap-3.5 min-w-0">
-                        <img src="${escapeHTML(art.image)}"
-                             alt="${escapeHTML(art.title)}"
-                             data-title="${escapeHTML(art.title)}"
-                             data-category="${escapeHTML(art.category)}"
-                             data-aspect="${escapeHTML(art.aspect || '3/4')}"
-                             onerror="handleCardImageError(this)"
-                             class="w-14 h-14 rounded-xl object-cover bg-[#EFECE6] flex-shrink-0">
-                        <div class="min-w-0">
-                            <span class="text-[10px] uppercase tracking-wider text-[#A69076] block truncate">${escapeHTML(art.category)}</span>
-                            <h5 class="font-serif text-base text-[#2C2C2C] truncate">${escapeHTML(art.title)}</h5>
-                            <span class="text-[11px] text-[#2C2C2C]/50 block truncate">${escapeHTML(art.medium || 'Oil on Canvas')}</span>
+            list.innerHTML = artworks.map(art => {
+                const isSold = (art.status || 'Available').toLowerCase() === 'sold';
+                const dotClass = isSold ? 'bg-red-500' : 'bg-emerald-500';
+                const statusInfo = isSold ? 'Sold' : (escapeHTML(art.price) || 'Available');
+
+                return `
+                    <div class="flex items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-[#A69076]/20">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <img src="${escapeHTML(art.image)}"
+                                 alt="${escapeHTML(art.title)}"
+                                 data-title="${escapeHTML(art.title)}"
+                                 data-category="${escapeHTML(art.category)}"
+                                 data-aspect="${escapeHTML(art.aspect || '3/4')}"
+                                 onerror="handleCardImageError(this)"
+                                 class="w-14 h-14 rounded-xl object-cover bg-[#EFECE6] flex-shrink-0">
+                            <div class="min-w-0">
+                                <span class="text-[10px] uppercase tracking-wider text-[#A69076] block truncate">${escapeHTML(art.category)}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full ${dotClass} flex-shrink-0"></span>
+                                    <h5 class="font-serif text-base text-[#2C2C2C] truncate">${escapeHTML(art.title)}</h5>
+                                </div>
+                                <span class="text-[11px] text-[#2C2C2C]/50 block truncate">${escapeHTML(art.medium || 'Oil on Canvas')} • ${statusInfo}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <button type="button" onclick="editArtworkInAdmin('${escapeHTML(art.id)}')" class="px-3 py-1.5 rounded-lg border border-[#A69076]/40 text-xs hover:bg-[#A69076] hover:text-white transition-colors">
+                                Edit
+                            </button>
+                            <button type="button" onclick="deleteArtworkFromAdmin('${escapeHTML(art.id)}')" class="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs hover:bg-red-50 transition-colors">
+                                Delete
+                            </button>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                        <button type="button" onclick="editArtworkInAdmin('${escapeHTML(art.id)}')" class="px-3 py-1.5 rounded-lg border border-[#A69076]/40 text-xs hover:bg-[#A69076] hover:text-white transition-colors">
-                            Edit
-                        </button>
-                        <button type="button" onclick="deleteArtworkFromAdmin('${escapeHTML(art.id)}')" class="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 text-xs hover:bg-red-50 transition-colors">
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         async function saveArtworkFromAdmin(event) {
@@ -1469,6 +1587,8 @@
                 const newCat = document.getElementById('art-new-category-input').value.trim();
                 const category = newCat !== '' ? newCat : selectedCat;
                 const medium = document.getElementById('art-medium-input').value.trim() || 'Oil on Canvas';
+                const status = document.getElementById('art-status-select').value || 'Available';
+                const price = document.getElementById('art-price-input').value.trim();
                 const description = document.getElementById('art-desc-input').value.trim();
                 const urlInput = document.getElementById('art-url-input').value.trim();
                 const fileInput = document.getElementById('art-file-input');
@@ -1498,6 +1618,8 @@
                     title,
                     category,
                     medium,
+                    status,
+                    price,
                     image: imageSrc,
                     aspect,
                     description,
@@ -1539,6 +1661,8 @@
             populateAdminCategoryDropdown(art.category);
             document.getElementById('art-new-category-input').value = '';
             document.getElementById('art-medium-input').value = art.medium || 'Oil on Canvas';
+            document.getElementById('art-status-select').value = art.status || 'Available';
+            document.getElementById('art-price-input').value = art.price || '';
             const currentImg = String(art.image || '');
             document.getElementById('art-url-input').value = currentImg.startsWith('data:') ? '' : currentImg;
             document.getElementById('art-desc-input').value = art.description || '';
@@ -1579,6 +1703,7 @@
             document.getElementById('admin-artwork-form').reset();
             document.getElementById('edit-artwork-id').value = '';
             document.getElementById('art-medium-input').value = 'Oil on Canvas';
+            document.getElementById('art-status-select').value = 'Available';
             document.getElementById('cancel-edit-btn').classList.add('hidden');
             document.getElementById('save-artwork-btn').textContent = 'Publish to Live Gallery';
         }
@@ -1648,6 +1773,7 @@
         window.showSection = showSection;
         window.handleSecretBrandTap = handleSecretBrandTap;
         window.filterByCategory = filterByCategory;
+        window.inquireAboutArtwork = inquireAboutArtwork;
         window.openLightboxById = openLightboxById;
         window.navigateLightbox = navigateLightbox;
         window.closeLightbox = closeLightbox;
