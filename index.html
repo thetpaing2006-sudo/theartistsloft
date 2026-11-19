@@ -311,35 +311,35 @@
                 </p>
             </div>
 
-            <!-- Netlify-Compatible Contact Form -->
-            <form id="contact-form" name="contact" method="POST" data-netlify="true" onsubmit="handleContactSubmit(event)" class="space-y-8 bg-white/60 backdrop-blur-sm border border-[#A69076]/20 p-8 md:p-12 rounded-3xl shadow-sm">
-                <!-- Required hidden input for Netlify Forms -->
-                <input type="hidden" name="form-name" value="contact" />
+            <!-- Secure Server-Proxied Contact Form (Zero API keys exposed in client HTML) -->
+            <form id="contact-form" name="contact" method="POST" onsubmit="handleContactSubmit(event)" class="space-y-8 bg-white/60 backdrop-blur-sm border border-[#A69076]/20 p-8 md:p-12 rounded-3xl shadow-sm">
+                <!-- Hidden Honeypot Field to Trap Automated Spam Bots -->
+                <input type="checkbox" name="botcheck" id="contact-botcheck" class="hidden" style="display:none;" tabindex="-1" autocomplete="off" />
 
                 <div>
                     <label for="contact-name" class="block text-xs uppercase tracking-[0.2em] text-[#2C2C2C]/70 mb-2">Full Name</label>
-                    <input id="contact-name" type="text" name="name" required placeholder="Your name" class="w-full border-b border-[#A69076]/40 bg-transparent py-2.5 outline-none focus:border-[#2C2C2C] transition-colors text-[#2C2C2C] placeholder:text-[#2C2C2C]/30">
+                    <input id="contact-name" type="text" name="name" required maxlength="120" placeholder="Your name" class="w-full border-b border-[#A69076]/40 bg-transparent py-2.5 outline-none focus:border-[#2C2C2C] transition-colors text-[#2C2C2C] placeholder:text-[#2C2C2C]/30">
                 </div>
 
                 <div>
                     <label for="contact-email" class="block text-xs uppercase tracking-[0.2em] text-[#2C2C2C]/70 mb-2">Email Address</label>
-                    <input id="contact-email" type="email" name="email" required placeholder="you@example.com" class="w-full border-b border-[#A69076]/40 bg-transparent py-2.5 outline-none focus:border-[#2C2C2C] transition-colors text-[#2C2C2C] placeholder:text-[#2C2C2C]/30">
+                    <input id="contact-email" type="email" name="email" required maxlength="160" placeholder="you@example.com" class="w-full border-b border-[#A69076]/40 bg-transparent py-2.5 outline-none focus:border-[#2C2C2C] transition-colors text-[#2C2C2C] placeholder:text-[#2C2C2C]/30">
                 </div>
 
                 <div>
                     <label for="contact-message" class="block text-xs uppercase tracking-[0.2em] text-[#2C2C2C]/70 mb-2">Message</label>
-                    <textarea id="contact-message" name="message" rows="4" required placeholder="Tell us about the artwork you are interested in..." class="w-full border-b border-[#A69076]/40 bg-transparent py-2.5 outline-none focus:border-[#2C2C2C] transition-colors text-[#2C2C2C] placeholder:text-[#2C2C2C]/30 resize-none"></textarea>
+                    <textarea id="contact-message" name="message" rows="4" required maxlength="3000" placeholder="Tell us about the artwork you are interested in..." class="w-full border-b border-[#A69076]/40 bg-transparent py-2.5 outline-none focus:border-[#2C2C2C] transition-colors text-[#2C2C2C] placeholder:text-[#2C2C2C]/30 resize-none"></textarea>
                 </div>
 
                 <div class="pt-2 text-center">
-                    <button type="submit" class="w-full sm:w-auto px-12 py-4 bg-[#2C2C2C] text-[#FAF9F6] hover:bg-[#A69076] rounded-full transition-colors uppercase tracking-[0.22em] text-xs font-medium shadow-sm">
+                    <button id="contact-submit-btn" type="submit" class="w-full sm:w-auto px-12 py-4 bg-[#2C2C2C] text-[#FAF9F6] hover:bg-[#A69076] rounded-full transition-colors uppercase tracking-[0.22em] text-xs font-medium shadow-sm disabled:opacity-50">
                         Send Message
                     </button>
                 </div>
 
                 <!-- Instant Client-Side Confirmation Banner -->
                 <div id="contact-feedback" class="hidden p-4 rounded-2xl bg-[#A69076]/15 border border-[#A69076]/40 text-center text-sm text-[#2C2C2C]">
-                    Thank you! Your message has been received. We will respond shortly.
+                    Thank you! Your message has been sent to our gallery team. We will respond shortly.
                 </div>
             </form>
         </div>
@@ -1207,31 +1207,26 @@
             catEl.textContent = `${art.category} — ${art.medium || 'Oil on Canvas'}`;
             descEl.textContent = art.description || '';
 
+            const isSold = (art.status || 'Available').toLowerCase() === 'sold';
+            if (statusDotEl) {
+                statusDotEl.className = `w-2.5 h-2.5 rounded-full ${isSold ? 'bg-red-500' : 'bg-emerald-400'}`;
+            }
+            if (statusTextEl) {
+                statusTextEl.textContent = isSold ? 'Sold' : 'Available';
+                statusTextEl.className = `text-[10px] uppercase tracking-[0.25em] font-medium ${isSold ? 'text-red-300' : 'text-emerald-300'}`;
+            }
+            if (priceEl) {
+                priceEl.textContent = isSold ? 'Sold — Private Collection' : (art.price || '');
+                priceEl.classList.toggle('hidden', !isSold && !art.price);
+            }
+            if (inquiryBtn) {
+                inquiryBtn.classList.toggle('hidden', isSold);
+                inquiryBtn.onclick = (e) => inquireAboutArtwork(art.id, e);
+            }
+
             const idx = list.findIndex(a => a.id === art.id);
             if (counterEl && idx !== -1) {
                 counterEl.textContent = `${idx + 1} / ${list.length}`;
-            }
-
-            const isSold = (art.status || 'Available').toLowerCase() === 'sold';
-            if (isSold) {
-                if (statusDotEl) statusDotEl.className = 'w-2.5 h-2.5 rounded-full bg-red-500';
-                if (statusTextEl) {
-                    statusTextEl.className = 'text-[10px] uppercase tracking-[0.25em] text-red-300 font-medium';
-                    statusTextEl.textContent = 'Sold';
-                }
-                if (priceEl) priceEl.textContent = '';
-                if (inquiryBtn) inquiryBtn.classList.add('hidden');
-            } else {
-                if (statusDotEl) statusDotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400';
-                if (statusTextEl) {
-                    statusTextEl.className = 'text-[10px] uppercase tracking-[0.25em] text-emerald-300 font-medium';
-                    statusTextEl.textContent = 'Available';
-                }
-                if (priceEl) priceEl.textContent = (art.price || '').trim();
-                if (inquiryBtn) {
-                    inquiryBtn.classList.remove('hidden');
-                    inquiryBtn.onclick = (e) => inquireAboutArtwork(art.id, e);
-                }
             }
         }
 
@@ -1414,11 +1409,22 @@
             resetAdminForm();
         }
 
+        // Brute-Force Rate Limiting for Admin Passcode Gate
+        let failedPinAttempts = 0;
+        let pinLockoutUntil = 0;
+
         async function verifyAdminPin(event) {
             event.preventDefault();
             const entered = document.getElementById('admin-pin-input').value.trim();
             const errorEl = document.getElementById('admin-pin-error');
             errorEl.classList.add('hidden');
+
+            if (Date.now() < pinLockoutUntil) {
+                const secsLeft = Math.ceil((pinLockoutUntil - Date.now()) / 1000);
+                errorEl.textContent = `Too many failed attempts. Try again in ${secsLeft}s.`;
+                errorEl.classList.remove('hidden');
+                return;
+            }
 
             if (!isPinInitialized) {
                 const confirmed = document.getElementById('admin-pin-confirm-input').value.trim();
@@ -1443,6 +1449,7 @@
                 } catch (err) {
                     console.error('Failed to initialize passcode in cloud:', err);
                 }
+                failedPinAttempts = 0;
                 isAdminUnlocked = true;
                 showAdminDashboard();
                 return;
@@ -1450,10 +1457,18 @@
 
             const enteredHash = await hashPasscode(entered);
             if (enteredHash === storedPinHash) {
+                failedPinAttempts = 0;
                 isAdminUnlocked = true;
                 showAdminDashboard();
             } else {
-                errorEl.textContent = 'Incorrect passcode. Please try again.';
+                failedPinAttempts++;
+                if (failedPinAttempts >= 5) {
+                    pinLockoutUntil = Date.now() + 60000;
+                    failedPinAttempts = 0;
+                    errorEl.textContent = 'Too many failed attempts. Locked for 60 seconds.';
+                } else {
+                    errorEl.textContent = `Incorrect passcode (${5 - failedPinAttempts} attempts remaining).`;
+                }
                 errorEl.classList.remove('hidden');
             }
         }
@@ -1747,26 +1762,71 @@
             downloadAnchor.remove();
         }
 
-        // ==================== CONTACT FORM (NETLIFY READY) ====================
-        function handleContactSubmit(event) {
+        // ==================== CONTACT FORM (SECURE SERVER ENDPOINT + HONEYPOT) ====================
+        let lastContactSentAt = 0;
+
+        async function handleContactSubmit(event) {
             event.preventDefault();
             const form = event.target;
             const feedback = document.getElementById('contact-feedback');
-            const formData = new FormData(form);
+            const submitBtn = document.getElementById('contact-submit-btn');
+            const botCheck = document.getElementById('contact-botcheck');
 
-            fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
-            })
-            .then(() => {
-                feedback.classList.remove('hidden');
+            // Silent drop if honeypot bot trap is triggered
+            if (botCheck && botCheck.checked) {
                 form.reset();
-            })
-            .catch(() => {
+                return;
+            }
+
+            // Client-side cooldown (15 seconds between submissions)
+            if (Date.now() - lastContactSentAt < 15000) {
+                feedback.textContent = 'Please wait a few seconds before sending another message.';
+                feedback.className = 'p-4 rounded-2xl bg-amber-50 border border-amber-200 text-center text-sm text-amber-800';
                 feedback.classList.remove('hidden');
-                form.reset();
-            });
+                return;
+            }
+
+            const payload = {
+                name: document.getElementById('contact-name').value.trim(),
+                email: document.getElementById('contact-email').value.trim(),
+                message: document.getElementById('contact-message').value.trim(),
+                botcheck: botCheck ? botCheck.checked : false
+            };
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+            }
+
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    lastContactSentAt = Date.now();
+                    feedback.textContent = 'Thank you! Your message has been sent directly to our email. We will respond shortly.';
+                    feedback.className = 'p-4 rounded-2xl bg-[#A69076]/15 border border-[#A69076]/40 text-center text-sm text-[#2C2C2C]';
+                    feedback.classList.remove('hidden');
+                    form.reset();
+                } else {
+                    feedback.textContent = result.message || 'Unable to send message right now. Please try again.';
+                    feedback.className = 'p-4 rounded-2xl bg-red-50 border border-red-200 text-center text-sm text-red-700';
+                    feedback.classList.remove('hidden');
+                }
+            } catch (error) {
+                feedback.textContent = 'Network error while sending message. Please check your connection and try again.';
+                feedback.className = 'p-4 rounded-2xl bg-red-50 border border-red-200 text-center text-sm text-red-700';
+                feedback.classList.remove('hidden');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Message';
+                }
+            }
         }
 
         // Expose functions globally for inline event handlers
