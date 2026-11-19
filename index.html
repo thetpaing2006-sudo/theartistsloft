@@ -74,14 +74,14 @@
             transform: scaleY(0.35);
         }
 
-        /* Apple-Inspired Dramatic Scroll Reveal & 3D Depth */
+        /* Slow Cinematic Bidirectional Scroll Fade-in / Fade-out & Throw-up */
         .reveal-item {
             opacity: 0;
-            transform: translateY(72px) scale(0.94);
+            transform: translateY(96px) scale(0.95);
             filter: blur(8px);
-            transition: opacity 1.15s cubic-bezier(0.16, 1, 0.3, 1),
-                        transform 1.25s cubic-bezier(0.16, 1, 0.3, 1),
-                        filter 1.05s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 2.35s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 2.45s cubic-bezier(0.16, 1, 0.3, 1),
+                        filter 2.1s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, transform, filter;
         }
         .reveal-item.is-visible {
@@ -750,7 +750,7 @@
                 btn.classList.toggle('border-[#9C8265]', isTarget);
                 btn.classList.toggle('text-[#26231F]/70', !isTarget);
             });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: 'instant' });
         }
 
         // Secret 5-Tap Admin Trigger on Brand Logo
@@ -946,32 +946,60 @@
         }
 
         function applyArtFallback(img, title, category, aspect = '3/4') {
-            if (!img) return;
+            if (!img || img.dataset.fallbackApplied === 'true') return;
+            img.dataset.fallbackApplied = 'true';
             img.onerror = null;
-            img.src = createArtPlaceholderDataURL(title, category, aspect);
+            img.src = createArtPlaceholderDataURL(title || 'Artwork', category || 'Fine Art', aspect || '3/4');
         }
 
         function handleCardImageError(img) {
-            if (!img || img.dataset.fallbackApplied === 'true') return;
-            img.dataset.fallbackApplied = 'true';
-            applyArtFallback(
-                img,
-                img.getAttribute('data-title') || 'Artwork',
-                img.getAttribute('data-category') || 'Fine Art',
-                img.getAttribute('data-aspect') || '3/4'
-            );
+            if (!img) return;
+            const title = img.getAttribute('data-title') || img.alt || 'Artwork';
+            const category = img.getAttribute('data-category') || 'Fine Art';
+            const aspect = img.getAttribute('data-aspect') || '3/4';
+            applyArtFallback(img, title, category, aspect);
         }
 
         function verifyAllImagesLoaded() {
-            document.querySelectorAll('img').forEach(img => {
+            document.querySelectorAll('img[data-title]').forEach(img => {
                 if (img.complete && img.naturalWidth === 0) {
-                    if (img.hasAttribute('data-title')) {
-                        handleCardImageError(img);
-                    } else if (img.hasAttribute('data-artist-name')) {
-                        handleArtistFallback(img, img.getAttribute('data-artist-name'));
-                    } else if (img.alt && img.alt.includes('Lotus Study')) {
-                        handleBgFallback(img, img.alt.includes('II') ? 2 : 1);
-                    }
+                    handleCardImageError(img);
+                }
+            });
+            document.querySelectorAll('img[data-artist-name]').forEach(img => {
+                if (img.complete && img.naturalWidth === 0) {
+                    handleArtistFallback(img, img.getAttribute('data-artist-name') || 'Artist');
+                }
+            });
+        }
+
+        // Navigation between sections (always starts cleanly at top)
+        function showSection(sectionId) {
+            if (typeof playSoftGalleryChime === 'function') {
+                playSoftGalleryChime('nav');
+            }
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+
+            document.querySelectorAll('.page-section').forEach(sec => {
+                sec.classList.add('hidden');
+            });
+            const targetSection = document.getElementById('section-' + sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                const isTarget = btn.getAttribute('data-target') === sectionId;
+                btn.classList.toggle('text-[#9C8265]', isTarget);
+                btn.classList.toggle('border-b', isTarget);
+                btn.classList.toggle('border-[#9C8265]', isTarget);
+                btn.classList.toggle('text-[#26231F]/70', !isTarget);
+            });
+            requestAnimationFrame(() => {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                if (sectionId === 'artworks' && typeof initGalleryCardAnimations === 'function') {
+                    initGalleryCardAnimations();
                 }
             });
         }
@@ -2324,12 +2352,12 @@
                         }
                     });
                 }, {
-                    threshold: 0.16,
-                    rootMargin: '-6% 0px -16% 0px'
+                    threshold: 0.14,
+                    rootMargin: '-4% 0px -14% 0px'
                 });
 
                 cards.forEach((card, idx) => {
-                    card.style.transitionDelay = `${(idx % 3) * 140}ms`;
+                    card.style.transitionDelay = `${(idx % 3) * 240}ms`;
                     observer.observe(card);
                 });
             } else {
