@@ -74,20 +74,15 @@
             transform: scaleY(0.35);
         }
 
-        /* Smooth Continuous Scroll-Driven Reveal & Dissolve */
+        /* Smooth Continuous Scroll-Driven Row Reveal & Dissolve */
         .reveal-item {
             opacity: 0;
-            transform: translateY(56px) scale(0.96);
-            filter: blur(5px);
-            transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-                        transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
-                        filter 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translate3d(0, 48px, 0) scale(0.95);
+            filter: blur(4px);
+            transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                        filter 0.55s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: opacity, transform, filter;
-        }
-        .reveal-item.is-visible {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            filter: blur(0);
         }
 
         /* Apple-Style Interactive 3D Tilt Card, Specular Glare & Light Sheen */
@@ -315,9 +310,9 @@
             </div>
         </div>
 
-        <!-- Flowing Masonry Gallery Grid -->
-        <main class="w-full max-w-screen-2xl mx-auto px-6 md:px-12 pb-28">
-            <div id="artworks-masonry-grid" class="artist-switch-stage artist-switch-in columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
+        <!-- Synchronized Row-Aligned Gallery Grid -->
+        <main class="w-full max-w-screen-2xl mx-auto px-6 md:px-12 pb-36">
+            <div id="artworks-masonry-grid" class="artist-switch-stage artist-switch-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 items-stretch">
                 <!-- Artwork Cards injected dynamically via JS -->
             </div>
         </main>
@@ -1402,7 +1397,7 @@
             }
         }
 
-        // ==================== CATEGORY FILTER & ARTWORKS MASONRY GRID ====================
+        // ==================== CATEGORY FILTER & SYNCHRONIZED ROW GALLERY GRID ====================
         function getArtistArtworks(artistId = activeArtistId) {
             return artworks.filter(a => (a.artistId || 'mt-oung') === artistId);
         }
@@ -1471,26 +1466,28 @@
                 const safeAspect = escapeHTML(art.aspect || '3/4');
 
                 return `
-                    <article class="reveal-item tilt-card break-inside-avoid mb-8 group bg-[#FAF7F0]/90 border border-[#9C8265]/25 rounded-2xl overflow-hidden shadow-sm cursor-pointer" onclick="openLightboxById('${safeId}')">
+                    <article class="reveal-item tilt-card flex flex-col h-full group bg-[#FAF7F0]/90 border border-[#9C8265]/25 rounded-2xl overflow-hidden shadow-sm cursor-pointer" onclick="openLightboxById('${safeId}')">
                         <div class="tilt-glare"></div>
-                        <div class="relative overflow-hidden bg-[#E7E0D2]">
+                        <div class="relative aspect-[4/5] w-full overflow-hidden bg-[#E7E0D2] flex items-center justify-center p-4 sm:p-5">
                             <img src="${safeImg}"
                                  alt="${safeTitle}"
                                  data-title="${safeTitle}"
                                  data-category="${safeCat}"
                                  data-aspect="${safeAspect}"
                                  onerror="handleCardImageError(this)"
-                                 class="w-full h-auto object-cover block transition-transform duration-1000 ease-out group-hover:scale-[1.06]">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#26231F]/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                                 class="w-full h-full object-contain block drop-shadow-sm transition-transform duration-1000 ease-out group-hover:scale-[1.04]">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#26231F]/18 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                             <div class="absolute top-3.5 right-3.5 px-3 py-1 rounded-full bg-[#26231F]/80 backdrop-blur-sm text-[#FAF9F6] text-[10px] uppercase tracking-[0.2em] flex items-center gap-1.5 z-10">
                                 <span class="w-2 h-2 rounded-full ${dotClass}"></span>
                                 <span>${statusLabel}</span>
                             </div>
                         </div>
-                        <div class="p-6">
-                            <span class="block text-[10px] uppercase tracking-[0.26em] text-[#9C8265] mb-1.5">${safeCat}</span>
-                            <h3 class="font-serif text-xl text-[#26231F] mb-1 group-hover:text-[#9C8265] transition-colors">${safeTitle}</h3>
-                            <p class="text-xs text-[#26231F]/60 mb-3">${safeMedium}</p>
+                        <div class="p-6 flex-1 flex flex-col justify-between border-t border-[#9C8265]/15 bg-[#FAF7F0]/95">
+                            <div>
+                                <span class="block text-[10px] uppercase tracking-[0.26em] text-[#9C8265] mb-1.5">${safeCat}</span>
+                                <h3 class="font-serif text-xl text-[#26231F] mb-1 group-hover:text-[#9C8265] transition-colors">${safeTitle}</h3>
+                                <p class="text-xs text-[#26231F]/60 mb-3">${safeMedium}</p>
+                            </div>
                             ${safeDesc ? `<p class="text-sm text-[#26231F]/75 font-light leading-relaxed line-clamp-2">${safeDesc}</p>` : ''}
                         </div>
                     </article>
@@ -2318,7 +2315,7 @@
             }
         }
 
-        // ==================== CONTINUOUS SMOOTH SCROLL-DRIVEN FADE & 3D TILT ANIMATIONS ====================
+        // ==================== SYNCHRONIZED ROW-BY-ROW SCROLL REVEAL & DISSOLVE ====================
         let galleryScrollRaf = null;
         let galleryScrollBound = false;
 
@@ -2327,38 +2324,57 @@
             const artworksSection = document.getElementById('section-artworks');
             if (!artworksSection || artworksSection.classList.contains('hidden')) return;
 
-            const cards = document.querySelectorAll('#artworks-masonry-grid .reveal-item');
+            const cards = Array.from(document.querySelectorAll('#artworks-masonry-grid .reveal-item'));
+            if (cards.length === 0) return;
+
             const vh = window.innerHeight || document.documentElement.clientHeight;
-            const topFadeStart = vh * 0.22;     // Start fading out top cards as they scroll past upper viewport
-            const topFadeEnd = -vh * 0.14;      // Fully faded out when scrolled above
-            const bottomFadeStart = vh * 0.96;  // Start fading in bottom cards smoothly as they enter
-            const bottomFadeEnd = vh * 0.62;    // Fully visible when entering main reading zone
+            const headerHeight = 105;
 
+            // Group cards by horizontal row (within 24px top tolerance) so every card in a row dissolves/appears in exact unison
+            const rows = [];
             cards.forEach(card => {
-                if (card.dataset.hovered === 'true') return;
                 const rect = card.getBoundingClientRect();
-                const cardCenter = rect.top + rect.height * 0.45;
+                let rowGroup = rows.find(r => Math.abs(r.top - rect.top) < 24);
+                if (!rowGroup) {
+                    rowGroup = { top: rect.top, bottom: rect.bottom, cards: [] };
+                    rows.push(rowGroup);
+                }
+                rowGroup.cards.push(card);
+                rowGroup.bottom = Math.max(rowGroup.bottom, rect.bottom);
+            });
 
+            // Synchronized viewport focal window:
+            // - Lower row fades in smoothly as it rises from 92% -> 58% of viewport height
+            // - Upper row fades out smoothly in lockstep as it moves past 28% -> -8% of viewport height
+            const topFadeStart = headerHeight + (vh - headerHeight) * 0.24;
+            const topFadeEnd = headerHeight - 90;
+            const bottomFadeStart = vh * 0.94;
+            const bottomFadeEnd = vh * 0.56;
+
+            rows.forEach(row => {
+                const rowCenter = (row.top + row.bottom) * 0.5;
                 let progress = 1;
-                if (cardCenter < topFadeStart) {
-                    // Exiting through top: smoothly dissolve out as lower rows take center stage
-                    progress = (cardCenter - topFadeEnd) / (topFadeStart - topFadeEnd);
-                } else if (cardCenter > bottomFadeEnd) {
-                    // Entering from bottom: smoothly rise and fade in
-                    progress = 1 - ((cardCenter - bottomFadeEnd) / (bottomFadeStart - bottomFadeEnd));
+
+                if (rowCenter < topFadeStart) {
+                    progress = (rowCenter - topFadeEnd) / (topFadeStart - topFadeEnd);
+                } else if (rowCenter > bottomFadeEnd) {
+                    progress = 1 - ((rowCenter - bottomFadeEnd) / (bottomFadeStart - bottomFadeEnd));
                 }
 
                 progress = Math.max(0, Math.min(1, progress));
-                // Smoothstep easing curve for ultra-organic Apple-like glide
+                // Smooth cubic ease for natural, unhurried gallery dissolve
                 const eased = progress * progress * (3 - 2 * progress);
 
-                const translateY = (1 - eased) * (cardCenter < topFadeStart ? -36 : 54);
-                const scale = 0.94 + (0.06 * eased);
-                const blurPx = (1 - eased) * 5;
+                const translateY = (1 - eased) * (rowCenter < topFadeStart ? -34 : 48);
+                const scale = 0.95 + (0.05 * eased);
+                const blurPx = (1 - eased) * 4.5;
 
-                card.style.opacity = eased.toFixed(3);
-                card.style.filter = blurPx > 0.08 ? `blur(${blurPx.toFixed(2)}px)` : 'none';
-                card.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(4)})`;
+                row.cards.forEach(card => {
+                    if (card.dataset.hovered === 'true') return;
+                    card.style.opacity = eased.toFixed(3);
+                    card.style.filter = blurPx > 0.08 ? `blur(${blurPx.toFixed(2)}px)` : 'none';
+                    card.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(4)})`;
+                });
             });
         }
 
