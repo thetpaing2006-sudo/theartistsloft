@@ -1362,42 +1362,68 @@
                     <p class="text-sm font-serif italic text-[#26231F]/65 mb-4">${safeSubtitle}</p>
                     <div class="w-12 h-[1px] bg-[#9C8265] mx-auto md:mx-0 mb-4"></div>
                     <p class="text-sm md:text-base text-[#26231F]/80 font-light leading-relaxed whitespace-pre-line">${safeBio}</p>
+                    ${(() => {
+                        const artistWorks = artworks.filter(w => (w.artistId || 'mt-oung') === artist.id);
+                        const previewThumbs = artistWorks.slice(0, 3).map(w => `
+                            <button type="button" onclick="scrollToArtistWorks()" title="${escapeHTML(w.title)}"
+                                    class="w-11 h-11 rounded-xl overflow-hidden border border-[#9C8265]/35 shadow-sm hover:scale-110 transition-transform bg-[#E7E0D2] flex-shrink-0">
+                                <img src="${escapeHTML(w.image)}" alt="${escapeHTML(w.title)}"
+                                     data-title="${escapeHTML(w.title)}" data-category="${escapeHTML(w.category)}"
+                                     onerror="handleCardImageError(this)" class="w-full h-full object-cover">
+                            </button>
+                        `).join('');
+                        return `
+                            <div class="mt-6 pt-5 border-t border-[#9C8265]/20 flex flex-wrap items-center justify-center md:justify-between gap-4">
+                                <div class="flex items-center gap-2.5">
+                                    ${previewThumbs}
+                                    ${artistWorks.length > 3 ? `<span class="text-[11px] text-[#9C8265] font-medium pl-1">+${artistWorks.length - 3} more</span>` : ''}
+                                </div>
+                                <button type="button" onclick="scrollToArtistWorks()"
+                                        class="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-[#26231F] text-[#F3EFE6] hover:bg-[#9C8265] text-[11px] uppercase tracking-[0.22em] font-medium transition-all shadow-sm">
+                                    <span>View Artworks (${artistWorks.length})</span>
+                                    <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        `;
+                    })()}
                 </div>
             `;
         }
 
-        // ==================== CATEGORY & GALLERY RENDERING ====================
-        function getArtworksForActiveArtist() {
-            return artworks.filter(art => (art.artistId || 'mt-oung') === activeArtistId);
+        function scrollToArtistWorks() {
+            playSoftGalleryChime('step');
+            const filterBar = document.getElementById('category-filter-bar');
+            if (filterBar) {
+                const headerOffset = 110;
+                const topPos = filterBar.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+                window.scrollTo({ top: Math.max(0, topPos), behavior: 'smooth' });
+            }
         }
 
-        function getUniqueCategories() {
-            const cats = new Set(['All']);
-            getArtworksForActiveArtist().forEach(art => {
-                if (art.category && art.category.trim() !== '') {
-                    cats.add(art.category.trim());
-                }
-            });
-            return Array.from(cats);
+        // ==================== CATEGORY FILTER & ARTWORKS MASONRY GRID ====================
+        function getArtistArtworks(artistId = activeArtistId) {
+            return artworks.filter(a => (a.artistId || 'mt-oung') === artistId);
         }
 
         function renderCategoryFilterBar() {
             const bar = document.getElementById('category-filter-bar');
             if (!bar) return;
-            const categories = getUniqueCategories();
 
-            if (!categories.includes(activeCategory)) {
+            const artistWorks = getArtistArtworks(activeArtistId);
+            const cats = ['All', ...new Set(artistWorks.map(a => a.category).filter(Boolean))];
+            if (!cats.includes(activeCategory)) {
                 activeCategory = 'All';
             }
 
-            bar.innerHTML = categories.map(cat => {
+            bar.innerHTML = cats.map(cat => {
                 const isActive = cat === activeCategory;
-                const safeCatAttr = cat.replace(/'/g, "\\'");
-                const baseClasses = "px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.2em] transition-all duration-300 font-medium";
-                const stateClasses = isActive
-                    ? "bg-[#2C2C2C] text-[#FAF9F6] shadow-md"
-                    : "bg-transparent text-[#2C2C2C]/70 border border-[#A69076]/35 hover:border-[#2C2C2C] hover:text-[#2C2C2C]";
-                return `<button type="button" onclick="filterByCategory('${safeCatAttr}')" class="${baseClasses} ${stateClasses}">${cat}</button>`;
+                const safeCat = escapeHTML(cat);
+                const btnClass = isActive
+                    ? 'px-5 py-2 rounded-full text-xs uppercase tracking-[0.2em] font-medium bg-[#26231F] text-[#F3EFE6] shadow-sm'
+                    : 'px-5 py-2 rounded-full text-xs uppercase tracking-[0.2em] font-medium text-[#26231F]/70 hover:text-[#26231F] border border-transparent hover:border-[#9C8265]/40 transition-colors';
+                return `<button type="button" onclick="filterByCategory('${safeCat.replace(/'/g, "\\'")}')" class="${btnClass}">${safeCat}</button>`;
             }).join('');
         }
 
@@ -1408,176 +1434,88 @@
             renderArtworksGrid();
         }
 
-        function inquireAboutArtwork(id, event) {
-            if (event) event.stopPropagation();
-            const art = artworks.find(a => a.id === id);
-            if (!art) return;
-
-            const artist = artists.find(a => a.id === (art.artistId || 'mt-oung'));
-            const artistName = artist ? artist.name : '';
-
-            playSoftGalleryChime('inquiry');
-            const lightboxModal = document.getElementById('lightbox-modal');
-            if (lightboxModal && !lightboxModal.classList.contains('hidden')) {
-                closeLightbox();
-            }
-
-            showSection('contact');
-            setTimeout(() => {
-                const messageEl = document.getElementById('contact-message');
-                const nameEl = document.getElementById('contact-name');
-                if (messageEl) {
-                    messageEl.value = `Hello, I would like to inquire about the price and availability of "${art.title}"${artistName ? ` by ${artistName}` : ''} (${art.medium || 'Oil on Canvas'}).`;
-                }
-                if (nameEl) nameEl.focus();
-            }, 120);
-        }
-
         function renderArtworksGrid() {
             const grid = document.getElementById('artworks-masonry-grid');
             const countLabel = document.getElementById('artwork-count-label');
             if (!grid) return;
 
-            const artistWorks = getArtworksForActiveArtist();
-            const filtered = activeCategory === 'All'
+            const artistWorks = getArtistArtworks(activeArtistId);
+            const visibleWorks = activeCategory === 'All'
                 ? artistWorks
-                : artistWorks.filter(art => art.category === activeCategory);
-
-            const currentArtist = artists.find(a => a.id === activeArtistId);
-            const artistDisplay = currentArtist ? ` by ${currentArtist.name}` : '';
+                : artistWorks.filter(a => a.category === activeCategory);
 
             if (countLabel) {
-                countLabel.textContent = `Showing ${filtered.length} ${filtered.length === 1 ? 'Work' : 'Works'}${artistDisplay}${activeCategory !== 'All' ? ` in ${activeCategory}` : ''}`;
+                countLabel.textContent = `Showing ${visibleWorks.length} ${visibleWorks.length === 1 ? 'Work' : 'Works'}`;
             }
 
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-16 text-[#2C2C2C]/50 font-light">No artworks published for this artist yet.</div>`;
+            if (visibleWorks.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 px-6 bg-[#FAF7F0]/70 rounded-3xl border border-[#9C8265]/20">
+                        <p class="font-serif text-xl text-[#26231F]/75 mb-2">No artworks listed in this category yet.</p>
+                        <p class="text-xs uppercase tracking-widest text-[#9C8265]">Please select another category or artist above</p>
+                    </div>
+                `;
                 return;
             }
 
-            grid.innerHTML = filtered.map((art, index) => {
-                const safeTitle = escapeHTML(art.title);
-                const safeCategory = escapeHTML(art.category);
-                const safeMedium = escapeHTML(art.medium || 'Oil on Canvas');
-                const safeImage = escapeHTML(art.image);
-                const safeAspect = escapeHTML(art.aspect || '3/4');
+            grid.innerHTML = visibleWorks.map(art => {
                 const isSold = (art.status || 'Available').toLowerCase() === 'sold' || (art.status || '').toLowerCase() === 'collected';
-                const statusDotClass = isSold ? 'bg-red-500 ring-red-200' : 'bg-emerald-500 ring-emerald-200';
-                const statusLabel = isSold ? 'Collected' : 'Available';
-                const safePrice = escapeHTML((art.price || '').trim());
+                const dotClass = isSold ? 'bg-red-500' : 'bg-emerald-500';
+                const statusLabel = isSold ? 'Collected' : (escapeHTML(art.price) || 'Available');
+                const safeId = escapeHTML(art.id);
+                const safeTitle = escapeHTML(art.title);
+                const safeCat = escapeHTML(art.category || 'Fine Art');
+                const safeMedium = escapeHTML(art.medium || 'Oil on Canvas');
+                const safeDesc = escapeHTML(art.description || '');
+                const safeImg = escapeHTML(art.image);
+                const safeAspect = escapeHTML(art.aspect || '3/4');
 
                 return `
-                    <article class="reveal-item break-inside-avoid mb-8" style="transition-delay: ${(index % 3) * 110}ms;">
-                        <div class="tilt-card group cursor-pointer bg-[#FAF7F0]/85 border border-[#9C8265]/25 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl"
-                             data-art-id="${escapeHTML(art.id)}"
-                             onclick="openLightboxById('${escapeHTML(art.id)}')">
-                            <div class="tilt-glare"></div>
-                            <div class="relative overflow-hidden bg-[#E7E0D2] min-h-[240px]">
-                                <img src="${safeImage}"
-                                     alt="${safeTitle}"
-                                     data-title="${safeTitle}"
-                                     data-category="${safeCategory}"
-                                     data-aspect="${safeAspect}"
-                                     onerror="handleCardImageError(this)"
-                                     class="w-full h-auto object-cover block transition-transform duration-700 ease-out group-hover:scale-105">
-
-                                <div class="absolute top-3.5 right-3.5 z-10 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF9F6]/90 backdrop-blur-sm border border-[#A69076]/25 shadow-sm"
-                                     title="${statusLabel}">
-                                    <span class="w-2.5 h-2.5 rounded-full ${statusDotClass} ring-2"></span>
-                                    <span class="text-[10px] uppercase tracking-[0.18em] font-medium text-[#2C2C2C]">${statusLabel}</span>
-                                </div>
-
-                                <div class="absolute inset-0 bg-[#2C2C2C]/0 group-hover:bg-[#2C2C2C]/15 transition-colors duration-300 flex items-end p-5">
-                                    <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4 py-1.5 rounded-full bg-[#FAF9F6]/90 backdrop-blur-sm text-[10px] uppercase tracking-[0.22em] text-[#2C2C2C]">
-                                        View Painting
-                                    </span>
-                                </div>
+                    <article class="break-inside-avoid mb-8 group bg-[#FAF7F0]/90 border border-[#9C8265]/25 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer" onclick="openLightboxById('${safeId}')">
+                        <div class="relative overflow-hidden bg-[#E7E0D2]">
+                            <img src="${safeImg}"
+                                 alt="${safeTitle}"
+                                 data-title="${safeTitle}"
+                                 data-category="${safeCat}"
+                                 data-aspect="${safeAspect}"
+                                 onerror="handleCardImageError(this)"
+                                 class="w-full h-auto object-cover block transition-transform duration-700 ease-out group-hover:scale-[1.03]">
+                            <div class="absolute top-3.5 right-3.5 px-3 py-1 rounded-full bg-[#26231F]/80 backdrop-blur-sm text-[#FAF9F6] text-[10px] uppercase tracking-[0.2em] flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full ${dotClass}"></span>
+                                <span>${statusLabel}</span>
                             </div>
-                            <div class="p-6">
-                                <span class="block text-[10px] uppercase tracking-[0.25em] text-[#A69076] mb-1.5">${safeCategory}</span>
-                                <h3 class="font-serif text-xl text-[#2C2C2C] mb-1 group-hover:text-[#A69076] transition-colors">${safeTitle}</h3>
-                                <p class="text-xs text-[#2C2C2C]/55 font-light">${safeMedium}</p>
-
-                                <div class="mt-4 pt-3.5 border-t border-[#A69076]/15 flex items-center justify-between gap-2">
-                                    <span class="text-xs font-medium text-[#2C2C2C]/85">
-                                        ${isSold ? '<span class="text-red-700/80 uppercase tracking-[0.18em] text-[10px]">Collected</span>' : (safePrice || '<span class="text-[#2C2C2C]/50 font-light">Available</span>')}
-                                    </span>
-                                    ${isSold
-                                        ? `<span class="text-[10px] uppercase tracking-[0.2em] text-[#2C2C2C]/40">Private Collection</span>`
-                                        : `<button type="button" onclick="inquireAboutArtwork('${escapeHTML(art.id)}', event)"
-                                               class="px-3.5 py-1.5 rounded-full bg-[#2C2C2C] text-[#FAF9F6] text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-[#A69076] transition-colors">
-                                               Price Inquiry
-                                           </button>`
-                                    }
-                                </div>
-                            </div>
+                        </div>
+                        <div class="p-6">
+                            <span class="block text-[10px] uppercase tracking-[0.26em] text-[#9C8265] mb-1.5">${safeCat}</span>
+                            <h3 class="font-serif text-xl text-[#26231F] mb-1 group-hover:text-[#9C8265] transition-colors">${safeTitle}</h3>
+                            <p class="text-xs text-[#26231F]/60 mb-3">${safeMedium}</p>
+                            ${safeDesc ? `<p class="text-sm text-[#26231F]/75 font-light leading-relaxed line-clamp-2">${safeDesc}</p>` : ''}
                         </div>
                     </article>
                 `;
             }).join('');
-
-            initScrollRevealObserver();
-            initTiltCards();
-            setTimeout(() => {
-                if (typeof verifyAllImagesLoaded === 'function') verifyAllImagesLoaded();
-            }, 150);
         }
 
-        // ==================== SCROLL REVEAL & 3D TILT EFFECTS ====================
-        let revealObserver = null;
-
-        function initScrollRevealObserver() {
-            if (revealObserver) revealObserver.disconnect();
-            revealObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    } else {
-                        entry.target.classList.remove('is-visible');
-                    }
-                });
-            }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-
-            document.querySelectorAll('.reveal-item').forEach(el => {
-                revealObserver.observe(el);
-                const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    requestAnimationFrame(() => el.classList.add('is-visible'));
-                }
-            });
-        }
-
-        function initTiltCards() {
-            document.querySelectorAll('.tilt-card').forEach(card => {
-                const glare = card.querySelector('.tilt-glare');
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -6;
-                    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 6;
-                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.015, 1.015, 1.015)`;
-                    if (glare) {
-                        glare.style.background = `radial-gradient(circle at ${(x / rect.width) * 100}% ${(y / rect.height) * 100}%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 70%)`;
-                        glare.style.opacity = '1';
-                    }
-                });
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-                    if (glare) glare.style.opacity = '0';
-                });
-            });
-        }
-
-        // ==================== LIGHTBOX ====================
+        // ==================== LIGHTBOX STATE & HELPERS ====================
         let currentLightboxId = null;
         let isLightboxTransitioning = false;
 
         function getVisibleLightboxArtworks() {
-            const artistWorks = getArtworksForActiveArtist();
+            const artistWorks = getArtistArtworks(activeArtistId);
             return activeCategory === 'All'
                 ? artistWorks
-                : artistWorks.filter(art => art.category === activeCategory);
+                : artistWorks.filter(a => a.category === activeCategory);
+        }
+
+        function inquireAboutArtwork(artTitle, artistName) {
+            playSoftGalleryChime('inquiry');
+            closeLightbox();
+            showSection('contact');
+            const msgBox = document.getElementById('contact-message');
+            if (msgBox) {
+                msgBox.value = `Hello, I would like to inquire about "${artTitle}" by ${artistName}.`;
+                msgBox.focus();
+            }
         }
 
         function populateLightboxContent(art, list) {
@@ -1585,41 +1523,39 @@
             const titleEl = document.getElementById('lightbox-title');
             const catEl = document.getElementById('lightbox-category');
             const descEl = document.getElementById('lightbox-desc');
-            const counterEl = document.getElementById('lightbox-counter');
-            const statusDotEl = document.getElementById('lightbox-status-dot');
-            const statusTextEl = document.getElementById('lightbox-status-text');
             const priceEl = document.getElementById('lightbox-price');
+            const dotEl = document.getElementById('lightbox-status-dot');
+            const statusTextEl = document.getElementById('lightbox-status-text');
+            const counterEl = document.getElementById('lightbox-counter');
             const inquiryBtn = document.getElementById('lightbox-inquiry-btn');
 
             const artist = artists.find(a => a.id === (art.artistId || 'mt-oung'));
-            const artistPrefix = artist ? `${artist.name} • ` : '';
-
-            img.onerror = function() {
-                applyArtFallback(img, art.title, art.category, art.aspect || '3/4');
-            };
-            img.src = art.image;
-            titleEl.textContent = art.title;
-            catEl.textContent = `${artistPrefix}${art.category} — ${art.medium || 'Oil on Canvas'}`;
-            descEl.textContent = art.description || '';
-
+            const artistName = artist ? artist.name : 'MT. Oung';
             const isSold = (art.status || 'Available').toLowerCase() === 'sold' || (art.status || '').toLowerCase() === 'collected';
-            if (statusDotEl) statusDotEl.className = `w-2.5 h-2.5 rounded-full ${isSold ? 'bg-red-500' : 'bg-emerald-400'}`;
+
+            if (img) {
+                img.src = art.image;
+                img.alt = art.title || 'Artwork';
+                img.onerror = () => applyArtFallback(img, art.title, art.category, art.aspect || '3/4');
+            }
+            if (titleEl) titleEl.textContent = art.title || '';
+            if (catEl) catEl.textContent = `${artistName} • ${art.category || 'Fine Art'} • ${art.medium || 'Oil on Canvas'}`;
+            if (descEl) descEl.textContent = art.description || '';
+            if (dotEl) dotEl.className = `w-2.5 h-2.5 rounded-full ${isSold ? 'bg-red-400' : 'bg-emerald-400'}`;
             if (statusTextEl) {
                 statusTextEl.textContent = isSold ? 'Collected' : 'Available';
                 statusTextEl.className = `text-[10px] uppercase tracking-[0.25em] font-medium ${isSold ? 'text-red-300' : 'text-emerald-300'}`;
             }
             if (priceEl) {
-                priceEl.textContent = isSold ? 'Collected — Private Collection' : (art.price || '');
-                priceEl.classList.toggle('hidden', !isSold && !art.price);
+                priceEl.textContent = isSold ? 'In Private Collection' : (art.price || 'Price Upon Request');
+            }
+            if (counterEl && list && list.length > 0) {
+                const idx = list.findIndex(item => item.id === art.id);
+                counterEl.textContent = `${idx + 1} / ${list.length}`;
             }
             if (inquiryBtn) {
                 inquiryBtn.classList.toggle('hidden', isSold);
-                inquiryBtn.onclick = (e) => inquireAboutArtwork(art.id, e);
-            }
-
-            const idx = list.findIndex(a => a.id === art.id);
-            if (counterEl && idx !== -1) {
-                counterEl.textContent = `${idx + 1} / ${list.length}`;
+                inquiryBtn.onclick = () => inquireAboutArtwork(art.title, artistName);
             }
         }
 
@@ -2070,6 +2006,7 @@
                     } else {
                         artworks.unshift(artworkPayload);
                     }
+                    renderSelectedArtistProfile();
                     renderCategoryFilterBar();
                     renderArtworksGrid();
                     renderAdminArtworksList();
@@ -2865,6 +2802,7 @@
         window.showSection = showSection;
         window.handleSecretBrandTap = handleSecretBrandTap;
         window.selectArtist = selectArtist;
+        window.scrollToArtistWorks = scrollToArtistWorks;
         window.filterByCategory = filterByCategory;
         window.inquireAboutArtwork = inquireAboutArtwork;
         window.openLightboxById = openLightboxById;
