@@ -601,8 +601,8 @@
         </div>
     </footer>
 
-    <!-- Custom Gallery Ambience Audio Track (Hosted on GitHub Release v1.0) -->
-    <audio id="gallery-bg-audio" src="https://github.com/thetpaing2006-sudo/theartistsloft/releases/download/v1.0/ambience.mp3" loop preload="auto"></audio>
+    <!-- Custom Gallery Ambience Audio Track (Local Repo / CDN Streaming) -->
+    <audio id="gallery-bg-audio" src="ambience.mp3" loop preload="auto"></audio>
 
     <!-- Subtle Secret Tap Toast -->
     <div id="secret-tap-toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2 rounded-full bg-[#2C2C2C]/85 text-[#FAF9F6] text-xs tracking-widest uppercase shadow-lg pointer-events-none"></div>
@@ -1877,8 +1877,15 @@
 
         const customBgAudio = document.getElementById('gallery-bg-audio');
         if (customBgAudio) {
-            customBgAudio.volume = 0.22;
+            customBgAudio.volume = 0.25;
             customBgAudio.addEventListener('error', () => {
+                if (!customBgAudio.dataset.triedCdn) {
+                    customBgAudio.dataset.triedCdn = 'true';
+                    customBgAudio.src = 'https://cdn.jsdelivr.net/gh/thetpaing2006-sudo/theartistsloft@main/ambience.mp3';
+                    customBgAudio.load();
+                    if (isSoundEnabled) customBgAudio.play().catch(() => {});
+                    return;
+                }
                 customTrackFailed = true;
                 if (isSoundEnabled) {
                     ensureAudioContext();
