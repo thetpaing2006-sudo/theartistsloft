@@ -74,14 +74,14 @@
             transform: scaleY(0.35);
         }
 
-        /* Slow Cinematic Bidirectional Scroll Fade-in / Fade-out & Throw-up */
+        /* Smooth Continuous Scroll-Driven Reveal & Dissolve */
         .reveal-item {
             opacity: 0;
-            transform: translateY(96px) scale(0.95);
-            filter: blur(8px);
-            transition: opacity 2.35s cubic-bezier(0.16, 1, 0.3, 1),
-                        transform 2.45s cubic-bezier(0.16, 1, 0.3, 1),
-                        filter 2.1s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(56px) scale(0.96);
+            filter: blur(5px);
+            transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+                        filter 0.65s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: opacity, transform, filter;
         }
         .reveal-item.is-visible {
@@ -254,7 +254,7 @@
     </header>
 
     <!-- ==================== 1. HOME SECTION ==================== -->
-    <section id="section-home" class="page-section flex-grow relative flex flex-col justify-center items-center px-6 py-24 md:py-36 min-h-[84vh] text-center overflow-hidden">
+    <section id="section-home" class="page-section relative flex-grow flex flex-col justify-center items-center w-full px-6 py-16 md:py-24 min-h-[calc(100vh-105px)] text-center overflow-hidden">
         
         <!-- Side-by-side Background Lotus Paintings -->
         <div class="absolute inset-0 z-0 flex w-full h-full pointer-events-none">
@@ -267,7 +267,7 @@
         <div class="absolute inset-0 z-0 pointer-events-none bg-gradient-to-r from-[#F3EFE6] via-transparent to-[#F3EFE6] opacity-55"></div>
 
         <!-- Frosted-Glass Editorial Hero Card -->
-        <div class="relative z-10 bg-[#FAF7F0]/75 backdrop-blur-md border border-[#9C8265]/30 shadow-2xl shadow-[#9C8265]/15 px-7 py-12 md:px-16 md:py-16 rounded-3xl max-w-3xl mx-auto">
+        <div class="relative z-10 w-full bg-[#FAF7F0]/75 backdrop-blur-md border border-[#9C8265]/30 shadow-2xl shadow-[#9C8265]/15 px-7 py-12 md:px-16 md:py-16 rounded-3xl max-w-3xl mx-auto my-auto">
             <p class="text-[11px] md:text-xs uppercase tracking-[0.35em] text-[#9C8265] mb-3 font-medium">Curated Myanmar Fine Art</p>
             <h1 class="text-4xl sm:text-5xl md:text-6xl font-serif font-medium tracking-tight text-[#26231F] mb-5 leading-tight">
                 The Artist's Loft
@@ -731,28 +731,6 @@
     <audio id="gallery-bg-audio" loop preload="auto" src="ambience.mp3"></audio>
 
     <script>
-        // Navigation between sections
-        function showSection(sectionId) {
-            if (typeof playSoftGalleryChime === 'function') {
-                playSoftGalleryChime('nav');
-            }
-            document.querySelectorAll('.page-section').forEach(sec => {
-                sec.classList.add('hidden');
-            });
-            const targetSection = document.getElementById('section-' + sectionId);
-            if (targetSection) {
-                targetSection.classList.remove('hidden');
-            }
-            document.querySelectorAll('.nav-link').forEach(btn => {
-                const isTarget = btn.getAttribute('data-target') === sectionId;
-                btn.classList.toggle('text-[#9C8265]', isTarget);
-                btn.classList.toggle('border-b', isTarget);
-                btn.classList.toggle('border-[#9C8265]', isTarget);
-                btn.classList.toggle('text-[#26231F]/70', !isTarget);
-            });
-            window.scrollTo({ top: 0, behavior: 'instant' });
-        }
-
         // Secret 5-Tap Admin Trigger on Brand Logo
         let secretTapCount = 0;
         let secretTapTimer = null;
@@ -2299,73 +2277,114 @@
         async function handleContactSubmit(event) {
             event.preventDefault();
             const form = document.getElementById('contact-form');
-            const btn = document.getElementById('contact-submit-btn');
+            const submitBtn = document.getElementById('contact-submit-btn');
             const feedback = document.getElementById('contact-feedback');
-            const botcheck = document.getElementById('contact-botcheck');
+            const name = document.getElementById('contact-name').value.trim();
+            const email = document.getElementById('contact-email').value.trim();
+            const message = document.getElementById('contact-message').value.trim();
+            const botcheck = document.getElementById('contact-botcheck').checked;
 
-            if (botcheck && botcheck.checked) return;
+            if (botcheck) return;
+            if (!name || !email || !message) return;
 
-            btn.disabled = true;
-            btn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            feedback.classList.add('hidden');
 
             try {
-                const payload = {
-                    name: document.getElementById('contact-name').value.trim(),
-                    email: document.getElementById('contact-email').value.trim(),
-                    message: document.getElementById('contact-message').value.trim()
-                };
-
                 const res = await fetch('/api/contact', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ name, email, message, botcheck })
                 });
                 const data = await res.json();
 
                 if (res.ok && data.success) {
                     playSoftGalleryChime('success');
-                    form.reset();
                     feedback.textContent = 'Thank you! Your message has been sent to our gallery team. We will respond shortly.';
+                    feedback.className = 'p-4 rounded-2xl bg-[#A69076]/15 border border-[#A69076]/40 text-center text-sm text-[#2C2C2C]';
                     feedback.classList.remove('hidden');
+                    form.reset();
                 } else {
-                    throw new Error(data.message || 'Unable to send message.');
+                    throw new Error(data.message || 'Unable to send message right now.');
                 }
             } catch (err) {
-                feedback.textContent = 'Thank you for your inquiry. Please reach out directly or try again shortly.';
+                feedback.textContent = 'Notice: ' + (err.message || 'Please try again later.');
+                feedback.className = 'p-4 rounded-2xl bg-red-50 border border-red-200 text-center text-sm text-red-700';
                 feedback.classList.remove('hidden');
             } finally {
-                btn.disabled = false;
-                btn.textContent = 'Send Message';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Message';
             }
         }
 
-        // ==================== APPLE-INSPIRED SCROLL REVEAL & 3D TILT ANIMATIONS ====================
-        function initGalleryCardAnimations() {
-            const cards = document.querySelectorAll('#artworks-masonry-grid .reveal-item');
-            if ('IntersectionObserver' in window) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                        } else {
-                            entry.target.classList.remove('is-visible');
-                        }
-                    });
-                }, {
-                    threshold: 0.14,
-                    rootMargin: '-4% 0px -14% 0px'
-                });
+        // ==================== CONTINUOUS SMOOTH SCROLL-DRIVEN FADE & 3D TILT ANIMATIONS ====================
+        let galleryScrollRaf = null;
+        let galleryScrollBound = false;
 
-                cards.forEach((card, idx) => {
-                    card.style.transitionDelay = `${(idx % 3) * 240}ms`;
-                    observer.observe(card);
-                });
-            } else {
-                cards.forEach(card => card.classList.add('is-visible'));
+        function updateGalleryScrollPresence() {
+            galleryScrollRaf = null;
+            const artworksSection = document.getElementById('section-artworks');
+            if (!artworksSection || artworksSection.classList.contains('hidden')) return;
+
+            const cards = document.querySelectorAll('#artworks-masonry-grid .reveal-item');
+            const vh = window.innerHeight || document.documentElement.clientHeight;
+            const topFadeStart = vh * 0.22;     // Start fading out top cards as they scroll past upper viewport
+            const topFadeEnd = -vh * 0.14;      // Fully faded out when scrolled above
+            const bottomFadeStart = vh * 0.96;  // Start fading in bottom cards smoothly as they enter
+            const bottomFadeEnd = vh * 0.62;    // Fully visible when entering main reading zone
+
+            cards.forEach(card => {
+                if (card.dataset.hovered === 'true') return;
+                const rect = card.getBoundingClientRect();
+                const cardCenter = rect.top + rect.height * 0.45;
+
+                let progress = 1;
+                if (cardCenter < topFadeStart) {
+                    // Exiting through top: smoothly dissolve out as lower rows take center stage
+                    progress = (cardCenter - topFadeEnd) / (topFadeStart - topFadeEnd);
+                } else if (cardCenter > bottomFadeEnd) {
+                    // Entering from bottom: smoothly rise and fade in
+                    progress = 1 - ((cardCenter - bottomFadeEnd) / (bottomFadeStart - bottomFadeEnd));
+                }
+
+                progress = Math.max(0, Math.min(1, progress));
+                // Smoothstep easing curve for ultra-organic Apple-like glide
+                const eased = progress * progress * (3 - 2 * progress);
+
+                const translateY = (1 - eased) * (cardCenter < topFadeStart ? -36 : 54);
+                const scale = 0.94 + (0.06 * eased);
+                const blurPx = (1 - eased) * 5;
+
+                card.style.opacity = eased.toFixed(3);
+                card.style.filter = blurPx > 0.08 ? `blur(${blurPx.toFixed(2)}px)` : 'none';
+                card.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(4)})`;
+            });
+        }
+
+        function requestGalleryScrollUpdate() {
+            if (!galleryScrollRaf) {
+                galleryScrollRaf = requestAnimationFrame(updateGalleryScrollPresence);
+            }
+        }
+
+        function initGalleryCardAnimations() {
+            if (!galleryScrollBound) {
+                galleryScrollBound = true;
+                window.addEventListener('scroll', requestGalleryScrollUpdate, { passive: true });
+                window.addEventListener('resize', requestGalleryScrollUpdate, { passive: true });
             }
 
+            requestGalleryScrollUpdate();
+
             document.querySelectorAll('#artworks-masonry-grid .tilt-card').forEach(card => {
+                if (card.dataset.tiltBound === 'true') return;
+                card.dataset.tiltBound = 'true';
                 const glare = card.querySelector('.tilt-glare');
+
+                card.addEventListener('mouseenter', () => {
+                    card.dataset.hovered = 'true';
+                });
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -2374,7 +2393,9 @@
                     const centerY = rect.height / 2;
                     const rotateX = ((y - centerY) / centerY) * -7.5;
                     const rotateY = ((x - centerX) / centerX) * 7.5;
-                    card.style.transition = 'transform 0.12s ease-out, box-shadow 0.45s ease, border-color 0.4s ease';
+                    card.style.transition = 'transform 0.14s ease-out, box-shadow 0.45s ease, border-color 0.4s ease';
+                    card.style.opacity = '1';
+                    card.style.filter = 'none';
                     card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale3d(1.022, 1.022, 1.022)`;
                     if (glare) {
                         const pctX = (x / rect.width) * 100;
@@ -2384,9 +2405,10 @@
                     }
                 });
                 card.addEventListener('mouseleave', () => {
-                    card.style.transition = 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease, border-color 0.45s ease';
-                    card.style.transform = '';
+                    card.dataset.hovered = 'false';
+                    card.style.transition = 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease, border-color 0.45s ease, opacity 0.55s ease, filter 0.55s ease';
                     if (glare) glare.style.opacity = '0';
+                    requestGalleryScrollUpdate();
                 });
             });
         }
