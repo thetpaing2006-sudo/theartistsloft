@@ -178,17 +178,17 @@
             transition: none !important;
         }
 
-        /* Smooth Artist Switch Transition */
+        /* Smooth Classic Museum Artist Switch Transition */
         .artist-switch-stage {
-            transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1),
-                        transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
-                        filter 0.34s ease;
+            transition: opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.78s cubic-bezier(0.16, 1, 0.3, 1),
+                        filter 0.72s ease;
             will-change: opacity, transform, filter;
         }
         .artist-switch-out {
             opacity: 0 !important;
-            transform: translateY(14px) scale(0.985) !important;
-            filter: blur(4px) !important;
+            transform: translateY(18px) scale(0.99) !important;
+            filter: blur(5px) !important;
         }
         .artist-switch-in {
             opacity: 1 !important;
@@ -1289,7 +1289,7 @@
                 const isActive = artist.id === activeArtistId;
                 const safeId = escapeHTML(artist.id);
                 const safeName = escapeHTML(artist.name);
-                const baseClasses = "px-6 py-2.5 rounded-full text-xs uppercase tracking-[0.22em] transition-all duration-300 font-medium";
+                const baseClasses = "px-6 py-2.5 rounded-full text-xs uppercase tracking-[0.22em] transition-all duration-500 ease-out font-medium";
                 const stateClasses = isActive
                     ? "bg-[#26231F] text-[#F3EFE6] shadow-md scale-[1.03]"
                     : "bg-[#FAF7F0]/80 text-[#26231F]/75 border border-[#9C8265]/40 hover:border-[#26231F] hover:text-[#26231F]";
@@ -1304,7 +1304,7 @@
             activeArtistId = artistId;
             activeCategory = 'All';
 
-            // Update pill button active state immediately for tactile feedback
+            // Update pill button active state smoothly
             renderArtistSelectorBar();
 
             const profileEl = document.getElementById('selected-artist-profile');
@@ -1323,15 +1323,17 @@
                 renderArtworksGrid();
 
                 requestAnimationFrame(() => {
-                    targets.forEach(el => {
-                        el.classList.remove('artist-switch-out');
-                        el.classList.add('artist-switch-in');
+                    requestAnimationFrame(() => {
+                        targets.forEach(el => {
+                            el.classList.remove('artist-switch-out');
+                            el.classList.add('artist-switch-in');
+                        });
+                        setTimeout(() => {
+                            isArtistSwitching = false;
+                        }, 760);
                     });
-                    setTimeout(() => {
-                        isArtistSwitching = false;
-                    }, 360);
                 });
-            }, 240);
+            }, 460);
         }
 
         function renderSelectedArtistProfile() {
