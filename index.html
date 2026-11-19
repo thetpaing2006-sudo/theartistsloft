@@ -177,6 +177,24 @@
             transform: translateX(-56px) scale(0.95) !important;
             transition: none !important;
         }
+
+        /* Smooth Artist Switch Transition */
+        .artist-switch-stage {
+            transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                        filter 0.34s ease;
+            will-change: opacity, transform, filter;
+        }
+        .artist-switch-out {
+            opacity: 0 !important;
+            transform: translateY(14px) scale(0.985) !important;
+            filter: blur(4px) !important;
+        }
+        .artist-switch-in {
+            opacity: 1 !important;
+            transform: translateY(0) scale(1) !important;
+            filter: blur(0) !important;
+        }
     </style>
 </head>
 <body class="bg-[#F3EFE6] text-[#26231F] font-sans antialiased flex flex-col min-h-screen selection:bg-[#9C8265]/25 selection:text-[#26231F]">
@@ -270,14 +288,14 @@
 
         <!-- Selected Artist Profile Card -->
         <div class="w-full max-w-5xl mx-auto px-6 pb-10">
-            <div id="selected-artist-profile" class="bg-[#FAF7F0]/85 backdrop-blur-sm border border-[#9C8265]/25 rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm flex flex-col md:flex-row items-center md:items-start gap-7 md:gap-10">
+            <div id="selected-artist-profile" class="artist-switch-stage artist-switch-in bg-[#FAF7F0]/85 backdrop-blur-sm border border-[#9C8265]/25 rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm flex flex-col md:flex-row items-center md:items-start gap-7 md:gap-10">
                 <!-- Artist Portrait & Bio injected dynamically via JS -->
             </div>
         </div>
 
         <!-- Dynamic Category Filter Bar for Selected Artist -->
         <div class="w-full max-w-screen-xl mx-auto px-6 mb-12">
-            <div id="category-filter-bar" class="flex flex-wrap items-center justify-center gap-2.5 md:gap-4 border-b border-[#A69076]/20 pb-6">
+            <div id="category-filter-bar" class="artist-switch-stage artist-switch-in flex flex-wrap items-center justify-center gap-2.5 md:gap-4 border-b border-[#A69076]/20 pb-6">
                 <!-- Buttons injected dynamically via JS -->
             </div>
             <div class="text-center mt-4">
@@ -287,7 +305,7 @@
 
         <!-- Flowing Masonry Gallery Grid -->
         <main class="w-full max-w-screen-2xl mx-auto px-6 md:px-12 pb-28">
-            <div id="artworks-masonry-grid" class="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
+            <div id="artworks-masonry-grid" class="artist-switch-stage artist-switch-in columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
                 <!-- Artwork Cards injected dynamically via JS -->
             </div>
         </main>
@@ -463,6 +481,11 @@
                             Unlock Console
                         </button>
                     </form>
+                    <div class="pt-2">
+                        <button type="button" onclick="resetForgottenAdminPin()" class="text-[11px] underline text-[#9C8265] hover:text-[#2C2C2C] transition-colors">
+                            Forgot / Reset Passcode
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Step 2: Unlocked Dashboard -->
@@ -1071,6 +1094,7 @@
         let galleryAbout = { ...DEFAULT_GALLERY_ABOUT };
         let activeArtistId = 'mt-oung';
         let activeCategory = 'All';
+        let isArtistSwitching = false;
         let isAdminUnlocked = false;
         let db = null;
         let auth = null;
@@ -1274,13 +1298,40 @@
         }
 
         function selectArtist(artistId) {
+            if (artistId === activeArtistId || isArtistSwitching) return;
             playSoftGalleryChime('filter');
+            isArtistSwitching = true;
             activeArtistId = artistId;
             activeCategory = 'All';
+
+            // Update pill button active state immediately for tactile feedback
             renderArtistSelectorBar();
-            renderSelectedArtistProfile();
-            renderCategoryFilterBar();
-            renderArtworksGrid();
+
+            const profileEl = document.getElementById('selected-artist-profile');
+            const filterEl = document.getElementById('category-filter-bar');
+            const gridEl = document.getElementById('artworks-masonry-grid');
+            const targets = [profileEl, filterEl, gridEl].filter(Boolean);
+
+            targets.forEach(el => {
+                el.classList.remove('artist-switch-in');
+                el.classList.add('artist-switch-out');
+            });
+
+            setTimeout(() => {
+                renderSelectedArtistProfile();
+                renderCategoryFilterBar();
+                renderArtworksGrid();
+
+                requestAnimationFrame(() => {
+                    targets.forEach(el => {
+                        el.classList.remove('artist-switch-out');
+                        el.classList.add('artist-switch-in');
+                    });
+                    setTimeout(() => {
+                        isArtistSwitching = false;
+                    }, 360);
+                });
+            }, 240);
         }
 
         function renderSelectedArtistProfile() {
@@ -1807,6 +1858,18 @@
             feedback.classList.add('hidden');
             document.getElementById('current-pin-verify-input').value = '';
             document.getElementById('new-pin-input').value = '';
+        }
+
+        function resetForgottenAdminPin() {
+            storedPinHash = null;
+            isPinInitialized = false;
+            failedPinAttempts = 0;
+            pinLockoutUntil = 0;
+            document.getElementById('admin-pin-error').classList.add('hidden');
+            document.getElementById('admin-pin-input').value = '';
+            document.getElementById('admin-pin-confirm-input').value = '';
+            updateAdminGateUI();
+            document.getElementById('admin-pin-input').focus();
         }
 
         async function saveNewAdminPin(event) {
@@ -2798,6 +2861,7 @@
         window.closeAdminModal = closeAdminModal;
         window.switchAdminTab = switchAdminTab;
         window.verifyAdminPin = verifyAdminPin;
+        window.resetForgottenAdminPin = resetForgottenAdminPin;
         window.toggleChangePinBox = toggleChangePinBox;
         window.saveNewAdminPin = saveNewAdminPin;
         window.saveArtworkFromAdmin = saveArtworkFromAdmin;
