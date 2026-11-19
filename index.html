@@ -1299,7 +1299,7 @@
 
         function selectArtist(artistId) {
             if (artistId === activeArtistId || isArtistSwitching) return;
-            playSoftGalleryChime('filter');
+            playSoftGalleryChime('artist');
             isArtistSwitching = true;
             activeArtistId = artistId;
             activeCategory = 'All';
@@ -2692,7 +2692,12 @@
             if (!isSoundEnabled) return;
             ensureAudioContext();
 
-            if (type === 'open') {
+            if (type === 'artist') {
+                // Whisper-thin, airy classical harmonic (ultra-light & delicate)
+                playSoftCanvasSwoosh();
+                playCelestaBell(659.25, 1.1, 0.032);
+                setTimeout(() => playCelestaBell(987.77, 1.3, 0.026), 140);
+            } else if (type === 'open') {
                 playFeltPianoNote(523.25, 2.2, 0.12);
                 setTimeout(() => playFeltPianoNote(659.25, 2.4, 0.11), 95);
                 setTimeout(() => playCelestaBell(783.99, 2.6, 0.09), 190);
@@ -2704,6 +2709,12 @@
                 playCelestaBell(587.33, 1.5, 0.09);
             } else if (type === 'filter') {
                 playCelestaBell(880.00, 1.4, 0.10);
+            } else if (type === 'artist') {
+                // Light, graceful Classical Harp & Shimmering Glass Bell Arpeggio (C5 -> G5 -> B5 -> D6)
+                playCelestaBell(523.25, 1.9, 0.065);
+                setTimeout(() => playCelestaBell(783.99, 2.1, 0.06), 145);
+                setTimeout(() => playCelestaBell(987.77, 2.3, 0.055), 290);
+                setTimeout(() => playCelestaBell(1174.66, 2.6, 0.05), 440);
             } else if (type === 'nav') {
                 playFeltPianoNote(392.00, 1.4, 0.09);
                 setTimeout(() => playCelestaBell(587.33, 1.5, 0.07), 85);
