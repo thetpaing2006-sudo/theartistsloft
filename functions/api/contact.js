@@ -49,7 +49,8 @@ export async function onRequestPost(context) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json"
+        "Accept": "application/json",
+        "User-Agent": "TheArtistsLoft-CloudflarePages/1.0"
       },
       body: JSON.stringify({
         access_key: accessKey,
