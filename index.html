@@ -599,6 +599,9 @@
         </div>
     </footer>
 
+    <!-- Custom Gallery Ambience Audio Track (Upload your audio file as 'ambience.mp3' in the same folder as index.html) -->
+    <audio id="gallery-bg-audio" src="ambience.mp3" loop preload="auto"></audio>
+
     <!-- Subtle Secret Tap Toast -->
     <div id="secret-tap-toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2 rounded-full bg-[#2C2C2C]/85 text-[#FAF9F6] text-xs tracking-widest uppercase shadow-lg pointer-events-none"></div>
 
@@ -1030,6 +1033,7 @@
         }
 
         function filterByCategory(category) {
+            playSoftGalleryChime('filter');
             activeCategory = category;
             renderCategoryFilterBar();
             renderArtworksGrid();
@@ -1049,6 +1053,7 @@
             const art = artworks.find(a => a.id === id);
             if (!art) return;
 
+            playSoftGalleryChime('inquiry');
             const lightboxModal = document.getElementById('lightbox-modal');
             if (lightboxModal && !lightboxModal.classList.contains('hidden')) {
                 closeLightbox();
@@ -1344,6 +1349,7 @@
 
         function closeLightbox(event) {
             if (event) event.stopPropagation();
+            playSoftGalleryChime('close');
             const modal = document.getElementById('lightbox-modal');
             currentLightboxId = null;
 
@@ -1821,35 +1827,30 @@
             feedback.classList.add('hidden');
 
             try {
-                const response = await fetch('/api/contact', {
+                const res = await fetch('/api/contact', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({
-                        name,
-                        email,
-                        message,
-                        botcheck: false
-                    })
+                    body: JSON.stringify({ name, email, message })
                 });
 
-                const result = await response.json();
-                if (response.ok && result.success) {
-                    feedback.textContent = 'Thank you! Your message has been sent directly to our email. We will respond shortly.';
-                    feedback.className = 'p-4 rounded-2xl bg-emerald-500/15 border border-emerald-600/40 text-center text-sm text-[#26231F]';
-                    feedback.classList.remove('hidden');
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    playSoftGalleryChime('success');
                     form.reset();
+                    feedback.textContent = 'Thank you! Your message has been sent directly to our email. We will respond shortly.';
+                    feedback.className = 'p-4 rounded-2xl bg-[#A69076]/15 border border-[#A69076]/40 text-center text-sm text-[#2C2C2C]';
+                    feedback.classList.remove('hidden');
                 } else {
-                    feedback.textContent = result.message || 'Could not send message. Please try again shortly.';
-                    feedback.className = 'p-4 rounded-2xl bg-red-500/15 border border-red-600/40 text-center text-sm text-red-900';
+                    feedback.textContent = result.message || 'Unable to send message right now. Please try again.';
+                    feedback.className = 'p-4 rounded-2xl bg-red-50 border border-red-200 text-center text-sm text-red-700';
                     feedback.classList.remove('hidden');
                 }
             } catch (err) {
-                console.error('Contact form submission error:', err);
                 feedback.textContent = 'Network error while sending message. Please check your connection and try again.';
-                feedback.className = 'p-4 rounded-2xl bg-red-500/15 border border-red-600/40 text-center text-sm text-red-900';
+                feedback.className = 'p-4 rounded-2xl bg-red-50 border border-red-200 text-center text-sm text-red-700';
                 feedback.classList.remove('hidden');
             } finally {
                 submitBtn.disabled = false;
@@ -1857,7 +1858,7 @@
             }
         }
 
-        // ==================== CLASSIC GALLERY & NATURE AMBIENCE AUDIO ENGINE (SOFT & SERENE) ====================
+        // ==================== CLASSIC GALLERY AMBIENCE + TACTILE UI SOUND EFFECTS ====================
         let audioCtx = null;
         let isSoundEnabled = true; // Default ON
         let isLoopStarted = false;
@@ -1866,20 +1867,53 @@
         let masterGain = null;
         let breezeNode = null;
         let breezeGain = null;
+        let customTrackFailed = false;
+        let audioFadeTimer = null;
+
+        const customBgAudio = document.getElementById('gallery-bg-audio');
+        if (customBgAudio) {
+            customBgAudio.volume = 0;
+            customBgAudio.addEventListener('error', () => {
+                customTrackFailed = true;
+                if (isSoundEnabled && !isLoopStarted) {
+                    ensureAudioContext();
+                    startSynthAmbienceLoop();
+                }
+            });
+        }
+
+        function fadeAudioVolume(audioEl, targetVol, durationMs = 1400, onDone = null) {
+            if (!audioEl) return;
+            clearInterval(audioFadeTimer);
+            const steps = 28;
+            const stepTime = durationMs / steps;
+            const startVol = audioEl.volume;
+            const delta = (targetVol - startVol) / steps;
+            let count = 0;
+
+            audioFadeTimer = setInterval(() => {
+                count++;
+                const nextVol = Math.min(1, Math.max(0, startVol + delta * count));
+                audioEl.volume = nextVol;
+                if (count >= steps) {
+                    clearInterval(audioFadeTimer);
+                    audioEl.volume = targetVol;
+                    if (onDone) onDone();
+                }
+            }, stepTime);
+        }
 
         function ensureAudioContext() {
             if (!audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContextClass();
                 masterGain = audioCtx.createGain();
-                // Gentle, whisper-soft gallery volume so piano & nature never overwhelm
-                masterGain.gain.setValueAtTime(0.22, audioCtx.currentTime);
+                masterGain.gain.setValueAtTime(0.24, audioCtx.currentTime);
                 masterGain.connect(audioCtx.destination);
             }
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            // Unlock iOS / Safari WebAudio buffer
             const silentBuffer = audioCtx.createBuffer(1, 1, 22050);
             const source = audioCtx.createBufferSource();
             source.buffer = silentBuffer;
@@ -1887,7 +1921,7 @@
             source.start(0);
         }
 
-        // Soft Courtyard Breeze & Quiet Gallery Air Bed (Pink Noise through gentle lowpass)
+        // Soft Courtyard Breeze & Quiet Gallery Air Bed
         function startCourtyardBreeze() {
             if (!audioCtx || breezeNode) return;
             const bufferSize = audioCtx.sampleRate * 4;
@@ -1902,7 +1936,7 @@
                 b3 = 0.86650 * b3 + white * 0.3104856;
                 b4 = 0.55000 * b4 + white * 0.5329522;
                 b5 = -0.7616 * b5 - white * 0.0168980;
-                output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.03;
+                output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.028;
                 b6 = white * 0.115926;
             }
 
@@ -1912,11 +1946,11 @@
 
             const breezeFilter = audioCtx.createBiquadFilter();
             breezeFilter.type = 'lowpass';
-            breezeFilter.frequency.setValueAtTime(280, audioCtx.currentTime);
+            breezeFilter.frequency.setValueAtTime(260, audioCtx.currentTime);
 
             breezeGain = audioCtx.createGain();
             breezeGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            breezeGain.gain.linearRampToValueAtTime(0.28, audioCtx.currentTime + 2.5);
+            breezeGain.gain.linearRampToValueAtTime(0.24, audioCtx.currentTime + 2.5);
 
             breezeNode.connect(breezeFilter);
             breezeFilter.connect(breezeGain);
@@ -1932,11 +1966,11 @@
             }
         }
 
-        // Distant Garden Songbird Chirp (delicate, soft, far outside the gallery window)
+        // Distant Garden Songbird Chirp outside the gallery courtyard
         function playDistantSongbird() {
             if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
-            const notesCount = 2 + Math.floor(Math.random() * 3); // 2 to 4 delicate chirps
+            const notesCount = 2 + Math.floor(Math.random() * 3);
             const baseFreq = 1950 + Math.random() * 650;
 
             for (let i = 0; i < notesCount; i++) {
@@ -1952,12 +1986,11 @@
                 osc.frequency.exponentialRampToValueAtTime(baseFreq * (1.18 + Math.random() * 0.12), startT + dur * 0.5);
                 osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.92, startT + dur);
 
-                // Muffle slightly so it sounds outside the gallery courtyard
                 filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(2400, startT);
+                filter.frequency.setValueAtTime(2350, startT);
 
                 birdGain.gain.setValueAtTime(0.0001, startT);
-                birdGain.gain.linearRampToValueAtTime(0.045, startT + 0.02);
+                birdGain.gain.linearRampToValueAtTime(0.042, startT + 0.02);
                 birdGain.gain.exponentialRampToValueAtTime(0.0001, startT + dur);
 
                 osc.connect(filter);
@@ -1972,14 +2005,14 @@
         function scheduleNatureBirds() {
             clearTimeout(natureBirdTimer);
             if (!isSoundEnabled) return;
-            const nextDelay = 5500 + Math.random() * 6500; // Every 5.5s - 12s naturally
+            const nextDelay = 6000 + Math.random() * 7000;
             natureBirdTimer = setTimeout(() => {
                 playDistantSongbird();
                 scheduleNatureBirds();
             }, nextDelay);
         }
 
-        // Whisper-Soft Felt Grand Piano Voice
+        // Whisper-Soft Felt Grand Piano / Harp Voice
         function playFeltPianoNote(freq, duration = 5.8, volume = 0.14) {
             if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
@@ -1995,15 +2028,14 @@
 
             overtoneOsc.type = 'triangle';
             overtoneOsc.frequency.setValueAtTime(freq * 2, now);
-            overtoneGain.gain.setValueAtTime(0.05, now);
+            overtoneGain.gain.setValueAtTime(0.055, now);
 
-            // Warm damped felt piano tone
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(880, now);
+            filter.frequency.setValueAtTime(920, now);
             filter.frequency.exponentialRampToValueAtTime(420, now + duration);
 
             noteGain.gain.setValueAtTime(0.0001, now);
-            noteGain.gain.linearRampToValueAtTime(volume, now + 0.18);
+            noteGain.gain.linearRampToValueAtTime(volume, now + 0.12);
             noteGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
             osc.connect(filter);
@@ -2016,6 +2048,70 @@
             overtoneOsc.start(now);
             osc.stop(now + duration + 0.15);
             overtoneOsc.stop(now + duration + 0.15);
+        }
+
+        // Delicate Crystal / Celesta Bell Voice for UI Interactions
+        function playCelestaBell(freq, duration = 1.6, volume = 0.12) {
+            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
+            const now = audioCtx.currentTime;
+
+            const fundamental = audioCtx.createOscillator();
+            const shimmer = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const shimmerGain = audioCtx.createGain();
+
+            fundamental.type = 'sine';
+            fundamental.frequency.setValueAtTime(freq, now);
+
+            shimmer.type = 'sine';
+            shimmer.frequency.setValueAtTime(freq * 3, now);
+            shimmerGain.gain.setValueAtTime(0.035, now);
+            shimmerGain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.45);
+
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.linearRampToValueAtTime(volume, now + 0.025);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+            fundamental.connect(gain);
+            shimmer.connect(shimmerGain);
+            shimmerGain.connect(gain);
+            gain.connect(masterGain);
+
+            fundamental.start(now);
+            shimmer.start(now);
+            fundamental.stop(now + duration + 0.05);
+            shimmer.stop(now + duration + 0.05);
+        }
+
+        // Soft Velvet Canvas Swoosh for Next/Prev Artwork Navigation
+        function playSoftCanvasSwoosh() {
+            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
+            const now = audioCtx.currentTime;
+            const bufferSize = Math.floor(audioCtx.sampleRate * 0.28);
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
+            }
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(340, now);
+            filter.frequency.exponentialRampToValueAtTime(620, now + 0.26);
+            filter.Q.setValueAtTime(1.8, now);
+
+            const swooshGain = audioCtx.createGain();
+            swooshGain.gain.setValueAtTime(0.0001, now);
+            swooshGain.gain.linearRampToValueAtTime(0.09, now + 0.08);
+            swooshGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.27);
+
+            noise.connect(filter);
+            filter.connect(swooshGain);
+            swooshGain.connect(masterGain);
+            noise.start(now);
         }
 
         // Soft Warm Chamber Cello Sustain
@@ -2053,17 +2149,42 @@
             osc2.stop(now + duration + 0.2);
         }
 
-        // Subtle tactile chime when navigating or viewing paintings
+        // Poetic & Tactile UI Sound Effects for Every Gallery Interaction
         function playSoftGalleryChime(type = 'step') {
             if (!isSoundEnabled) return;
             ensureAudioContext();
+
             if (type === 'open') {
-                playFeltPianoNote(523.25, 2.2, 0.11); // C5
-                setTimeout(() => playFeltPianoNote(659.25, 2.5, 0.09), 140); // E5
+                // Opening a painting in Lightbox: Warm rising Harp Arpeggio (C5 -> E5 -> G5)
+                playFeltPianoNote(523.25, 2.2, 0.12);
+                setTimeout(() => playFeltPianoNote(659.25, 2.4, 0.11), 95);
+                setTimeout(() => playCelestaBell(783.99, 2.6, 0.09), 190);
+            } else if (type === 'close') {
+                // Closing Lightbox: Gentle descending resolution (G5 -> C5)
+                playFeltPianoNote(783.99, 1.4, 0.08);
+                setTimeout(() => playFeltPianoNote(523.25, 1.8, 0.09), 100);
+            } else if (type === 'step') {
+                // Next / Previous painting: Soft velvet swoosh + delicate bell
+                playSoftCanvasSwoosh();
+                playCelestaBell(587.33, 1.5, 0.09);
+            } else if (type === 'filter') {
+                // Category filter click: Crisp crystal celesta note (A5)
+                playCelestaBell(880.00, 1.4, 0.10);
             } else if (type === 'nav') {
-                playFeltPianoNote(392.00, 1.4, 0.08); // G4
+                // Main navigation click: Soft warm harp pluck (G4 -> D5)
+                playFeltPianoNote(392.00, 1.4, 0.09);
+                setTimeout(() => playCelestaBell(587.33, 1.5, 0.07), 85);
+            } else if (type === 'inquiry') {
+                // Price inquiry click: Inviting warm chord (E5 -> B5)
+                playFeltPianoNote(659.25, 1.8, 0.11);
+                setTimeout(() => playCelestaBell(987.77, 2.0, 0.09), 110);
+            } else if (type === 'success') {
+                // Message sent confirmation: Serene 3-note harmonic chime (C5 -> G5 -> B5)
+                playFeltPianoNote(523.25, 2.2, 0.12);
+                setTimeout(() => playFeltPianoNote(783.99, 2.4, 0.11), 120);
+                setTimeout(() => playCelestaBell(987.77, 2.8, 0.10), 250);
             } else {
-                playFeltPianoNote(440.00, 1.6, 0.09); // A4
+                playCelestaBell(659.25, 1.5, 0.09);
             }
         }
 
@@ -2071,6 +2192,35 @@
             if (isLoopStarted) return;
             isLoopStarted = true;
 
+            // Layer 1: Gentle Courtyard Breeze & Distant Garden Songbirds (Subtle Natural Atmosphere)
+            ensureAudioContext();
+            startCourtyardBreeze();
+            setTimeout(() => playDistantSongbird(), 2200);
+            scheduleNatureBirds();
+
+            // Layer 2: Your Custom Uploaded Meditation / Pan-Flute Track ('ambience.mp3')
+            if (customBgAudio && !customTrackFailed) {
+                const playPromise = customBgAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        fadeAudioVolume(customBgAudio, 0.32, 1600);
+                    }).catch(() => {
+                        isLoopStarted = false;
+                        stopCourtyardBreeze();
+                        clearTimeout(natureBirdTimer);
+                        if (customTrackFailed) {
+                            startSynthAmbienceLoop();
+                        }
+                    });
+                    return;
+                }
+            }
+
+            startSynthAmbienceLoop();
+        }
+
+        function startSynthAmbienceLoop() {
+            isLoopStarted = true;
             startCourtyardBreeze();
             setTimeout(() => playDistantSongbird(), 1800);
             scheduleNatureBirds();
@@ -2123,6 +2273,11 @@
         }
 
         function stopClassicAmbienceLoop() {
+            if (customBgAudio && !customBgAudio.paused) {
+                fadeAudioVolume(customBgAudio, 0, 700, () => {
+                    customBgAudio.pause();
+                });
+            }
             clearInterval(ambientInterval);
             clearTimeout(natureBirdTimer);
             stopCourtyardBreeze();
@@ -2132,7 +2287,11 @@
         }
 
         function unlockAndStartDefaultSound() {
-            if (!isSoundEnabled) return;
+            if (!isSoundEnabled || isLoopStarted) return;
+            if (customBgAudio && !customTrackFailed) {
+                startClassicAmbienceLoop();
+                return;
+            }
             ensureAudioContext();
             if (audioCtx && audioCtx.state === 'running' && !isLoopStarted) {
                 startClassicAmbienceLoop();
@@ -2142,7 +2301,7 @@
         // Auto-unlock on first user interaction anywhere on the page (satisfies modern browser autoplay policy)
         ['pointerdown', 'touchstart', 'keydown'].forEach(evtName => {
             window.addEventListener(evtName, () => {
-                if (isSoundEnabled && (!audioCtx || audioCtx.state !== 'running' || !isLoopStarted)) {
+                if (isSoundEnabled && !isLoopStarted) {
                     unlockAndStartDefaultSound();
                 }
             }, { passive: true });
@@ -2155,7 +2314,9 @@
 
             if (!isSoundEnabled) {
                 isSoundEnabled = true;
-                ensureAudioContext();
+                if (!customBgAudio || customTrackFailed) {
+                    ensureAudioContext();
+                }
                 startClassicAmbienceLoop();
                 if (btn) btn.classList.remove('sound-paused');
                 if (label) label.textContent = 'Sound On';
