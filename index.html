@@ -229,10 +229,13 @@
 
         <!-- Frosted-Glass Editorial Hero Card -->
         <div class="relative z-10 bg-[#FAF7F0]/75 backdrop-blur-md border border-[#9C8265]/30 shadow-2xl shadow-[#9C8265]/15 px-7 py-12 md:px-16 md:py-16 rounded-3xl max-w-3xl mx-auto">
-            <p class="text-[11px] md:text-xs uppercase tracking-[0.35em] text-[#9C8265] mb-4 font-medium">Curated Myanmar Fine Art</p>
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-serif font-medium text-[#26231F] mb-5 leading-tight">
-                The Artist's Loft
-            </h1>
+            <p class="text-[11px] md:text-xs uppercase tracking-[0.35em] text-[#9C8265] mb-3 font-medium">Curated Myanmar Fine Art</p>
+            <div class="flex justify-center mb-5">
+                <img src="Logo.jpg"
+                     alt="The Artist's Loft — Unique Art Works"
+                     onerror="handleLogoFallback(this)"
+                     class="w-full max-w-[340px] sm:max-w-[430px] md:max-w-[490px] h-auto object-contain mix-blend-multiply select-none">
+            </div>
             <div class="w-12 h-[1px] bg-[#9C8265] mx-auto mb-6"></div>
             <p class="text-sm sm:text-base md:text-lg text-[#26231F]/80 font-light leading-relaxed max-w-xl mx-auto mb-9">
                 The Artist's Loft — sharing unique artworks of artists from Myanmar
@@ -657,6 +660,25 @@
         function handleBgFallback(imgEl, index) {
             imgEl.onerror = null;
             imgEl.src = createArtPlaceholderDataURL('Lotus Study ' + index, 'Floral & Still Life', '3/4');
+        }
+
+        function handleLogoFallback(imgEl) {
+            if (!imgEl.dataset.triedLower) {
+                imgEl.dataset.triedLower = 'true';
+                imgEl.src = 'logo.jpg';
+                return;
+            }
+            imgEl.onerror = null;
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="520" height="190" viewBox="0 0 520 190">
+                <circle cx="348" cy="64" r="24" fill="#F5820D"/>
+                <polygon points="158,112 325,52 474,112" fill="#C4912C"/>
+                <line x1="158" y1="112" x2="325" y2="52" stroke="#FAF7F0" stroke-width="4" stroke-linecap="round"/>
+                <line x1="325" y1="52" x2="474" y2="112" stroke="#FAF7F0" stroke-width="4" stroke-linecap="round"/>
+                <text x="260" y="148" text-anchor="middle" font-family="sans-serif" font-size="44" font-weight="600" letter-spacing="2" fill="#E64A19">The Artist's Loft</text>
+                <rect x="24" y="158" width="472" height="15" fill="#C4912C"/>
+                <text x="260" y="170" text-anchor="middle" font-family="sans-serif" font-size="10" letter-spacing="9" fill="#FFFFFF">UNIQUE ART WORKS</text>
+            </svg>`;
+            imgEl.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
         }
 
         function handleArtistFallback(img) {
