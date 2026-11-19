@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Artist's Loft | MT. Oung</title>
     <!-- Browser Tab Favicon & Mobile Home Screen Icon -->
-    <link rel="icon" type="image/jpeg" href="Logo.jpg">
-    <link rel="shortcut icon" type="image/jpeg" href="Logo.jpg">
-    <link rel="apple-touch-icon" href="Logo.jpg">
+    <link id="dynamic-favicon" rel="icon" href="Logo.jpg">
+    <link id="dynamic-shortcut-icon" rel="shortcut icon" href="Logo.jpg">
+    <link id="dynamic-apple-icon" rel="apple-touch-icon" href="Logo.jpg">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Playfair Display & Inter -->
@@ -192,9 +192,12 @@
             </nav>
 
             <!-- Center Brand Title (5 taps opens hidden Admin Console) -->
-            <div class="md:w-1/3 text-center">
-                <button type="button" onclick="handleSecretBrandTap(event)" class="text-2xl md:text-3xl font-serif tracking-wide text-[#26231F] font-medium hover:text-[#9C8265] transition-colors select-none">
-                    The Artist's Loft
+            <div class="md:w-1/3 flex justify-center items-center">
+                <button type="button" onclick="handleSecretBrandTap(event)" class="group flex items-center justify-center focus:outline-none select-none" aria-label="The Artist's Loft">
+                    <img id="header-brand-logo"
+                         src="Logo.jpg"
+                         alt="The Artist's Loft"
+                         class="h-10 sm:h-12 md:h-14 w-auto max-w-[230px] object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105">
                 </button>
             </div>
 
@@ -234,12 +237,9 @@
         <!-- Frosted-Glass Editorial Hero Card -->
         <div class="relative z-10 bg-[#FAF7F0]/75 backdrop-blur-md border border-[#9C8265]/30 shadow-2xl shadow-[#9C8265]/15 px-7 py-12 md:px-16 md:py-16 rounded-3xl max-w-3xl mx-auto">
             <p class="text-[11px] md:text-xs uppercase tracking-[0.35em] text-[#9C8265] mb-3 font-medium">Curated Myanmar Fine Art</p>
-            <div class="flex justify-center mb-5">
-                <img src="Logo.jpg"
-                     alt="The Artist's Loft — Unique Art Works"
-                     onerror="handleLogoFallback(this)"
-                     class="w-full max-w-[340px] sm:max-w-[430px] md:max-w-[490px] h-auto object-contain mix-blend-multiply select-none">
-            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-serif font-medium tracking-tight text-[#26231F] mb-5 leading-tight">
+                The Artist's Loft
+            </h1>
             <div class="w-12 h-[1px] bg-[#9C8265] mx-auto mb-6"></div>
             <p class="text-sm sm:text-base md:text-lg text-[#26231F]/80 font-light leading-relaxed max-w-xl mx-auto mb-9">
                 The Artist's Loft — sharing unique artworks of artists from Myanmar
@@ -491,8 +491,8 @@
                         </div>
                     </div>
 
-                    <!-- Collapsible Change Passcode Box -->
-                    <div id="change-pin-box" class="hidden bg-white p-5 rounded-2xl border border-[#A69076]/30 shadow-sm">
+                    <!-- Admin Publish Status Banner -->
+                    <div id="admin-publish-feedback" class="hidden p-4 rounded-2xl text-xs font-medium"></div>
                         <h4 class="font-serif text-lg mb-1">Update Curator Passcode</h4>
                         <p class="text-xs text-[#2C2C2C]/60 mb-4">Your passcode is encrypted (SHA-256) and never stored in plain text or source code.</p>
                         <form onsubmit="saveNewAdminPin(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -551,8 +551,15 @@
                             <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-[#FAF9F6] border border-[#A69076]/20">
                                 <div>
                                     <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Option A: Upload Image File</label>
-                                    <input id="art-file-input" type="file" accept="image/*" class="w-full text-xs text-[#2C2C2C]/70 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:uppercase file:tracking-wider file:bg-[#2C2C2C] file:text-[#FAF9F6] hover:file:bg-[#A69076] cursor-pointer">
+                                    <input id="art-file-input" type="file" accept="image/*" onchange="previewAdminSelectedFile(this)" class="w-full text-xs text-[#2C2C2C]/70 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:uppercase file:tracking-wider file:bg-[#2C2C2C] file:text-[#FAF9F6] hover:file:bg-[#A69076] cursor-pointer">
+                                    <p id="art-file-status" class="hidden text-[11px] text-[#9C8265] mt-1.5 font-medium"></p>
                                 </div>
+                                <div>
+                                    <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Option B: Local Filename / Image URL</label>
+                                    <input id="art-url-input" type="text" placeholder="e.g., my-painting.jpg" class="w-full px-3.5 py-2 rounded-xl border border-[#A69076]/40 bg-white text-sm outline-none focus:border-[#2C2C2C]">
+                                </div>
+                                <div id="art-upload-feedback" class="hidden md:col-span-2 text-xs px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-800"></div>
+                            </div>
                                 <div>
                                     <label class="block text-[11px] uppercase tracking-wider text-[#2C2C2C]/70 mb-1.5">Option B: Local Filename / Image URL</label>
                                     <input id="art-url-input" type="text" placeholder="e.g., my-painting.jpg" class="w-full px-3.5 py-2 rounded-xl border border-[#A69076]/40 bg-white text-sm outline-none focus:border-[#2C2C2C]">
@@ -589,101 +596,208 @@
     </div>
 
     <!-- Minimalist Footer -->
-    <footer class="w-full border-t border-[#9C8265]/25 mt-auto py-12 px-6 md:px-12 bg-[#EDE7DA]/70">
-        <div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-            <div>
-                <h4 class="font-serif text-xl text-[#2C2C2C] mb-1">The Artist's Loft</h4>
-                <p class="text-xs tracking-wider text-[#2C2C2C]/60 font-light">Curated works of MT. Oung — Yangon, Myanmar</p>
-            </div>
-            
-            <div class="flex gap-8 text-xs uppercase tracking-[0.2em]">
-                <button type="button" onclick="showSection('home')" class="text-[#2C2C2C]/60 hover:text-[#A69076] transition-colors">Home</button>
-                <button type="button" onclick="showSection('artworks')" class="text-[#2C2C2C]/60 hover:text-[#A69076] transition-colors">Artworks</button>
-                <button type="button" onclick="showSection('about')" class="text-[#2C2C2C]/60 hover:text-[#A69076] transition-colors">About</button>
-            </div>
-
-            <div ondblclick="openAdminModal()" title="Double-click for Curator Access" class="text-xs text-[#2C2C2C]/45 font-light select-none cursor-default">
-                &copy; <span id="footer-year"></span> The Artist's Loft. All rights reserved.
-            </div>
+    <footer class="w-full py-10 px-6 md:px-12 border-t border-[#9C8265]/20 bg-[#F3EFE6] text-center">
+        <div class="max-w-screen-xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs uppercase tracking-[0.22em] text-[#26231F]/60">
+            <span>&copy; <span id="footer-year">2026</span> The Artist's Loft</span>
+            <span>Curated Myanmar Fine Art &bull; MT. Oung</span>
         </div>
     </footer>
 
-    <!-- Custom Gallery Ambience Audio Track (Local Repo / CDN Streaming) -->
-    <audio id="gallery-bg-audio" src="ambience.mp3" loop preload="auto"></audio>
+    <!-- Optional Ambient Background Audio -->
+    <audio id="gallery-bg-audio" loop preload="none" src="ambience.mp3"></audio>
 
-    <!-- Subtle Secret Tap Toast -->
-    <div id="secret-tap-toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2 rounded-full bg-[#2C2C2C]/85 text-[#FAF9F6] text-xs tracking-widest uppercase shadow-lg pointer-events-none"></div>
-
-    <!-- Immediate Synchronous Image Fallbacks (Available before module scripts defer) -->
     <script>
-        function createArtPlaceholderDataURL(title, category, aspect) {
-            const isPortrait = aspect === '3/4';
-            const w = isPortrait ? 600 : 800;
-            const h = isPortrait ? 800 : 600;
-            const palettes = {
-                'Sacred Art': ['#EFE6D5', '#C8A97E', '#8C6D46'],
-                'Floral & Still Life': ['#F2EDE4', '#B8A898', '#7A8471'],
-                'Landscapes': ['#EAE7DF', '#9EA899', '#6B7A6E'],
-                'Portraits': ['#EFEAE2', '#C2A894', '#7C6556']
-            };
-            const [bg, mid, accent] = palettes[category] || ['#EFECE6', '#C2B4A3', '#8E7B65'];
-            const safeTitle = String(title || 'Artwork').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-            const safeCat = String(category || 'Collection').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+        // Navigation between sections
+        function showSection(sectionId) {
+            if (typeof playSoftGalleryChime === 'function') {
+                playSoftGalleryChime('nav');
+            }
+            document.querySelectorAll('.page-section').forEach(sec => {
+                sec.classList.add('hidden');
+            });
+            const targetSection = document.getElementById('section-' + sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                const isTarget = btn.getAttribute('data-target') === sectionId;
+                btn.classList.toggle('text-[#9C8265]', isTarget);
+                btn.classList.toggle('border-b', isTarget);
+                btn.classList.toggle('border-[#9C8265]', isTarget);
+                btn.classList.toggle('text-[#26231F]/70', !isTarget);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
+        // Secret 5-Tap Admin Trigger on Brand Title
+        let secretTapCount = 0;
+        let secretTapTimer = null;
+        function handleSecretBrandTap(event) {
+            if (event) event.preventDefault();
+            secretTapCount++;
+            clearTimeout(secretTapTimer);
+            secretTapTimer = setTimeout(() => {
+                secretTapCount = 0;
+            }, 1800);
+            if (secretTapCount >= 5) {
+                secretTapCount = 0;
+                if (typeof openAdminModal === 'function') {
+                    openAdminModal();
+                }
+            } else if (secretTapCount === 1) {
+                showSection('home');
+            }
+        }
+
+        // Elegant Museum Placeholder Generator
+        function createArtPlaceholderDataURL(title, category, aspect = '3/4') {
+            const isLandscape = aspect === '4/3';
+            const w = isLandscape ? 800 : 600;
+            const h = isLandscape ? 600 : 800;
+            const safeT = String(title || 'Artwork').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const safeC = String(category || 'Fine Art').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
-                <defs>
-                    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="${bg}"/>
-                        <stop offset="100%" stop-color="${mid}" stop-opacity="0.45"/>
-                    </linearGradient>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#g)"/>
-                <circle cx="${w * 0.65}" cy="${h * 0.35}" r="${Math.min(w, h) * 0.24}" fill="${accent}" opacity="0.16"/>
-                <path d="M0 ${h * 0.72} Q ${w * 0.35} ${h * 0.58}, ${w * 0.65} ${h * 0.7} T ${w} ${h * 0.64} L ${w} ${h} L 0 ${h} Z" fill="${accent}" opacity="0.22"/>
-                <rect x="28" y="28" width="${w - 56}" height="${h - 56}" fill="none" stroke="${accent}" stroke-opacity="0.3" stroke-width="1"/>
-                <text x="50%" y="${h * 0.47}" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#2C2C2C" opacity="0.82">${safeTitle}</text>
-                <text x="50%" y="${h * 0.53}" text-anchor="middle" font-family="sans-serif" font-size="12" letter-spacing="4" fill="#2C2C2C" opacity="0.55">${safeCat.toUpperCase()}</text>
-                <text x="50%" y="${h - 48}" text-anchor="middle" font-family="sans-serif" font-size="11" letter-spacing="2" fill="#2C2C2C" opacity="0.45">MT. OUNG COLLECTION</text>
+                <rect width="${w}" height="${h}" fill="#E9E2D3"/>
+                <rect x="28" y="28" width="${w - 56}" height="${h - 56}" fill="none" stroke="#9C8265" stroke-width="1" opacity="0.4"/>
+                <text x="${w / 2}" y="${h / 2 - 12}" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#26231F" opacity="0.75">${safeT}</text>
+                <text x="${w / 2}" y="${h / 2 + 22}" text-anchor="middle" font-family="sans-serif" font-size="11" letter-spacing="3" fill="#9C8265">${safeC.toUpperCase()}</text>
             </svg>`;
             return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
         }
 
-        function applyArtFallback(imgEl, title, category, aspect) {
-            imgEl.onerror = null;
-            imgEl.src = createArtPlaceholderDataURL(title, category, aspect);
+        // Compress & resize uploaded images cleanly so they always stay well under Firestore's 1MB document limit
+        function compressImageFile(file, maxDimension = 960, quality = 0.78) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxDimension || height > maxDimension) {
+                            if (width > height) {
+                                height = Math.round((height * maxDimension) / width);
+                                width = maxDimension;
+                            } else {
+                                width = Math.round((width * maxDimension) / height);
+                                height = maxDimension;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const aspect = height > width ? '3/4' : '4/3';
+                        let currentQuality = quality;
+                        let compressedDataUrl = canvas.toDataURL('image/jpeg', currentQuality);
+
+                        // Guarantee payload stays safely below 450KB for instant Firestore writes
+                        while (compressedDataUrl.length > 450000 && currentQuality > 0.35) {
+                            currentQuality -= 0.1;
+                            compressedDataUrl = canvas.toDataURL('image/jpeg', currentQuality);
+                        }
+
+                        resolve({ dataUrl: compressedDataUrl, aspect });
+                    };
+                    img.onerror = () => reject(new Error('Unable to decode selected image file.'));
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => reject(new Error('Unable to read selected file.'));
+                reader.readAsDataURL(file);
+            });
         }
 
-        function handleCardImageError(imgEl) {
-            imgEl.onerror = null;
-            const title = imgEl.getAttribute('data-title') || 'Artwork';
-            const category = imgEl.getAttribute('data-category') || 'Collection';
-            const aspect = imgEl.getAttribute('data-aspect') || '3/4';
-            imgEl.src = createArtPlaceholderDataURL(title, category, aspect);
-        }
-
-        function handleBgFallback(imgEl, index) {
-            imgEl.onerror = null;
-            imgEl.src = createArtPlaceholderDataURL('Lotus Study ' + index, 'Floral & Still Life', '3/4');
-        }
-
-        function handleLogoFallback(imgEl) {
-            if (!imgEl.dataset.triedLower) {
-                imgEl.dataset.triedLower = 'true';
-                imgEl.src = 'logo.jpg';
-                return;
+        function previewAdminSelectedFile(input) {
+            const statusEl = document.getElementById('art-file-status');
+            if (!statusEl) return;
+            if (input.files && input.files[0]) {
+                const f = input.files[0];
+                const kb = Math.round(f.size / 1024);
+                statusEl.textContent = `Selected: ${f.name} (${kb} KB) — Ready to optimize & publish`;
+                statusEl.classList.remove('hidden');
+            } else {
+                statusEl.classList.add('hidden');
             }
-            imgEl.onerror = null;
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="520" height="190" viewBox="0 0 520 190">
-                <circle cx="348" cy="64" r="24" fill="#F5820D"/>
-                <polygon points="158,112 325,52 474,112" fill="#C4912C"/>
-                <line x1="158" y1="112" x2="325" y2="52" stroke="#FAF7F0" stroke-width="4" stroke-linecap="round"/>
-                <line x1="325" y1="52" x2="474" y2="112" stroke="#FAF7F0" stroke-width="4" stroke-linecap="round"/>
-                <text x="260" y="148" text-anchor="middle" font-family="sans-serif" font-size="44" font-weight="600" letter-spacing="2" fill="#E64A19">The Artist's Loft</text>
-                <rect x="24" y="158" width="472" height="15" fill="#C4912C"/>
-                <text x="260" y="170" text-anchor="middle" font-family="sans-serif" font-size="10" letter-spacing="9" fill="#FFFFFF">UNIQUE ART WORKS</text>
-            </svg>`;
-            imgEl.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
         }
+        // Smart Auto-Resolver for Logo.jpg (updates both Header Brand Logo & Browser Tab Favicon)
+        function initBrandLogoResolver() {
+            const candidates = [
+                'brand-logo.jpg',
+                'brand-logo.png',
+                'Logo.jpg',
+                'logo.jpg',
+                'Logo.JPG',
+                'ALlogo.jpg',
+                'allogo.jpg',
+                'Logo.png',
+                'logo.png',
+                'https://cdn.jsdelivr.net/gh/thetpaing2006-sudo/theartistsloft@main/brand-logo.jpg',
+                'https://cdn.jsdelivr.net/gh/thetpaing2006-sudo/theartistsloft@main/Logo.jpg',
+                'https://cdn.jsdelivr.net/gh/thetpaing2006-sudo/theartistsloft@main/logo.jpg',
+                'https://cdn.jsdelivr.net/gh/thetpaing2006-sudo/theartistsloft@main/ALlogo.jpg'
+            ];
+
+            const applyFaviconPNG = (imgEl) => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 64;
+                    canvas.height = 64;
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#FAF7F0';
+                    ctx.beginPath();
+                    ctx.arc(32, 32, 32, 0, Math.PI * 2);
+                    ctx.fill();
+                    const scale = Math.min(54 / imgEl.naturalWidth, 54 / imgEl.naturalHeight);
+                    const w = imgEl.naturalWidth * scale;
+                    const h = imgEl.naturalHeight * scale;
+                    ctx.drawImage(imgEl, (64 - w) / 2, (64 - h) / 2, w, h);
+                    const pngUrl = canvas.toDataURL('image/png');
+                    ['dynamic-favicon', 'dynamic-shortcut-icon', 'dynamic-apple-icon'].forEach(id => {
+                        const linkEl = document.getElementById(id);
+                        if (linkEl) {
+                            linkEl.type = 'image/png';
+                            linkEl.href = pngUrl;
+                        }
+                    });
+                } catch (e) {
+                    ['dynamic-favicon', 'dynamic-shortcut-icon', 'dynamic-apple-icon'].forEach(id => {
+                        const linkEl = document.getElementById(id);
+                        if (linkEl) linkEl.href = imgEl.src;
+                    });
+                }
+            };
+
+            const applyResolvedLogo = (url, probeImg) => {
+                const headerImg = document.getElementById('header-brand-logo');
+                if (headerImg && headerImg.src !== url) {
+                    headerImg.src = url;
+                }
+                applyFaviconPNG(probeImg);
+            };
+
+            let idx = 0;
+            const tryNext = () => {
+                if (idx >= candidates.length) return;
+                const candidate = candidates[idx++];
+                const probe = new Image();
+                probe.crossOrigin = 'anonymous';
+                probe.onload = () => {
+                    if (probe.naturalWidth > 0) {
+                        applyResolvedLogo(candidate, probe);
+                    } else {
+                        tryNext();
+                    }
+                };
+                probe.onerror = tryNext;
+                probe.src = candidate;
+            };
+            tryNext();
+        }
+        window.addEventListener('DOMContentLoaded', initBrandLogoResolver);
 
         function handleArtistFallback(img) {
             img.onerror = null;
@@ -927,105 +1041,58 @@
         }
 
         // Compress & resize uploaded images cleanly before cloud storage
-        function compressImageFile(file, maxDimension = 1100, quality = 0.82) {
+        function compressImageFile(file, maxDimension = 1000, quality = 0.78) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
+                    const rawDataUrl = e.target.result;
                     const img = new Image();
                     img.onload = () => {
-                        let width = img.width;
-                        let height = img.height;
+                        try {
+                            let width = img.width || 800;
+                            let height = img.height || 1000;
 
-                        if (width > maxDimension || height > maxDimension) {
-                            if (width > height) {
-                                height = Math.round((height * maxDimension) / width);
-                                width = maxDimension;
-                            } else {
-                                width = Math.round((width * maxDimension) / height);
-                                height = maxDimension;
+                            if (width > maxDimension || height > maxDimension) {
+                                if (width > height) {
+                                    height = Math.round((height * maxDimension) / width);
+                                    width = maxDimension;
+                                } else {
+                                    width = Math.round((width * maxDimension) / height);
+                                    height = maxDimension;
+                                }
                             }
+
+                            const canvas = document.createElement('canvas');
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            const aspect = height > width ? '3/4' : '4/3';
+                            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                            resolve({ dataUrl: compressedDataUrl, aspect });
+                        } catch (canvasErr) {
+                            resolve({ dataUrl: rawDataUrl, aspect: '3/4' });
                         }
-
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        const aspect = height > width ? '3/4' : '4/3';
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-                        resolve({ dataUrl: compressedDataUrl, aspect });
                     };
-                    img.onerror = reject;
-                    img.src = e.target.result;
+                    img.onerror = () => resolve({ dataUrl: rawDataUrl, aspect: '3/4' });
+                    img.src = rawDataUrl;
                 };
-                reader.onerror = reject;
+                reader.onerror = () => reject(new Error('Unable to read image file.'));
                 reader.readAsDataURL(file);
             });
         }
 
-        // ==================== NAVIGATION & SECRET ADMIN TRIGGERS ====================
-        let brandTapCount = 0;
-        let brandTapTimer = null;
-
-        function handleSecretBrandTap(event) {
-            if (event) event.preventDefault();
-            brandTapCount++;
-            clearTimeout(brandTapTimer);
-
-            const toast = document.getElementById('secret-tap-toast');
-            if (brandTapCount >= 2 && brandTapCount < 5 && toast) {
-                toast.textContent = `Curator Unlock (${brandTapCount}/5)`;
-                toast.classList.remove('hidden');
-            }
-
-            if (brandTapCount >= 5) {
-                brandTapCount = 0;
-                if (toast) toast.classList.add('hidden');
-                openAdminModal();
-                return;
-            }
-
-            if (brandTapCount === 1) {
-                showSection('home');
-            }
-
-            brandTapTimer = setTimeout(() => {
-                brandTapCount = 0;
-                if (toast) toast.classList.add('hidden');
-            }, 2500);
-        }
-
-        function showSection(sectionId) {
-            playSoftGalleryChime('nav');
-            const sections = ['home', 'artworks', 'about', 'contact'];
-            sections.forEach(id => {
-                const el = document.getElementById(`section-${id}`);
-                if (el) {
-                    if (id === sectionId) {
-                        el.classList.remove('hidden');
-                    } else {
-                        el.classList.add('hidden');
-                    }
-                }
-            });
-
-            document.querySelectorAll('.nav-link').forEach(btn => {
-                const target = btn.getAttribute('data-target');
-                if (target === sectionId) {
-                    btn.classList.add('text-[#A69076]', 'border-b', 'border-[#A69076]');
-                    btn.classList.remove('text-[#2C2C2C]/70');
-                } else {
-                    btn.classList.remove('text-[#A69076]', 'border-b', 'border-[#A69076]');
-                    btn.classList.add('text-[#2C2C2C]/70');
-                }
-            });
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            if (sectionId === 'artworks') {
-                renderCategoryFilterBar();
-                renderArtworksGrid();
+        function showAdminFeedback(msg, isError = false) {
+            const box = document.getElementById('admin-publish-feedback');
+            if (!box) return;
+            box.textContent = msg;
+            box.className = isError
+                ? 'p-4 rounded-2xl text-xs font-medium bg-red-50 border border-red-200 text-red-700'
+                : 'p-4 rounded-2xl text-xs font-medium bg-emerald-50 border border-emerald-200 text-emerald-800';
+            box.classList.remove('hidden');
+            if (!isError) {
+                setTimeout(() => box.classList.add('hidden'), 4000);
             }
         }
 
@@ -1666,7 +1733,7 @@
             event.preventDefault();
             const submitBtn = document.getElementById('save-artwork-btn');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Publishing...';
+            submitBtn.textContent = 'Processing Image...';
 
             try {
                 const editId = document.getElementById('edit-artwork-id').value;
@@ -1715,8 +1782,17 @@
                     updatedAt: Date.now()
                 };
 
-                if (cloudReady && currentUser) {
-                    await setDoc(doc(getArtworksCollectionRef(), docId), artworkPayload);
+                submitBtn.textContent = 'Saving to Cloud...';
+
+                if (db && currentUser) {
+                    const saveWithTimeout = Promise.race([
+                        setDoc(doc(getArtworksCollectionRef(), docId), artworkPayload),
+                        new Promise((_, reject) =>
+                            setTimeout(() => reject(new Error('Cloud timeout — check Firebase Firestore Rules or internet connection.')), 8000)
+                        )
+                    ]);
+                    await saveWithTimeout;
+                    showAdminFeedback(`"${title}" published to Live Cloud Gallery!`);
                 } else {
                     if (editId) {
                         const idx = artworks.findIndex(a => a.id === editId);
@@ -1727,12 +1803,14 @@
                     renderCategoryFilterBar();
                     renderArtworksGrid();
                     renderAdminArtworksList();
+                    showAdminFeedback(`"${title}" saved locally (Cloud offline).`);
                 }
 
                 resetAdminForm();
                 populateAdminCategoryDropdown();
             } catch (err) {
                 console.error('Error publishing artwork:', err);
+                showAdminFeedback('Publish failed: ' + (err.message || 'Check Firebase Firestore Rules.'), true);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Publish to Live Gallery';
@@ -2454,6 +2532,7 @@
         window.toggleChangePinBox = toggleChangePinBox;
         window.saveNewAdminPin = saveNewAdminPin;
         window.saveArtworkFromAdmin = saveArtworkFromAdmin;
+        window.previewAdminSelectedFile = previewAdminSelectedFile;
         window.editArtworkInAdmin = editArtworkInAdmin;
         window.resetAdminForm = resetAdminForm;
         window.deleteArtworkFromAdmin = deleteArtworkFromAdmin;
