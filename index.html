@@ -101,8 +101,14 @@
         /* 3D Tilt Card & Glare */
         .tilt-card {
             transform-style: preserve-3d;
-            transition: transform 0.25s cubic-bezier(0.03, 0.98, 0.52, 0.99), box-shadow 0.4s ease;
+            transition: transform 0.35s cubic-bezier(0.03, 0.98, 0.52, 0.99),
+                        box-shadow 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 0.45s ease;
             position: relative;
+        }
+        .tilt-card:hover {
+            box-shadow: 0 24px 48px -16px rgba(38, 35, 31, 0.18), 0 8px 20px -8px rgba(156, 130, 101, 0.22);
+            border-color: rgba(156, 130, 101, 0.6);
         }
         .tilt-glare {
             position: absolute;
@@ -110,7 +116,7 @@
             pointer-events: none;
             background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 70%);
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.35s ease;
             border-radius: inherit;
             z-index: 20;
         }
@@ -1365,9 +1371,8 @@
                     ${(() => {
                         const artistWorksCount = artworks.filter(w => (w.artistId || 'mt-oung') === artist.id).length;
                         return `
-                            <div class="mt-6 pt-5 border-t border-[#9C8265]/20 flex justify-center md:justify-start">
-                                <button type="button" onclick="scrollToArtistWorks()"
-                                        class="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-[#26231F] text-[#F3EFE6] hover:bg-[#9C8265] text-[11px] uppercase tracking-[0.22em] font-medium transition-all shadow-sm">
+                            <div class="mt-6 pt-5 border-t border-[#9C8265]/20 flex flex-wrap items-center justify-center md:justify-start gap-4">
+                                <button type="button" onclick="scrollToArtistWorks()" class="inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-[#26231F] text-[#F3EFE6] hover:bg-[#9C8265] text-xs uppercase tracking-[0.2em] font-medium transition-all duration-300 shadow-sm group">
                                     <span>View Artworks (${artistWorksCount})</span>
                                     <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
@@ -1459,7 +1464,8 @@
                 const safeAspect = escapeHTML(art.aspect || '3/4');
 
                 return `
-                    <article class="break-inside-avoid mb-8 group bg-[#FAF7F0]/90 border border-[#9C8265]/25 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer" onclick="openLightboxById('${safeId}')">
+                    <article class="reveal-item tilt-card break-inside-avoid mb-8 group bg-[#FAF7F0]/90 border border-[#9C8265]/25 rounded-2xl overflow-hidden shadow-sm cursor-pointer" onclick="openLightboxById('${safeId}')">
+                        <div class="tilt-glare"></div>
                         <div class="relative overflow-hidden bg-[#E7E0D2]">
                             <img src="${safeImg}"
                                  alt="${safeTitle}"
@@ -1467,8 +1473,9 @@
                                  data-category="${safeCat}"
                                  data-aspect="${safeAspect}"
                                  onerror="handleCardImageError(this)"
-                                 class="w-full h-auto object-cover block transition-transform duration-700 ease-out group-hover:scale-[1.03]">
-                            <div class="absolute top-3.5 right-3.5 px-3 py-1 rounded-full bg-[#26231F]/80 backdrop-blur-sm text-[#FAF9F6] text-[10px] uppercase tracking-[0.2em] flex items-center gap-1.5">
+                                 class="w-full h-auto object-cover block transition-transform duration-1000 ease-out group-hover:scale-[1.04]">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#26231F]/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                            <div class="absolute top-3.5 right-3.5 px-3 py-1 rounded-full bg-[#26231F]/80 backdrop-blur-sm text-[#FAF9F6] text-[10px] uppercase tracking-[0.2em] flex items-center gap-1.5 z-10">
                                 <span class="w-2 h-2 rounded-full ${dotClass}"></span>
                                 <span>${statusLabel}</span>
                             </div>
@@ -1482,6 +1489,8 @@
                     </article>
                 `;
             }).join('');
+
+            requestAnimationFrame(() => initGalleryCardAnimations());
         }
 
         // ==================== LIGHTBOX STATE & HELPERS ====================
