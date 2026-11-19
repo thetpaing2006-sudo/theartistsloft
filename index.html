@@ -1877,10 +1877,10 @@
 
         const customBgAudio = document.getElementById('gallery-bg-audio');
         if (customBgAudio) {
-            customBgAudio.volume = 0;
+            customBgAudio.volume = 0.22;
             customBgAudio.addEventListener('error', () => {
                 customTrackFailed = true;
-                if (isSoundEnabled && !isLoopStarted) {
+                if (isSoundEnabled) {
                     ensureAudioContext();
                     startSynthAmbienceLoop();
                 }
@@ -1913,7 +1913,7 @@
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContextClass();
                 masterGain = audioCtx.createGain();
-                masterGain.gain.setValueAtTime(0.28, audioCtx.currentTime);
+                masterGain.gain.setValueAtTime(0.55, audioCtx.currentTime);
                 masterGain.connect(audioCtx.destination);
             }
             if (audioCtx.state === 'suspended') {
@@ -2245,38 +2245,54 @@
             if (isLoopStarted) return;
             isLoopStarted = true;
 
-            // Layer 1: Gentle Courtyard Breeze & Distant Garden Songbirds (Subtle Natural Atmosphere)
+            // Layer 1: Gentle Courtyard Breeze, Lotus Fountain & Distant Garden Songbirds
             ensureAudioContext();
             startCourtyardBreeze();
-            setTimeout(() => playDistantSongbird(), 2200);
+            setTimeout(() => playDistantSongbird(), 600);
             scheduleNatureBirds();
 
-            // Layer 2: Your Custom Uploaded Meditation / Pan-Flute Track ('ambience.mp3') at whisper-soft level
+            // Layer 2: Start Instant Chamber Piano immediately (0.3s) while 13.4MB MP3 buffers
             if (customBgAudio && !customTrackFailed) {
+                startSynthAmbienceLoop(true);
+                customBgAudio.volume = 0.01;
+
+                const handoffToCustomTrack = () => {
+                    if (!isSoundEnabled || customBgAudio.paused) return;
+                    clearInterval(ambientInterval);
+                    ambientInterval = null;
+                    fadeAudioVolume(customBgAudio, 0.30, 1800);
+                };
+
+                customBgAudio.addEventListener('playing', handoffToCustomTrack, { once: true });
+
                 const playPromise = customBgAudio.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        fadeAudioVolume(customBgAudio, 0.13, 1800);
+                        if (!customBgAudio.paused && customBgAudio.readyState >= 3) {
+                            handoffToCustomTrack();
+                        }
                     }).catch(() => {
-                        isLoopStarted = false;
+                        // Browser blocked autoplay until first tap; keep synth ready for unlock
+                        clearInterval(ambientInterval);
+                        ambientInterval = null;
                         stopCourtyardBreeze();
                         clearTimeout(natureBirdTimer);
-                        if (customTrackFailed) {
-                            startSynthAmbienceLoop();
-                        }
+                        isLoopStarted = false;
                     });
-                    return;
                 }
+                return;
             }
 
-            startSynthAmbienceLoop();
+            startSynthAmbienceLoop(false);
         }
 
-        function startSynthAmbienceLoop() {
+        function startSynthAmbienceLoop(isWarmupOnly = false) {
             isLoopStarted = true;
-            startCourtyardBreeze();
-            setTimeout(() => playDistantSongbird(), 1800);
-            scheduleNatureBirds();
+            if (!isWarmupOnly) {
+                startCourtyardBreeze();
+                setTimeout(() => playDistantSongbird(), 1200);
+                scheduleNatureBirds();
+            }
 
             // Long 16-Measure Classic Nocturne / Gymnopédie Progression (~46 seconds per full cycle)
             const classicalSuite = [
@@ -2365,12 +2381,21 @@
             const btn = document.getElementById('sound-toggle-btn');
             const label = document.getElementById('sound-toggle-label');
 
+            // If Sound was set to Default ON but browser hadn't unlocked audio yet, start it immediately instead of turning off
+            if (isSoundEnabled && !isLoopStarted) {
+                ensureAudioContext();
+                startClassicAmbienceLoop();
+                playSoftGalleryChime('open');
+                if (btn) btn.classList.remove('sound-paused');
+                if (label) label.textContent = 'Sound On';
+                return;
+            }
+
             if (!isSoundEnabled) {
                 isSoundEnabled = true;
-                if (!customBgAudio || customTrackFailed) {
-                    ensureAudioContext();
-                }
+                ensureAudioContext();
                 startClassicAmbienceLoop();
+                playSoftGalleryChime('open');
                 if (btn) btn.classList.remove('sound-paused');
                 if (label) label.textContent = 'Sound On';
             } else {
