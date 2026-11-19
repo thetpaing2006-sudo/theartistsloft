@@ -12,21 +12,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cream: '#F3EFE6',
-                        parchment: '#E9E2D3',
-                        charcoal: '#26231F',
-                        taupe: '#9C8265',
-                    },
-                    fontFamily: {
-                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-                        sans: ['"Inter"', 'system-ui', 'sans-serif'],
+        if (window.tailwind) {
+            window.tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            cream: '#F3EFE6',
+                            parchment: '#E9E2D3',
+                            charcoal: '#26231F',
+                            taupe: '#9C8265',
+                        },
+                        fontFamily: {
+                            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                            sans: ['"Inter"', 'system-ui', 'sans-serif'],
+                        }
                     }
                 }
-            }
+            };
         }
     </script>
 
@@ -599,8 +601,8 @@
         </div>
     </footer>
 
-    <!-- Custom Gallery Ambience Audio Track (Upload your audio file as 'ambience.mp3' in the same folder as index.html) -->
-    <audio id="gallery-bg-audio" src="ambience.mp3" loop preload="auto"></audio>
+    <!-- Custom Gallery Ambience Audio Track (Hosted on GitHub Release v1.0) -->
+    <audio id="gallery-bg-audio" src="https://github.com/thetpaing2006-sudo/theartistsloft/releases/download/v1.0/ambience.mp3" loop preload="auto"></audio>
 
     <!-- Subtle Secret Tap Toast -->
     <div id="secret-tap-toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2 rounded-full bg-[#2C2C2C]/85 text-[#FAF9F6] text-xs tracking-widest uppercase shadow-lg pointer-events-none"></div>
@@ -1867,6 +1869,9 @@
         let masterGain = null;
         let breezeNode = null;
         let breezeGain = null;
+        let breezeLfo = null;
+        let fountainNode = null;
+        let fountainGain = null;
         let customTrackFailed = false;
         let audioFadeTimer = null;
 
@@ -1908,7 +1913,7 @@
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContextClass();
                 masterGain = audioCtx.createGain();
-                masterGain.gain.setValueAtTime(0.24, audioCtx.currentTime);
+                masterGain.gain.setValueAtTime(0.28, audioCtx.currentTime);
                 masterGain.connect(audioCtx.destination);
             }
             if (audioCtx.state === 'suspended') {
@@ -1921,7 +1926,7 @@
             source.start(0);
         }
 
-        // Soft Courtyard Breeze & Quiet Gallery Air Bed
+        // Soft Courtyard Breeze, Gentle Rustling Leaves & Lotus Fountain Water Trickle
         function startCourtyardBreeze() {
             if (!audioCtx || breezeNode) return;
             const bufferSize = audioCtx.sampleRate * 4;
@@ -1936,26 +1941,64 @@
                 b3 = 0.86650 * b3 + white * 0.3104856;
                 b4 = 0.55000 * b4 + white * 0.5329522;
                 b5 = -0.7616 * b5 - white * 0.0168980;
-                output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.028;
+                output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04;
                 b6 = white * 0.115926;
             }
 
+            // 1. Gentle Breeze & Rustling Courtyard Leaves
             breezeNode = audioCtx.createBufferSource();
             breezeNode.buffer = noiseBuffer;
             breezeNode.loop = true;
 
             const breezeFilter = audioCtx.createBiquadFilter();
-            breezeFilter.type = 'lowpass';
-            breezeFilter.frequency.setValueAtTime(260, audioCtx.currentTime);
+            breezeFilter.type = 'bandpass';
+            breezeFilter.frequency.setValueAtTime(520, audioCtx.currentTime);
+            breezeFilter.Q.setValueAtTime(0.65, audioCtx.currentTime);
+
+            // Slow natural wind swell modulation (every ~7 seconds)
+            breezeLfo = audioCtx.createOscillator();
+            const lfoGain = audioCtx.createGain();
+            breezeLfo.type = 'sine';
+            breezeLfo.frequency.setValueAtTime(0.14, audioCtx.currentTime);
+            lfoGain.gain.setValueAtTime(190, audioCtx.currentTime);
+            breezeLfo.connect(lfoGain);
+            lfoGain.connect(breezeFilter.frequency);
 
             breezeGain = audioCtx.createGain();
             breezeGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            breezeGain.gain.linearRampToValueAtTime(0.24, audioCtx.currentTime + 2.5);
+            breezeGain.gain.linearRampToValueAtTime(0.38, audioCtx.currentTime + 2.2);
 
             breezeNode.connect(breezeFilter);
             breezeFilter.connect(breezeGain);
             breezeGain.connect(masterGain);
             breezeNode.start();
+            breezeLfo.start();
+
+            // 2. Soft Lotus Pond / Courtyard Fountain Water Trickle
+            const waterBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 3, audioCtx.sampleRate);
+            const wData = waterBuffer.getChannelData(0);
+            for (let i = 0; i < wData.length; i++) {
+                const sparkle = Math.random() > 0.992 ? (Math.random() * 2 - 1) * 0.45 : 0;
+                wData[i] = ((Math.random() * 2 - 1) * 0.06) + sparkle;
+            }
+
+            fountainNode = audioCtx.createBufferSource();
+            fountainNode.buffer = waterBuffer;
+            fountainNode.loop = true;
+
+            const waterFilter = audioCtx.createBiquadFilter();
+            waterFilter.type = 'bandpass';
+            waterFilter.frequency.setValueAtTime(1150, audioCtx.currentTime);
+            waterFilter.Q.setValueAtTime(1.4, audioCtx.currentTime);
+
+            fountainGain = audioCtx.createGain();
+            fountainGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            fountainGain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 2.5);
+
+            fountainNode.connect(waterFilter);
+            waterFilter.connect(fountainGain);
+            fountainGain.connect(masterGain);
+            fountainNode.start();
         }
 
         function stopCourtyardBreeze() {
@@ -1963,6 +2006,16 @@
                 try { breezeNode.stop(); } catch (e) {}
                 breezeNode.disconnect();
                 breezeNode = null;
+            }
+            if (breezeLfo) {
+                try { breezeLfo.stop(); } catch (e) {}
+                breezeLfo.disconnect();
+                breezeLfo = null;
+            }
+            if (fountainNode) {
+                try { fountainNode.stop(); } catch (e) {}
+                fountainNode.disconnect();
+                fountainNode = null;
             }
         }
 
@@ -2198,12 +2251,12 @@
             setTimeout(() => playDistantSongbird(), 2200);
             scheduleNatureBirds();
 
-            // Layer 2: Your Custom Uploaded Meditation / Pan-Flute Track ('ambience.mp3')
+            // Layer 2: Your Custom Uploaded Meditation / Pan-Flute Track ('ambience.mp3') at whisper-soft level
             if (customBgAudio && !customTrackFailed) {
                 const playPromise = customBgAudio.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        fadeAudioVolume(customBgAudio, 0.32, 1600);
+                        fadeAudioVolume(customBgAudio, 0.13, 1800);
                     }).catch(() => {
                         isLoopStarted = false;
                         stopCourtyardBreeze();
