@@ -194,7 +194,7 @@
 
             <!-- Right Links + Classic Gallery Ambience Sound Toggle (Default ON) -->
             <div class="flex items-center justify-center md:justify-end gap-5 md:w-1/3">
-                <button type="button" id="sound-toggle-btn" onclick="toggleGallerySound(event)" title="Toggle Classic Gallery Ambience"
+                <button type="button" id="sound-toggle-btn" onclick="toggleGallerySound(event)" title="Toggle Classic Gallery & Nature Ambience"
                         class="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#9C8265]/40 bg-[#FAF7F0]/75 hover:border-[#26231F] text-[10px] uppercase tracking-[0.2em] text-[#26231F]/80 transition-all">
                     <span class="flex items-end gap-[2px] h-3 w-3" aria-hidden="true">
                         <span class="sound-bar w-[2px] h-full bg-[#9C8265] rounded-full"></span>
@@ -1857,19 +1857,23 @@
             }
         }
 
-        // ==================== CLASSIC GALLERY AMBIENCE & TACTILE AUDIO ENGINE (DEFAULT ON) ====================
+        // ==================== CLASSIC GALLERY & NATURE AMBIENCE AUDIO ENGINE (SOFT & SERENE) ====================
         let audioCtx = null;
         let isSoundEnabled = true; // Default ON
         let isLoopStarted = false;
         let ambientInterval = null;
+        let natureBirdTimer = null;
         let masterGain = null;
+        let breezeNode = null;
+        let breezeGain = null;
 
         function ensureAudioContext() {
             if (!audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 audioCtx = new AudioContextClass();
                 masterGain = audioCtx.createGain();
-                masterGain.gain.setValueAtTime(0.42, audioCtx.currentTime);
+                // Gentle, whisper-soft gallery volume so piano & nature never overwhelm
+                masterGain.gain.setValueAtTime(0.22, audioCtx.currentTime);
                 masterGain.connect(audioCtx.destination);
             }
             if (audioCtx.state === 'suspended') {
@@ -1883,8 +1887,100 @@
             source.start(0);
         }
 
-        // Warm Felt Grand Piano & Harp Voice
-        function playFeltPianoNote(freq, duration = 5.5, volume = 0.24) {
+        // Soft Courtyard Breeze & Quiet Gallery Air Bed (Pink Noise through gentle lowpass)
+        function startCourtyardBreeze() {
+            if (!audioCtx || breezeNode) return;
+            const bufferSize = audioCtx.sampleRate * 4;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                b3 = 0.86650 * b3 + white * 0.3104856;
+                b4 = 0.55000 * b4 + white * 0.5329522;
+                b5 = -0.7616 * b5 - white * 0.0168980;
+                output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.03;
+                b6 = white * 0.115926;
+            }
+
+            breezeNode = audioCtx.createBufferSource();
+            breezeNode.buffer = noiseBuffer;
+            breezeNode.loop = true;
+
+            const breezeFilter = audioCtx.createBiquadFilter();
+            breezeFilter.type = 'lowpass';
+            breezeFilter.frequency.setValueAtTime(280, audioCtx.currentTime);
+
+            breezeGain = audioCtx.createGain();
+            breezeGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            breezeGain.gain.linearRampToValueAtTime(0.28, audioCtx.currentTime + 2.5);
+
+            breezeNode.connect(breezeFilter);
+            breezeFilter.connect(breezeGain);
+            breezeGain.connect(masterGain);
+            breezeNode.start();
+        }
+
+        function stopCourtyardBreeze() {
+            if (breezeNode) {
+                try { breezeNode.stop(); } catch (e) {}
+                breezeNode.disconnect();
+                breezeNode = null;
+            }
+        }
+
+        // Distant Garden Songbird Chirp (delicate, soft, far outside the gallery window)
+        function playDistantSongbird() {
+            if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
+            const now = audioCtx.currentTime;
+            const notesCount = 2 + Math.floor(Math.random() * 3); // 2 to 4 delicate chirps
+            const baseFreq = 1950 + Math.random() * 650;
+
+            for (let i = 0; i < notesCount; i++) {
+                const startT = now + i * (0.14 + Math.random() * 0.08);
+                const dur = 0.09 + Math.random() * 0.05;
+
+                const osc = audioCtx.createOscillator();
+                const filter = audioCtx.createBiquadFilter();
+                const birdGain = audioCtx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(baseFreq, startT);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq * (1.18 + Math.random() * 0.12), startT + dur * 0.5);
+                osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.92, startT + dur);
+
+                // Muffle slightly so it sounds outside the gallery courtyard
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(2400, startT);
+
+                birdGain.gain.setValueAtTime(0.0001, startT);
+                birdGain.gain.linearRampToValueAtTime(0.045, startT + 0.02);
+                birdGain.gain.exponentialRampToValueAtTime(0.0001, startT + dur);
+
+                osc.connect(filter);
+                filter.connect(birdGain);
+                birdGain.connect(masterGain);
+
+                osc.start(startT);
+                osc.stop(startT + dur + 0.02);
+            }
+        }
+
+        function scheduleNatureBirds() {
+            clearTimeout(natureBirdTimer);
+            if (!isSoundEnabled) return;
+            const nextDelay = 5500 + Math.random() * 6500; // Every 5.5s - 12s naturally
+            natureBirdTimer = setTimeout(() => {
+                playDistantSongbird();
+                scheduleNatureBirds();
+            }, nextDelay);
+        }
+
+        // Whisper-Soft Felt Grand Piano Voice
+        function playFeltPianoNote(freq, duration = 5.8, volume = 0.14) {
             if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
 
@@ -1899,15 +1995,15 @@
 
             overtoneOsc.type = 'triangle';
             overtoneOsc.frequency.setValueAtTime(freq * 2, now);
-            overtoneGain.gain.setValueAtTime(0.08, now);
+            overtoneGain.gain.setValueAtTime(0.05, now);
 
-            // Soft felt hammer warmth
+            // Warm damped felt piano tone
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(1150, now);
-            filter.frequency.exponentialRampToValueAtTime(520, now + duration);
+            filter.frequency.setValueAtTime(880, now);
+            filter.frequency.exponentialRampToValueAtTime(420, now + duration);
 
             noteGain.gain.setValueAtTime(0.0001, now);
-            noteGain.gain.linearRampToValueAtTime(volume, now + 0.14);
+            noteGain.gain.linearRampToValueAtTime(volume, now + 0.18);
             noteGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
             osc.connect(filter);
@@ -1922,8 +2018,8 @@
             overtoneOsc.stop(now + duration + 0.15);
         }
 
-        // Deep Expressive Chamber Cello Sustain
-        function playChamberCello(freq, duration = 6.5, volume = 0.18) {
+        // Soft Warm Chamber Cello Sustain
+        function playChamberCello(freq, duration = 6.5, volume = 0.11) {
             if (!audioCtx || !isSoundEnabled || audioCtx.state !== 'running') return;
             const now = audioCtx.currentTime;
 
@@ -1935,16 +2031,15 @@
             osc1.type = 'sawtooth';
             osc1.frequency.setValueAtTime(freq, now);
 
-            // Subtle warm ensemble detune
             osc2.type = 'triangle';
             osc2.frequency.setValueAtTime(freq * 1.002, now);
 
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(340, now);
-            filter.Q.setValueAtTime(1.5, now);
+            filter.frequency.setValueAtTime(290, now);
+            filter.Q.setValueAtTime(1.2, now);
 
             celloGain.gain.setValueAtTime(0.0001, now);
-            celloGain.gain.linearRampToValueAtTime(volume, now + 1.1);
+            celloGain.gain.linearRampToValueAtTime(volume, now + 1.2);
             celloGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
             osc1.connect(filter);
@@ -1963,12 +2058,12 @@
             if (!isSoundEnabled) return;
             ensureAudioContext();
             if (type === 'open') {
-                playFeltPianoNote(523.25, 2.2, 0.2); // C5
-                setTimeout(() => playFeltPianoNote(659.25, 2.5, 0.18), 140); // E5
+                playFeltPianoNote(523.25, 2.2, 0.11); // C5
+                setTimeout(() => playFeltPianoNote(659.25, 2.5, 0.09), 140); // E5
             } else if (type === 'nav') {
-                playFeltPianoNote(392.00, 1.4, 0.14); // G4
+                playFeltPianoNote(392.00, 1.4, 0.08); // G4
             } else {
-                playFeltPianoNote(440.00, 1.6, 0.16); // A4
+                playFeltPianoNote(440.00, 1.6, 0.09); // A4
             }
         }
 
@@ -1976,7 +2071,11 @@
             if (isLoopStarted) return;
             isLoopStarted = true;
 
-            // Long 16-Measure Classic Nocturne / Gymnopédie Progression (~45 seconds per full cycle)
+            startCourtyardBreeze();
+            setTimeout(() => playDistantSongbird(), 1800);
+            scheduleNatureBirds();
+
+            // Long 16-Measure Classic Nocturne / Gymnopédie Progression (~46 seconds per full cycle)
             const classicalSuite = [
                 { bass: 130.81, chord: [261.63, 329.63, 392.00], melody: 493.88 }, // Cmaj7 (B4)
                 { bass: 110.00, chord: [220.00, 261.63, 329.63], melody: 440.00 }, // Am7 (A4)
@@ -2001,32 +2100,34 @@
                 if (!isSoundEnabled || !audioCtx || audioCtx.state !== 'running') return;
                 const bar = classicalSuite[measure % classicalSuite.length];
 
-                // 1. Deep expressive Cello bass on beat 1
-                playChamberCello(bar.bass, 5.8, 0.19);
+                // 1. Soft expressive Cello bass on beat 1
+                playChamberCello(bar.bass, 6.0, 0.11);
 
                 // 2. Gentle arpeggiated Felt Piano accompaniment
                 bar.chord.forEach((freq, idx) => {
                     setTimeout(() => {
-                        playFeltPianoNote(freq, 4.8, 0.17);
-                    }, (idx + 1) * 520);
+                        playFeltPianoNote(freq, 5.0, 0.10);
+                    }, (idx + 1) * 540);
                 });
 
-                // 3. Lyrical expressive melody note floating above
+                // 3. Soft lyrical melody note floating above
                 setTimeout(() => {
-                    playFeltPianoNote(bar.melody, 5.4, 0.23);
-                }, 1650);
+                    playFeltPianoNote(bar.melody, 5.6, 0.14);
+                }, 1700);
 
                 measure++;
             };
 
             playMeasure();
-            // 2.85 seconds per measure * 16 measures = ~45.6 seconds full classical movement
-            ambientInterval = setInterval(playMeasure, 2850);
+            ambientInterval = setInterval(playMeasure, 2900);
         }
 
         function stopClassicAmbienceLoop() {
             clearInterval(ambientInterval);
+            clearTimeout(natureBirdTimer);
+            stopCourtyardBreeze();
             ambientInterval = null;
+            natureBirdTimer = null;
             isLoopStarted = false;
         }
 
