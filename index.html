@@ -167,4 +167,53 @@
 
     @keyframes loadBar {
       to {
-        width: 10
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="gallery-card">
+    <div class="logo-wrapper">
+      <!-- Ensure logo.jpg is placed in the same root folder as index.html -->
+      <img src="logo.jpg" alt="The Artist's Loft Logo">
+    </div>
+
+    <div class="eyebrow">Exhibition Relocation</div>
+    <h1>The Artist's Loft</h1>
+    <p>
+      Our digital gallery has moved to a newly curated space. 
+      Please step inside to explore the latest collections.
+    </p>
+
+    <a href="https://theartistsloftv2.pages.dev/" class="cta-button">
+      Enter New Gallery
+    </a>
+
+    <div class="redirect-note">
+      Redirecting automatically in <span id="countdown">10</span>s...
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let seconds = 10;
+    const countdownEl = document.getElementById('countdown');
+    const targetUrl = "https://theartistsloftv2.pages.dev/";
+
+    const timer = setInterval(() => {
+      seconds--;
+      if (seconds > 0) {
+        countdownEl.textContent = seconds;
+      } else {
+        clearInterval(timer);
+        window.location.replace(targetUrl);
+      }
+    }, 1000);
+  </script>
+
+</body>
+</html>
