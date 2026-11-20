@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Artist's Loft — Relocating Gallery</title>
   
-  <!-- Automatic redirect after 4 seconds -->
-  <meta http-equiv="refresh" content="4;url=https://theartistsloftv2.pages.dev/">
+  <!-- Automatic redirect after 10 seconds -->
+  <meta http-equiv="refresh" content="10;url=https://theartistsloftv2.pages.dev/">
 
   <!-- Google Fonts for a refined gallery aesthetic -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -151,7 +151,7 @@
       height: 100%;
       width: 0%;
       background: var(--gold-accent);
-      animation: loadBar 4s linear forwards;
+      animation: loadBar 10s linear forwards;
     }
 
     @keyframes fadeIn {
@@ -167,53 +167,4 @@
 
     @keyframes loadBar {
       to {
-        width: 100%;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <main class="gallery-card">
-    <div class="logo-wrapper">
-      <!-- Ensure logo.jpg is placed in the same root folder as index.html -->
-      <img src="logo.jpg" alt="The Artist's Loft Logo">
-    </div>
-
-    <div class="eyebrow">Exhibition Relocation</div>
-    <h1>The Artist's Loft</h1>
-    <p>
-      Our digital gallery has moved to a newly curated space. 
-      Please step inside to explore the latest collections.
-    </p>
-
-    <a href="https://theartistsloftv2.pages.dev/" class="cta-button">
-      Enter New Gallery
-    </a>
-
-    <div class="redirect-note">
-      Redirecting automatically in <span id="countdown">4</span>s...
-      <div class="progress-bar">
-        <div class="progress-fill"></div>
-      </div>
-    </div>
-  </main>
-
-  <script>
-    let seconds = 4;
-    const countdownEl = document.getElementById('countdown');
-    const targetUrl = "https://theartistsloftv2.pages.dev/";
-
-    const timer = setInterval(() => {
-      seconds--;
-      if (seconds > 0) {
-        countdownEl.textContent = seconds;
-      } else {
-        clearInterval(timer);
-        window.location.replace(targetUrl);
-      }
-    }, 1000);
-  </script>
-
-</body>
-</html>
+        width: 10
