@@ -76,8 +76,8 @@
 
         /* Smooth Continuous Scroll-Driven Zoom-In / Zoom-Out & Focus */
         .reveal-item {
-            opacity: 0.14;
-            transform: perspective(1200px) translate3d(0, 26px, 0) scale(0.86);
+            opacity: 0.06;
+            transform: perspective(1200px) translate3d(0, 30px, 0) scale(0.84);
             will-change: opacity, transform;
         }
 
@@ -2339,40 +2339,53 @@
 
             let stillMoving = false;
 
-            cards.forEach(card => {
+            cards.forEach((card, index) => {
+                // Assign subtle, organic per-card random offsets once so cards in the same row breathe naturally
+                if (card._randPhase === undefined) {
+                    card._randPhase = (Math.random() - 0.5) * 46; // subtle vertical timing variance (-23px to +23px)
+                    card._randScaleMin = 0.82 + Math.random() * 0.05; // slightly varied resting scale (0.82 - 0.87)
+                    card._randEase = 0.088 + Math.random() * 0.042; // subtle organic speed difference (0.088 - 0.130)
+                    card._randTiltZ = (Math.random() - 0.5) * 1.1; // whisper-subtle organic angle (-0.55deg to +0.55deg)
+                }
+
                 const rect = card.getBoundingClientRect();
                 const isPointerRow = activeRowTop !== null && Math.abs(Math.round(rect.top) - activeRowTop) < 35;
 
                 let targetOpacity = 1;
                 let targetY = 0;
                 let targetScale = 1;
+                let targetRotZ = 0;
 
                 if (!isPointerRow) {
-                    const cardCenter = rect.top + rect.height * 0.5;
+                    const cardCenter = rect.top + rect.height * 0.5 + card._randPhase;
                     const viewportCenter = vh * 0.5;
                     const distanceFromCenter = Math.abs(cardCenter - viewportCenter);
-                    const focusRadius = vh * 0.52;
+                    const focusRadius = vh * 0.50;
                     const normalizedDist = Math.min(1, distanceFromCenter / focusRadius);
 
-                    // Faint silhouette when off-center, smoothly zooming in as it enters focus
-                    const focusFactor = Math.pow(1 - normalizedDist, 1.35);
-                    targetOpacity = 0.14 + focusFactor * 0.86;
-                    targetY = (1 - focusFactor) * (cardCenter > viewportCenter ? 26 : -14);
-                    targetScale = 0.86 + focusFactor * 0.14;
+                    // Very faint whisper silhouette when off-center (0.06), smoothly zooming into full clarity
+                    const focusFactor = Math.pow(1 - normalizedDist, 1.45);
+                    targetOpacity = 0.06 + focusFactor * 0.94;
+                    targetY = (1 - focusFactor) * (cardCenter > viewportCenter ? 32 : -18);
+                    targetScale = card._randScaleMin + focusFactor * (1 - card._randScaleMin);
+                    targetRotZ = (1 - focusFactor) * card._randTiltZ;
                 }
 
                 const curOpacity = card._curOpacity !== undefined ? card._curOpacity : targetOpacity;
                 const curY = card._curY !== undefined ? card._curY : targetY;
                 const curScale = card._curScale !== undefined ? card._curScale : targetScale;
+                const curRotZ = card._curRotZ !== undefined ? card._curRotZ : targetRotZ;
 
-                const ease = 0.11;
+                const ease = card._randEase;
                 const nextOpacity = curOpacity + (targetOpacity - curOpacity) * ease;
                 const nextY = curY + (targetY - curY) * ease;
                 const nextScale = curScale + (targetScale - curScale) * ease;
+                const nextRotZ = curRotZ + (targetRotZ - curRotZ) * ease;
 
                 card._curOpacity = nextOpacity;
                 card._curY = nextY;
                 card._curScale = nextScale;
+                card._curRotZ = nextRotZ;
 
                 if (
                     Math.abs(targetOpacity - nextOpacity) > 0.004 ||
@@ -2384,7 +2397,7 @@
 
                 card.style.opacity = nextOpacity.toFixed(3);
                 if (card.dataset.tilting !== 'true') {
-                    card.style.transform = `perspective(1200px) translate3d(0, ${nextY.toFixed(1)}px, 0) scale(${nextScale.toFixed(3)})`;
+                    card.style.transform = `perspective(1200px) translate3d(0, ${nextY.toFixed(1)}px, 0) scale(${nextScale.toFixed(3)}) rotateZ(${nextRotZ.toFixed(2)}deg)`;
                 }
             });
 
