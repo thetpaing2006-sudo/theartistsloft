@@ -3,9 +3,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Artist's Loft</title>
+  <title>The Artist's Loft — Relocating Gallery</title>
+  
+  <!-- Automatic redirect after 4 seconds -->
+  <meta http-equiv="refresh" content="4;url=https://theartistsloftv2.pages.dev/">
+
+  <!-- Google Fonts for a refined gallery aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #111111;
+      --card-bg: #181818;
+      --gold-accent: #c5a059;
+      --gold-hover: #dfc082;
+      --text-main: #f4f1ea;
+      --text-muted: #9e9a93;
+      --border-subtle: rgba(197, 160, 89, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: radial-gradient(circle at center, #1d1c1a 0%, #0d0d0d 100%);
+      color: var(--text-main);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .gallery-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-subtle);
+      max-width: 520px;
+      width: 100%;
+      padding: 48px 36px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      animation: fadeIn 0.9s ease-out forwards;
+    }
+
+    /* Subtle inner gallery frame line */
+    .gallery-card::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 1px solid rgba(197, 160, 89, 0.12);
+      pointer-events: none;
+    }
+
+    .logo-wrapper {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 28px;
+      border-radius: 50%;
+      padding: 6px;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #121212;
+    }
+
+    .logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-accent);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.3rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-bottom: 14px;
+      color: var(--text-main);
+    }
+
+    p {
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      font-weight: 300;
+      margin-bottom: 32px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 14px 32px;
+      border: 1px solid var(--gold-accent);
+      color: var(--gold-accent);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    .cta-button:hover {
+      background-color: var(--gold-accent);
+      color: #111111;
+      box-shadow: 0 0 20px rgba(197, 160, 89, 0.3);
+    }
+
+    .redirect-note {
+      margin-top: 28px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .progress-bar {
+      width: 140px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 12px auto 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--gold-accent);
+      animation: loadBar 4s linear forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes loadBar {
+      to {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-  <a href="https://theartistsloftv2.pages.dev/">https://theartistsloftv2.pages.dev/</a>
+
+  <main class="gallery-card">
+    <div class="logo-wrapper">
+      <!-- Ensure logo.jpg is placed in the same root folder as index.html -->
+      <img src="logo.jpg" alt="The Artist's Loft Logo">
+    </div>
+
+    <div class="eyebrow">Exhibition Relocation</div>
+    <h1>The Artist's Loft</h1>
+    <p>
+      Our digital gallery has moved to a newly curated space. 
+      Please step inside to explore the latest collections.
+    </p>
+
+    <a href="https://theartistsloftv2.pages.dev/" class="cta-button">
+      Enter New Gallery
+    </a>
+
+    <div class="redirect-note">
+      Redirecting automatically in <span id="countdown">4</span>s...
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let seconds = 4;
+    const countdownEl = document.getElementById('countdown');
+    const targetUrl = "https://theartistsloftv2.pages.dev/";
+
+    const timer = setInterval(() => {
+      seconds--;
+      if (seconds > 0) {
+        countdownEl.textContent = seconds;
+      } else {
+        clearInterval(timer);
+        window.location.replace(targetUrl);
+      }
+    }, 1000);
+  </script>
+
 </body>
 </html>
